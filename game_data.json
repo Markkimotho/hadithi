@@ -34,7 +34,8 @@
       "exits": [
         {"text": "Go to the Tavern", "destination": "tavern"},
         {"text": "Go to the Forest", "destination": "forest"},
-        {"text": "Go to the Shop", "destination": "shop"}
+        {"text": "Go to the Shop", "destination": "shop"},
+        {"text": "Take the road to the Castle", "destination": "castle"}
       ],
       "loot": null
     },

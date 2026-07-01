@@ -1,2 +1,4 @@
+dist/
+saves/
 venv/
 __pycache__/

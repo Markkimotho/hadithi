@@ -1,7 +1,11 @@
 # Quest for the Crystal
 ## A Simple Adventure Game
 
-A bare-bones, JSON-driven adventure game built with Python and Tkinter. Navigate locations, collect items, and defeat the dragon boss.
+A JSON-driven adventure game with a Python/Tkinter desktop edition and a browser edition. Navigate locations, collect items, and face the dragon.
+
+## Browser edition
+
+Run `npm test && npm run build`, then serve `dist/` with `python3 -m http.server 8000 --directory dist`. GitHub Actions runs the tests, validates location exits, and publishes the browser edition to GitHub Pages. Both editions read `game_data.json`; the build copies it into `dist/`.
 
 ## Quick Start
 
@@ -30,6 +34,8 @@ Or use the launcher script:
 - Dark Forest
 - Weapon Shop
 - Dark Castle (boss location)
+
+The castle is reachable from the village. Visit the tavern, forest, and shop first if you want a fighting chance.
 
 **Mechanics:**
 - Click buttons to navigate locations
