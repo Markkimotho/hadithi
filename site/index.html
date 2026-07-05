@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Quest for the Crystal</title><link rel="stylesheet" href="./style.css"><script type="module" src="./app.js"></script></head>
+<body>
+<main class="shell">
+  <header><p class="eyebrow">an afternoon adventure</p><h1>Quest for the Crystal</h1><p>Collect what you need. Find the castle. Face the dragon.</p></header>
+  <div class="layout">
+    <section class="scene" aria-live="polite">
+      <p id="chapter" class="chapter">Loading story…</p>
+      <div id="icon" class="icon" aria-hidden="true">✦</div>
+      <h2 id="place">Village</h2>
+      <p id="story"></p>
+      <div id="actions" class="actions"></div>
+    </section>
+    <aside class="sidebar">
+      <div class="sidebar-head"><h2>Satchel</h2><span id="count">0 items</span></div>
+      <ul id="inventory"><li>Empty for now.</li></ul>
+      <p class="note">You can visit the castle at any time. Whether you should is another question.</p>
+      <button id="restart" class="restart">Start over ↺</button>
+    </aside>
+  </div>
+  <p class="credit">A browser edition of the JSON-driven Python desktop game.</p>
+</main>
+</body>
+</html>
