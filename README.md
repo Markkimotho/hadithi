@@ -1,4 +1,4 @@
-# Quest for the Crystal
+# Hadithi
 ## A Simple Adventure Game
 
 A JSON-driven adventure game with a Python/Tkinter desktop edition and a browser edition. Navigate locations, collect items, and face the dragon.
@@ -15,8 +15,8 @@ Run `npm test && npm run build`, then serve `dist/` with `python3 -m http.server
 
 ### Run the Game
 ```bash
-cd adventure_game
-python3.11 adventure_game.py
+cd hadithi
+python3.11 hadithi.py
 ```
 
 Or use the launcher script:
@@ -47,8 +47,8 @@ The castle is reachable from the village. Visit the tavern, forest, and shop fir
 ## File Structure
 
 ```
-adventure_game/
-├── adventure_game.py    # Main game (Python reads JSON)
+hadithi/
+├── hadithi.py    # Main game (Python reads JSON)
 ├── game_data.json       # Story, items, locations, boss
 ├── requirements.txt     # Dependencies (minimal)
 ├── run.sh              # Launcher script
@@ -59,7 +59,7 @@ adventure_game/
 
 The game is **100% JSON-driven**:
 - `game_data.json` defines all game content
-- `adventure_game.py` reads from JSON and provides UI
+- `hadithi.py` reads from JSON and provides UI
 - Python just pulls/displays data, no hardcoding
 
 Edit `game_data.json` to add:

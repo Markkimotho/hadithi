@@ -1,1 +1,1 @@
-{"name":"quest-for-the-crystal","private":true,"type":"module","scripts":{"test":"node --test","build":"node scripts/build.mjs"}}
+{"name":"hadithi","private":true,"type":"module","scripts":{"test":"node --test","build":"node scripts/build.mjs"}}

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Quest for the Crystal - A Simple Adventure Game
+Hadithi - A Simple Adventure Game
 JSON-driven game state with Tkinter UI
 """
 
@@ -14,7 +14,7 @@ import time
 class AdventureGame:
     def __init__(self, root):
         self.root = root
-        self.root.title("Quest for the Crystal")
+        self.root.title("Hadithi")
         self.root.geometry("1000x600")
         self.root.configure(bg="#1a1a1a")
         
