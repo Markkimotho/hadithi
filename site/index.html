@@ -1,25 +1,78 @@
 <!doctype html>
 <html lang="en">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Quest for the Crystal</title><link rel="stylesheet" href="./style.css"><script type="module" src="./app.js"></script></head>
-<body>
-<main class="shell">
-  <header><p class="eyebrow">an afternoon adventure</p><h1>Quest for the Crystal</h1><p>Collect what you need. Find the castle. Face the dragon.</p></header>
-  <div class="layout">
-    <section class="scene" aria-live="polite">
-      <p id="chapter" class="chapter">Loading story…</p>
-      <div id="icon" class="icon" aria-hidden="true">✦</div>
-      <h2 id="place">Village</h2>
-      <p id="story"></p>
-      <div id="actions" class="actions"></div>
-    </section>
-    <aside class="sidebar">
-      <div class="sidebar-head"><h2>Satchel</h2><span id="count">0 items</span></div>
-      <ul id="inventory"><li>Empty for now.</li></ul>
-      <p class="note">You can visit the castle at any time. Whether you should is another question.</p>
-      <button id="restart" class="restart">Start over ↺</button>
-    </aside>
-  </div>
-  <p class="credit">A browser edition of the JSON-driven Python desktop game.</p>
-</main>
-</body>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta
+      name="description"
+      content="A browser adventure through a pixel-art castle."
+    />
+    <title>Quest for the Crystal</title>
+    <link rel="stylesheet" href="./style.css" />
+    <script type="module" src="./app.js"></script>
+  </head>
+  <body>
+    <main class="shell">
+      <header class="site-header">
+        <div class="topline">
+          <span>EPISODE 01 // BROWSER EDITION</span
+          ><a href="https://markkimotho.github.io/projects/">← ALL PROJECTS</a>
+        </div>
+        <h1>QUEST FOR <span>THE CRYSTAL</span></h1>
+        <p>Collect what you need. Find the castle. Face the dragon.</p>
+      </header>
+      <div class="game-frame">
+        <div class="game-bar">
+          <span class="game-led" aria-hidden="true"></span
+          ><span id="chapter">Loading story…</span
+          ><span class="game-version">QFTC / 01</span>
+        </div>
+        <section class="scene" aria-live="polite">
+          <div id="world" class="world" aria-hidden="true">
+            <div class="ceiling"></div>
+            <div class="floor"></div>
+            <div class="back-wall"></div>
+            <div class="wall-left"></div>
+            <div class="wall-right"></div>
+            <div class="door"></div>
+            <div class="torch torch-left"></div>
+            <div class="torch torch-right"></div>
+            <div class="enemy"><span></span></div>
+            <div class="crosshair">+</div>
+          </div>
+          <div class="hud">
+            <div class="hud-panel">
+              <span>LOCATION</span><strong id="place">Village</strong>
+            </div>
+            <div id="icon" class="face" aria-hidden="true">◆</div>
+            <div class="hud-panel hud-count">
+              <span>GEAR</span><strong id="count">0 items</strong>
+            </div>
+          </div>
+          <div class="story-panel">
+            <p id="story"></p>
+            <div id="actions" class="actions"></div>
+          </div>
+        </section>
+        <aside class="sidebar">
+          <div class="sidebar-head">
+            <span>INVENTORY / 01</span>
+            <h2>YOUR GEAR</h2>
+          </div>
+          <ul id="inventory">
+            <li>Empty for now.</li>
+          </ul>
+          <p class="note">
+            The castle is reachable from the village. Going in prepared is
+            another matter.
+          </p>
+          <button id="restart" class="restart">RESTART GAME ↺</button>
+        </aside>
+      </div>
+      <p class="credit">
+        A browser edition of the JSON-driven Python desktop game. Original
+        CSS-drawn scene; no game assets reused.
+      </p>
+    </main>
+  </body>
 </html>
