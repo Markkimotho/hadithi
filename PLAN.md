@@ -2,7 +2,7 @@
 
 ## 1. Product goal
 
-Turn the current single-route item checklist into a browser-first anthology of playable adventures. A player chooses a story, makes consequential decisions, collects and uses objects, changes alliances and circumstances, and reaches endings that reflect those choices. The experience should feel like a game from its first screen: short readable scenes, visible goals, responsive choices, satisfying feedback, and a reason to replay. The initial release should work without an account or a paid content service.
+Turn the current single-route item checklist into a browser-first anthology of playable adventures. A player chooses a story, makes consequential decisions, collects and uses objects, changes alliances and circumstances, and reaches endings that reflect those choices. The experience should feel like a game from its first screen: the world produces events, the player responds with actions, and those actions change what can happen next. Story text supplies context and consequence, but scrolling or repeatedly clicking “continue” must never be the main interaction. The initial release should work without an account or a paid content service.
 
 The visual direction is a late-1990s game manual and first-person adventure terminal: coarse stone, parchment, copper, ink, limited muted colors, strong borders, bitmap-like type, and restrained motion. Doom and Wolfenstein are references for framing and nostalgia, not for copying their art, branding, enemies, or interface assets. Story artwork must support the setting of each episode; a West African tale should not inherit a generic European castle.
 
@@ -40,6 +40,8 @@ Build **three complete episodes**, one rooted in a named African tradition, one 
 - 12–20 substantial scenes, about 20–30 meaningful choices, at least 3 endings, and a typical 15–25 minute first run. These are scope targets, not a reason to pad prose.
 - At least 4 obtainable objects, with at least 2 used in different ways. Objects can be consumed, exchanged, combined, or retained for a later consequence.
 - At least 2 tracked relationships or world variables and a choice whose effect appears several scenes later.
+- At least 8 authored gameplay events across travel, encounters, discoveries, hazards, negotiations, and world changes. Events must ask the player to act, spend a resource, use an object, solve a compact challenge, or accept a consequence.
+- At least 2 event chains in which an earlier action changes which event fires later. Every episode must include one interrupt event that changes the immediate plan and one ambient world event that makes the setting feel alive.
 - A genuine theme shift available during play: for example, an adventure can become a mystery, a tense survival route, or a hopeful diplomacy route. The selected mode changes scene text, available actions, sound/art treatment, and an ending condition; a palette toggle alone does not count.
 - A non-obvious but understandable consequence. Show players what they know, and foreshadow important risks. Avoid arbitrary punishment and invisible win requirements.
 - Distinct win, mixed, and loss or unresolved outcomes. An ending recap lists the choices and objects that mattered, then offers a replay from the beginning or from a discovered branch point.
@@ -48,21 +50,37 @@ The story library should label region, tradition, source type, genre, tone, esti
 
 ## 5. Game rules and data format
 
-Replace the old room/boss schema with a versioned episode graph. Each scene has stable ID, prose, optional illustration/ambience key, choices, and optional inspectable objects or characters. Each choice has a label, destination, visible requirements, state changes, and a short consequence. State includes inventory, flags, named relationships, theme, visited scenes, discovered clues, and choice history. The engine must support conditional choices and text, object acquisition/use/drop, one-time events, reversible and irreversible choices, checkpoints, and multiple endings.
+Replace the old room/boss schema with a versioned, event-driven episode graph. A scene establishes the current place and situation; events change that situation. Each player action is dispatched as an event such as `TRAVEL`, `INSPECT`, `TAKE_ITEM`, `USE_ITEM`, `TALK`, `BARGAIN`, `SOLVE`, `WAIT`, or `CHOOSE`. The engine evaluates rules, applies state changes, emits consequences, and queues follow-up events. The interface renders the resulting state. It never advances the story just because the player scrolled.
+
+Each authored event has a stable ID, trigger, priority, conditions, available actions, effects, optional deadline or turn cost, follow-up events, and outcome text. Triggers can include entering a place, acquiring or using an object, a relationship crossing a threshold, completing an objective, a turn counter reaching a value, or another event finishing. Events may interrupt travel or conversation when the story calls for it. They must remain authored and deterministic by default so consequences are understandable and testable.
+
+State includes current place, current encounter, inventory, resources, objectives, flags, named relationships, theme, turn counter, visited locations, discovered clues, event history, and queued events. The engine must support conditional actions and text, object acquisition/use/drop/combine, one-time and repeatable events, event chains, delayed consequences, reversible and irreversible actions, checkpoints, and multiple endings.
+
+The core play loop is:
+
+1. Present a situation, objective, and actions that are currently possible.
+2. Let the player move, investigate, speak, use an object, solve a challenge, or take a strategic action.
+3. Dispatch that action to the rules engine.
+4. Update inventory, relationships, resources, objectives, time, and world state.
+5. Fire any newly satisfied events and show immediate feedback.
+6. Return control with a changed situation and a new set of meaningful actions.
+
+Events should create playable pressure without demanding twitch reflexes. Turn limits, pursuit meters, resource costs, patrol cycles, and expiring opportunities are appropriate. Real-time countdowns are optional and must pause with the game, respect reduced-motion/accessibility settings, and offer a non-timed mode. Compact interactions may include clue assembly, route planning, matching an object to a problem, bargaining, stealth timing expressed in turns, or risk/reward choices. Avoid filler clicking and puzzles that require unexplained guessing.
 
 Keep story content in reviewed, local data files. Use a small declarative rules vocabulary rather than arbitrary JavaScript in content. Validate schema versions, missing destinations, impossible requirements, orphan scenes, soft locks, unreachable endings, and duplicate item IDs during the build. Set an explicit policy for save migration when content changes. Avoid random outcomes until they add drama without making a player's decision meaningless; if randomness is used, seed and show it so a run can be reproduced.
 
-Core engine API: `startEpisode`, `view`, `choose`, `inspect`, `useItem`, `save`, `load`, and `restart`. State transitions should be pure enough for tests and an episode editor. The UI should never infer game rules from CSS or story prose. Story data should never depend on UI selectors.
+Core engine API: `startEpisode`, `dispatch`, `evaluateTriggers`, `processQueue`, `view`, `save`, `load`, and `restart`. Domain events and their payloads form the boundary between UI and engine. State transitions should be deterministic and pure enough for tests, replay, save migration, and an episode editor. The UI should never infer game rules from CSS or story prose. Story data should never depend on UI selectors.
 
 ## 6. Browser experience
 
 1. **Story shelf:** strong cover compositions, concise hooks, region/tradition and source credit, clear New/Continue controls, tone and content information, completion marks.
-2. **Play screen:** large readable scene text, illustrated setting or restrained CSS scene, 2–4 prominent choices, a compact objective, and a visible consequence log. The main text column must remain comfortable on phones.
+2. **Play screen:** the current encounter dominates the screen, with a compact objective, illustrated setting or restrained CSS scene, 2–5 contextual actions, and a visible consequence log. Story text appears in short passages around play events; it is not an endless feed. The layout must remain comfortable on phones.
 3. **Inventory:** inspect each item for its story meaning, use it when an action allows it, and see when an item changes or is spent. No automatic pick-up without an intentional player action unless the story explains it.
 4. **Journal/map:** visited branches, discovered clues, named characters, current objective, and a concise recap after returning to a save. Show known information without exposing undiscovered branches.
 5. **Theme control:** offer an in-story choice to change narrative tone/direction and a separate accessibility control for visual comfort. The chosen narrative theme affects the episode's later scenes.
 6. **Feedback:** tactile pressed states, short transitions, optional low-volume sound, and muted scene art. Include sound off by default or an immediately visible mute control. Support reduced motion.
 7. **Accessibility:** semantic buttons/headings, keyboard play, visible focus, no color-only clues, sufficient contrast, adjustable text size, skip/reduce animation, screen-reader announcements for scene changes, and touch targets suitable for phones.
+8. **Event feedback:** clearly distinguish a world event, the player's selected action, the rules consequence, and newly available actions. Interrupt events may shake or reframe the interface briefly, while reduced-motion mode uses a static alert.
 
 Use original CSS or properly licensed art. Build a small visual system first: palette, type scale, panel shapes, icon rules, and scene composition. Create one representative story shelf and one play screen, review them at desktop and mobile sizes, then implement the rest. Avoid neon gradients, glowing cards, and generic AI-generated fantasy art.
 
@@ -83,9 +101,9 @@ Avoid live fetching of third-party stories at play time: availability, rights, f
 4. Prototype the shelf and play screen and review mobile, desktop, and keyboard flow.
 
 ### Gate B — engine and first vertical slice
-5. Define the versioned episode schema and validation script.
-6. Implement the state engine, save/load, and one full episode from opening to all endings.
-7. Add tests for every transition class and a graph traversal check for reachable endings and no trapped scenes.
+5. Define the versioned episode/event schema, action vocabulary, trigger rules, queue behavior, and validation script.
+6. Implement event dispatch, trigger evaluation, deterministic queue processing, save/load, and one full episode from opening to all endings.
+7. Add tests for every transition class, event priority, delayed effects, interruption, idempotency, and save/resume. Add a graph traversal check for reachable endings, dead events, loops, and trapped states.
 8. Play the episode without developer tools; revise pacing, clarity, object value, and consequences.
 
 ### Gate C — anthology release
@@ -97,9 +115,9 @@ Avoid live fetching of third-party stories at play time: availability, rights, f
 ## 9. Acceptance criteria
 
 - Three distinct, complete, source-credited episodes from named traditions across Africa, Asia, and Europe; each has multiple endings and a playable theme shift.
-- At least one choice in every episode visibly changes a later scene, an object use, and the ending recap. Collecting everything must not be the only winning strategy.
-- A player can understand goals and act within one minute, finish a first episode without technical help, save and resume, and replay with a materially different route.
-- The build rejects broken story links and invalid content; tests cover inventory, conditional choices, theme changes, endings, and save/load.
+- Every episode contains authored event chains, interruptions, world reactions, and at least one delayed consequence. At least one player action visibly changes a later event, an object use, and the ending recap. Collecting everything must not be the only winning strategy.
+- A player can understand the goal and perform a meaningful action within one minute. No route can be completed by scrolling or using only a generic continue action. A completed episode can be replayed through a materially different sequence of events.
+- The build rejects broken story links, invalid triggers, dead events, unbounded event loops, and invalid content. Tests cover event ordering, inventory, conditional actions, theme changes, endings, and save/load during an active encounter.
 - Desktop and phone layouts are readable; keyboard and reduced-motion paths work; source and rights records are available from the game.
 - Render deployment serves the release, and the live site passes a smoke test.
 
