@@ -1,0 +1,25 @@
+services:
+  - type: web
+    runtime: static
+    name: hadithi
+    repo: https://github.com/Markkimotho/hadithi
+    branch: main
+    buildCommand: npm ci && npm test && npm run build
+    staticPublishPath: ./dist
+    autoDeployTrigger: checksPass
+    headers:
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: X-Frame-Options
+        value: DENY
+      - path: /*
+        name: Referrer-Policy
+        value: same-origin
+      - path: /*
+        name: Cache-Control
+        value: no-cache
+      - path: /*
+        name: Content-Security-Policy
+        value: "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'none'"
