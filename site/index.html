@@ -2,77 +2,68 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#20261f" />
     <meta
       name="description"
-      content="A browser adventure through a pixel-art castle."
+      content="Hadithi — an atlas of playable tales. Explore, collect, solve, and change the story. Three free adventures from Ghana, Japan, and Germany."
     />
-    <title>Hadithi</title>
+    <title>Hadithi — An atlas of playable tales</title>
+    <link rel="icon" href="./assets/icon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="./style.css" />
     <script type="module" src="./app.js"></script>
   </head>
   <body>
-    <main class="shell">
-      <header class="site-header">
-        <div class="topline">
-          <span>EPISODE 01 // BROWSER EDITION</span
-          ><a href="https://markkimotho.github.io/projects/">← ALL PROJECTS</a>
-        </div>
-        <h1>QUEST FOR <span>THE CRYSTAL</span></h1>
-        <p>Collect what you need. Find the castle. Face the dragon.</p>
-      </header>
-      <div class="game-frame">
-        <div class="game-bar">
-          <span class="game-led" aria-hidden="true"></span
-          ><span id="chapter">Loading story…</span
-          ><span class="game-version">HADITHI / 01</span>
-        </div>
-        <section class="scene" aria-live="polite">
-          <div id="world" class="world" aria-hidden="true">
-            <div class="ceiling"></div>
-            <div class="floor"></div>
-            <div class="back-wall"></div>
-            <div class="wall-left"></div>
-            <div class="wall-right"></div>
-            <div class="door"></div>
-            <div class="torch torch-left"></div>
-            <div class="torch torch-right"></div>
-            <div class="enemy"><span></span></div>
-            <div class="crosshair">+</div>
-          </div>
-          <div class="hud">
-            <div class="hud-panel">
-              <span>LOCATION</span><strong id="place">Village</strong>
-            </div>
-            <div id="icon" class="face" aria-hidden="true">◆</div>
-            <div class="hud-panel hud-count">
-              <span>GEAR</span><strong id="count">0 items</strong>
-            </div>
-          </div>
-          <div class="story-panel">
-            <p id="story"></p>
-            <div id="actions" class="actions"></div>
-          </div>
-        </section>
-        <aside class="sidebar">
-          <div class="sidebar-head">
-            <span>INVENTORY / 01</span>
-            <h2>YOUR GEAR</h2>
-          </div>
-          <ul id="inventory">
-            <li>Empty for now.</li>
-          </ul>
-          <p class="note">
-            The castle is reachable from the village. Going in prepared is
-            another matter.
-          </p>
-          <button id="restart" class="restart">RESTART GAME ↺</button>
-        </aside>
-      </div>
-      <p class="credit">
-        A browser edition of the JSON-driven Python desktop game. Original
-        CSS-drawn scene; no game assets reused.
-      </p>
+    <a class="skip-link" href="#main">Skip to the adventure</a>
+    <header class="masthead">
+      <button id="brand" class="brand" aria-label="Hadithi story library">
+        <span class="brand-mark" aria-hidden="true">H</span
+        ><span>HADITHI<small>AN ATLAS OF PLAYABLE TALES</small></span>
+      </button>
+      <nav aria-label="Main navigation">
+        <button id="library-link">The collection</button
+        ><button id="sources-link">
+          Field notes <span aria-hidden="true">↗</span></button
+        ><button
+          id="settings-link"
+          class="settings-button"
+          aria-label="Open game settings"
+        >
+          ⚙ <span>Settings</span>
+        </button>
+      </nav>
+    </header>
+    <main id="main" tabindex="-1">
+      <p class="loading">Opening the atlas…</p>
     </main>
+    <footer class="site-footer">
+      <span>HADITHI <i>n.</i> stories, in Swahili.</span
+      ><span>Old tales. Your next move.</span
+      ><button id="footer-sources">Sources & credits</button>
+    </footer>
+    <div
+      id="announcement"
+      class="sr-only"
+      role="status"
+      aria-live="polite"
+    ></div>
+    <div id="toast" class="toast" role="status" hidden></div>
+    <dialog id="modal" aria-labelledby="modal-title">
+      <div id="modal-body"></div>
+      <button id="close-modal" class="dialog-close" aria-label="Close dialog">
+        ×
+      </button>
+    </dialog>
+    <input
+      id="import-file"
+      type="file"
+      accept="application/json,.json"
+      hidden
+    />
+    <noscript
+      ><p class="loading">
+        Hadithi needs JavaScript to play. Enable it and reload this page.
+      </p></noscript
+    >
   </body>
 </html>
