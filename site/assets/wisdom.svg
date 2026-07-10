@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 560">
+<defs>
+  <pattern id="d" width="7" height="7" patternUnits="userSpaceOnUse"><path d="M1 1h1v1H1zM4 5h1v1H4z" fill="#edce94" opacity=".18"/></pattern>
+  <pattern id="h" width="9" height="9" patternUnits="userSpaceOnUse"><path d="M0 9L9 0M-2 2L2-2M7 11l4-4" stroke="#252b25" stroke-width="2"/></pattern>
+  <radialGradient id="sky"><stop stop-color="#cb9862"/><stop offset="1" stop-color="#947052"/></radialGradient>
+  <linearGradient id="earth" x2="0" y2="1"><stop stop-color="#56604a"/><stop offset="1" stop-color="#242c26"/></linearGradient>
+</defs>
+<path fill="url(#sky)" d="M0 0h900v560H0z"/><circle cx="641" cy="171" r="92" fill="#e2b879"/>
+<circle cx="641" cy="171" r="110" fill="none" stroke="#dfb878" opacity=".35"/>
+<path d="M0 305Q93 234 180 285T360 270T530 284T730 261T900 288V560H0" fill="#747653"/>
+<path d="M0 359Q93 304 195 343T410 322T640 340T900 310V560H0" fill="#56604a"/>
+<path d="M0 407Q163 353 312 400T602 389T900 358V560H0" fill="url(#earth)"/>
+<path d="M565 334Q620 372 528 408T462 468T600 560H718Q540 460 598 431T677 390Q675 355 630 333" fill="#a88f65"/>
+<path d="M584 350q57 30-33 61m-9 17q-78 30-36 64m12 17 53 29" stroke="#e5bf83" fill="none" stroke-width="2" opacity=".6"/>
+<!-- Broad, branching silk-cotton tree; cut-paper and engraving marks. -->
+<path d="M250 469q50-90 39-164l-23-95-55-48 21-13 65 40-7-68 30-24 19 113 66-57 21 14-76 89q-8 88 44 205l-58-25-33 39-22-32-51 26z" fill="#283329" stroke="#16261f" stroke-width="5"/>
+<path d="M307 429q15-79 7-143m6-31-9-83m16 124 38 111m-65-118-17-66m42 45 45-44M289 345l-15 75" stroke="#a09b66" stroke-width="3" fill="none"/>
+<path d="M64 150q-21-47 24-65 8-55 63-48 33-50 89-22 59-38 110 7 68-34 107 18 70-8 80 51 46 34 17 69-31 39-82 23-42 41-94 6-45 24-86-6-44 34-86 2-63 22-87-35z" fill="#364734" stroke="#25342a" stroke-width="5"/>
+<path d="M66 151q45-36 93-7 38-41 81-15 45-30 82-2 54-25 98 8 48-23 103 11" stroke="#728052" stroke-width="5" fill="none"/>
+<path d="M103 83l32-8m14 34 28-18m33-37 41-4m7 50 32-12m22-43 24 10m38 47 42-8m29-28 31 16M131 158l20-6m55 14 25-10m106-6 23 13m68-7 26 4" stroke="#b0a575" stroke-width="3" opacity=".6"/>
+<path d="M76 120q66-53 125-41t116-5 135 28l66 27" fill="none" stroke="url(#h)" stroke-width="22"/>
+<!-- Pot and branch. -->
+<path d="M338 309q40-45 91-43" stroke="#27382a" stroke-width="15" fill="none"/>
+<path d="M409 246q16-22 31 0l-2 10q24 11 20 43-3 24-35 24t-34-24q-2-31 24-43z" fill="#b9683d" stroke="#272d22" stroke-width="5"/>
+<path d="M404 268q21 9 41 0m-40 16 39 0m-44 10 49 0" fill="none" stroke="#e3ac68" stroke-width="3"/>
+<path d="M419 249v-25q-29 2-45 24" fill="none" stroke="#d3bd7d" stroke-width="3"/>
+<!-- Foreground roots, grasses and the small witness. -->
+<path d="M287 439q-81 35-143 63m159-49q-10 40-44 72m72-82q35 37 113 48" stroke="#26352a" stroke-width="14" fill="none"/>
+<circle cx="505" cy="430" r="10" fill="#202b24"/><path d="M500 441l-8 30 15 0 5-26 15-11m-25 35-8 29m12-28 9 27" fill="#202b24" stroke="#202b24" stroke-width="5"/>
+<path d="M0 531q58-38 111 0 37-36 88-2l33 31H0M739 560q-30-38-15-60l13 23 7-45 14 34 25-39 1 45 40-21-11 36 60-16 27 43" fill="#1d2a23"/>
+<path d="m27 478 8 23 10-34 7 29m635-40 8 18 8-25m-75 40 8 22 9-29" fill="none" stroke="#8c9364" stroke-width="3"/>
+<path fill="url(#d)" d="M0 0h900v560H0z"/>
+<path d="M18 18h864v524H18z" fill="none" stroke="#e3c68f" opacity=".2"/>
+</svg>

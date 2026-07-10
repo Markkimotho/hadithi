@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 560">
+<defs><linearGradient id="s" x2="0" y2="1"><stop stop-color="#46515a"/><stop offset="1" stop-color="#222e33"/></linearGradient><pattern id="d" width="7" height="7" patternUnits="userSpaceOnUse"><path d="M1 1h1v1H1zM4 5h1v1H4z" fill="#d5c8a0" opacity=".18"/></pattern><pattern id="h" width="8" height="8" patternUnits="userSpaceOnUse"><path d="m0 8 8-8" stroke="#24302f" stroke-width="2"/></pattern></defs>
+<path fill="url(#s)" d="M0 0h900v560H0z"/><circle cx="621" cy="134" r="62" fill="#c9c7a4"/><circle cx="641" cy="114" r="60" fill="#46515a"/>
+<g fill="#c4c6a4"><path d="m244 79 2 6 7 2-7 2-2 6-2-6-6-2 6-2zm478 4 1 4 5 1-5 1-1 5-1-5-5-1 5-1zm-362 61 2 4 5 1-5 1-2 5-1-5-5-1 5-1z"/><circle cx="110" cy="91" r="1.5"/><circle cx="516" cy="57" r="1.5"/><circle cx="795" cy="177" r="1.5"/></g>
+<path d="M0 335q140-82 269-9t255-15 376 30v219H0" fill="#37453e"/>
+<g fill="#263934"><path d="m100 75-67 245h32l-55 86h180l-54-86h35zm99 68-53 196h26l-42 70h146l-44-70h26zm553-50-67 248h32l-52 79h177l-53-79h31zm86 69-44 177h22l-38 72h113l-31-72h25z"/></g>
+<!-- Timber house. -->
+<path d="M456 269h222v193H456z" fill="#999278" stroke="#1b2a28" stroke-width="5"/>
+<path d="M427 275 568 159l145 116-23 15-123-85-121 85z" fill="#806f57" stroke="#1d2d29" stroke-width="5"/>
+<path d="m446 270 123-98 129 98" fill="none" stroke="#b3a47c" stroke-width="3"/>
+<path d="M612 188v-60h31v84" fill="#8f8165" stroke="#22322d" stroke-width="4"/>
+<path d="m627 116-8-22 17-15-10-19 14-22" stroke="#acac94" stroke-width="5" fill="none" opacity=".3"/>
+<path d="M468 291h197v161H468z" fill="url(#h)"/>
+<path d="M457 289h220m-217 63h217m-219 73h220m-103-157v190m-109-165 210 136m-210 0 210-136" fill="none" stroke="#3a4235" stroke-width="9"/>
+<path d="M489 324h52v67h-52zM602 319h48v64h-48z" fill="#d8af6b" stroke="#26382f" stroke-width="6"/>
+<path d="M515 326v64m-24-31h49m85-38v62m-23-30h48" stroke="#6a694e" stroke-width="4"/>
+<path d="M554 461v-66a25 25 0 0 1 50 0v66" fill="#21332e" stroke="#24362e" stroke-width="5"/>
+<path d="M489 392 388 560h108l44-168" fill="#c09e60" opacity=".12"/>
+<path d="M0 477q177-65 353 0t291-19 256 23v79H0" fill="#1e302a"/>
+<!-- Ensemble silhouettes: donkey, dog, cat and rooster. -->
+<g fill="#b0ad87" stroke="#24372f" stroke-width="3">
+<path d="M224 440q-9-30 18-36h53l17-37 19-4 8 28-11 15-9 44-14 0-5-27h-42l-7 29-13 0-1-27-12 18z"/><path d="m311 369-4-35 9 2 8 31m6 0 8-31 8 5-7 33m-98 37-23-15-4 6 18 19"/>
+<path d="m340 454 7-24 38-3 17-20 18 1 7 12-18 7-10 29-10 0-3-16h-23l-3 17h-9l1-18m-4-7-10-13"/>
+<path d="M274 483q-5-16 11-22l5-15 11 9 11-5 7 14-10 13-3 17h-9l-1-14-13 4m-7-3q-23-3-15-22"/>
+<path d="m375 476 10-17 14-1 8-13 9 8-3 10 14 3-13 6-5 15-15-1-1 17-5 0-1-18-13-3-11-16 7-5z"/>
+</g>
+<path d="M185 560v-40m-2 16-12-18m14 10 9-24m468 56 3-53m-1 25-15-20m17 5 15-19" stroke="#737d5a" stroke-width="3"/>
+<path fill="url(#d)" d="M0 0h900v560H0z"/><path d="M18 18h864v524H18z" fill="none" stroke="#d5c8a0" opacity=".2"/>
+</svg>

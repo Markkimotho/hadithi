@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 560">
+<defs><linearGradient id="s" x2="0" y2="1"><stop stop-color="#517d7b"/><stop offset="1" stop-color="#1d353b"/></linearGradient><pattern id="d" width="7" height="7" patternUnits="userSpaceOnUse"><path d="M1 1h1v1H1zM4 5h1v1H4z" fill="#d6cd9a" opacity=".2"/></pattern><pattern id="scale" width="20" height="12" patternUnits="userSpaceOnUse"><path d="M0 12Q10-8 20 12" fill="none" stroke="#c8bc89" stroke-width="1"/></pattern></defs>
+<path d="M0 0h900v560H0z" fill="url(#s)"/>
+<path d="m209 0 80 0 100 560H64zm164 0h27l181 560H352zm182 0h42L807 560H661z" fill="#abc5a6" opacity=".08"/>
+<path d="M0 38q80 30 157 0t161 0 170 0 174 0 238 0M0 57q80 30 157 0t161 0 170 0 174 0 238 0" fill="none" stroke="#bed0ad" stroke-width="2" opacity=".4"/>
+<circle cx="675" cy="156" r="62" fill="none" stroke="#a8baa0" opacity=".25"/><circle cx="675" cy="156" r="76" fill="none" stroke="#a8baa0" opacity=".15"/>
+<path d="M0 410q120-50 232 12t230-2 211-26 227 20v146H0" fill="#2b4948"/>
+<!-- Palace terraces and roofs. -->
+<path d="M253 433h408v29H253zm37-104h327v103H290zm55-100h218v100H345zm49-58h120v58H394z" fill="#b6b28b" stroke="#233f41" stroke-width="5"/>
+<path d="M389 175q68-20 68-65 8 44 67 65-71 18-135 0M326 230q127-21 128-62 14 42 130 62-142 34-258 0M264 335q180-36 190-84 12 51 190 84-203 31-380 0" fill="#9f5542" stroke="#203b3e" stroke-width="5"/>
+<path d="M348 226q102-14 134-30m-162 131q173-20 261 1m-173-155 74-1" stroke="#d29168" stroke-width="3" fill="none"/>
+<path d="M319 352v72m59-69v69m75-69v69m79-69v69m56-69v69M377 246v73m53-73v73m57-73v73m48-73v73" stroke="#456461" stroke-width="7"/>
+<path d="M426 430v-48a28 28 0 0 1 56 0v48" fill="#304b4b"/>
+<path d="M241 459h438l37 25H211z" fill="#83927b" stroke="#254245" stroke-width="5"/>
+<path d="M403 485h94l104 75H286z" fill="#84917a"/><path d="m410 498 100 0m-118 13h134m-153 14h172m-189 15h209" stroke="#c3bb8b" stroke-width="2"/>
+<!-- Turtle guide. -->
+<g transform="translate(170 365) rotate(-12)"><ellipse rx="59" ry="29" fill="#8f9b74" stroke="#243f3d" stroke-width="4"/><ellipse rx="48" ry="22" fill="url(#scale)"/><path d="m40-7 33-4q25 4 18 16l-39 5m-74 9-19 30-17-7 11-28m-9-22-22-24 17-7 28 21m61 9 10-28 17 7-4 25m-2 22 20 25-18 8-25-25" fill="#96aa82" stroke="#24423f" stroke-width="3"/><circle cx="78" cy="-1" r="3" fill="#1e3436"/></g>
+<g fill="#c1bb8c" opacity=".7"><path d="m653 253 22-8 18 8-18 6zm31 26 17-6 14 6-14 5zm-575-69 20-7 18 7-18 6zm28 21 16-6 12 6-12 5z"/></g>
+<g fill="none" stroke="#adc0a4" opacity=".4"><circle cx="208" cy="306" r="6"/><circle cx="219" cy="279" r="3"/><circle cx="201" cy="245" r="5"/><circle cx="731" cy="363" r="8"/><circle cx="724" cy="328" r="4"/></g>
+<path d="M0 560v-138q49 18 32 59 47-30 45 10 42-2 44 69m655 0q12-47 42-36-22-48 14-47-9-58 27-47 6-52 41-29v159" fill="#1d3438"/>
+<path d="M95 560q29-42 10-75t14-67m682 142q-31-46-12-73t-8-66" fill="none" stroke="#64836e" stroke-width="5"/>
+<path fill="url(#d)" d="M0 0h900v560H0z"/><path d="M18 18h864v524H18z" fill="none" stroke="#d6cd9a" opacity=".2"/>
+</svg>
