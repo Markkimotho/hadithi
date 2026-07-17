@@ -2,6 +2,8 @@
 
 An atlas of playable tales. Three free browser adventures draw on a Fante Anansi tale, Urashima Tarō, and the German musicians tale. Explore a world that responds to your actions, collect and combine objects, investigate clues, solve practical puzzles, change the genre, and discover nine endings.
 
+[Play Hadithi](https://hadithi-i2us.onrender.com)
+
 ## Run
 
 Requires Node.js 22 or newer. The game has no runtime dependencies, account requirement, paid story API, or analytics.
@@ -56,9 +58,9 @@ Browser tests use installed Google Chrome locally. In CI they use Playwright Chr
 
 ## Deploy on Render
 
-`render.yaml` defines one static site. Build command: `npm ci && npm test && npm run build`. Publish directory: `dist`. No database or secrets are required. GitHub Actions verifies the build and browser tests; Render is the publishing destination.
+The live site is in the `main` Render workspace: [Hadithi](https://hadithi-i2us.onrender.com) · [service Dashboard](https://dashboard.render.com/static/srv-db9vii7avr4c73fj59ng). Build command: `npm ci && npm test && npm run build`. Publish directory: `dist`. No database or secrets are required. GitHub Actions verifies the build and browser tests; Render publishes the static app.
 
-[Create the Render Blueprint](https://dashboard.render.com/blueprint/new?repo=https://github.com/Markkimotho/hadithi). Choose the intended workspace and review the service before applying. The Blueprint sets security headers and deploys when checks pass. If creating a static site directly instead, use the same build/publish settings and copy the headers from `render.yaml` into its Dashboard settings. The local server is for previewing and is not needed on Render.
+The live service was created directly through the Render connector and deploys on commits. `render.yaml` is a validated provisioning reference that additionally specifies security headers and deployment after CI passes. Those additional settings are not automatically synced to a directly created service; apply them through its Dashboard if desired. Review the existing service before creating a Blueprint to avoid a duplicate site. The local server is for previewing and is not needed on Render. See [deployment details](docs/DEPLOYMENT.md).
 
 ## Authoring and sources
 

@@ -6,9 +6,9 @@
 
 `dispatch({ type, id })` checks the action against the current scene, visibility, prerequisites, and puzzle state. It records the player's choice, charges its turn cost, applies its effects, checks triggers, and processes due events. A rejected action restores the entire prior state. Inspection defaults to zero turns; other scene actions default to one.
 
-Events are considered after each action and after each event's effects. They fire once per journey. A matching event enters the queue at `turn + delay`. Due events sort by priority descending, due turn ascending, then ID. An interrupt saves the destination scene and enters an encounter. Queued events remain pending until that encounter resolves with `to: '$return'`. Resolving the encounter then drains due events. Processing is bounded at 64 immediate events per action to catch broken content.
+Events are considered after each action and after each event's effects. They fire once per journey by default. A matching event enters the queue at `turn + delay`. Due events sort by priority descending, due turn ascending, then ID. An interrupt saves the destination scene and enters an encounter. Queued events remain pending until that encounter resolves with `to: '$return'`. Resolving the encounter then drains due events. Processing is bounded at 64 immediate events per action to catch broken content.
 
-The current implementation supports authored one-shot events. Repeatable encounters should be modeled as separate explicit events with their own conditions. Do not introduce an unrestricted repeat loop without an author-defined cap and new tests.
+For recurring events, specify `maxRuns` (2–20) and a positive `cooldown` in turns. The engine tracks counts and last-fired turns, prevents a recurring event from immediately retriggering itself, and stops at the authored limit. Cooldowns do not advance during free inspection. The initial anthology uses one-shot story events; bounded recurrence is available for future patrol cycles and hazards.
 
 ## Conditions
 

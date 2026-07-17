@@ -126,3 +126,11 @@ Avoid live fetching of third-party stories at play time: availability, rights, f
 - Confirm the three specific tales and source editions after reading them in full and checking rights for the intended audience and launch markets.
 - Decide whether the desktop Tkinter edition should later receive the new engine or be archived as the original version. Browser work does not need to wait for this.
 - Decide whether accounts and cross-device sync have actual player demand after the static release.
+
+## Implementation status — 18 October 2026
+
+The first playable anthology is implemented and deployed at [Hadithi](https://hadithi-i2us.onrender.com) in the `main` Render workspace. It contains 44 authored scenes and encounters, 30 world events, three puzzles, and nine reachable endings. Three genre directions, object use and combination, delayed consequences, interruptions, turn pressure, a journal, replay checkpoints, portable saves, keyboard controls, and accessibility settings are implemented. The engine also supports bounded recurring events with cooldowns.
+
+Validation covers all nine endings with 18 engine tests and desktop/phone interactions with 16 browser tests. The build validates story references and rules. Live verification checks new play, save/resume, restored inventory, illustration loading, phone layout, and browser errors. GitHub Actions verifies changes; Render serves the static build. The Render Blueprint passes the current public JSON schema; the live service uses direct-creation settings documented in `docs/DEPLOYMENT.md`.
+
+The episodes use newly authored adaptations and original SVG illustrations; source editions and editorial distinctions are recorded in `docs/EPISODES.md`. Regional editorial review, commercial international rights review, and human blind playtesting remain outstanding before a broad commercial launch. Automated tests are not represented as those reviews. The first anthology is labeled 10–20 minutes per story; the original 15–25 minute target should be revisited through real playtests rather than adding filler. Broader regional coverage and an offline cache remain follow-on work.

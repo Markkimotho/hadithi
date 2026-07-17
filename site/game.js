@@ -47,6 +47,8 @@ export class Game {
       visited: [],
       clues: [],
       fired: [],
+      eventRuns: {},
+      lastFired: {},
       scheduled: [],
       log: [],
       actions: [],
@@ -115,8 +117,13 @@ export class Game {
   evaluateTriggers(signal) {
     for (const e of this.episode.events) {
       if (
-        this.state.fired.includes(e.id) ||
+        (this.state.eventRuns[e.id] ?? 0) >= (e.maxRuns ?? 1) ||
         this.state.scheduled.some((q) => q.id === e.id)
+      )
+        continue;
+      if (
+        this.state.lastFired[e.id] !== undefined &&
+        this.state.turn - this.state.lastFired[e.id] < (e.cooldown ?? 1)
       )
         continue;
       if (e.on && e.on !== signal.type && e.on !== "*") continue;
@@ -145,7 +152,9 @@ export class Game {
         (q) => q.id !== next.id,
       );
       const e = this.episode.events.find((x) => x.id === next.id);
-      this.state.fired.push(e.id);
+      if (!this.state.fired.includes(e.id)) this.state.fired.push(e.id);
+      this.state.eventRuns[e.id] = (this.state.eventRuns[e.id] ?? 0) + 1;
+      this.state.lastFired[e.id] = this.state.turn;
       this.record(e.interrupt ? "encounter" : "world", e.text);
       this.apply(e.effects);
       if (e.interrupt && !this.state.ending) {
@@ -412,6 +421,17 @@ export function validateEpisode(ep) {
         `unknown interrupt ${e.interrupt}`,
       );
     check((e.delay ?? 0) >= 0, "negative delay");
+    check(
+      Number.isInteger(e.maxRuns ?? 1) &&
+        (e.maxRuns ?? 1) >= 1 &&
+        (e.maxRuns ?? 1) <= 20,
+      `invalid repeat limit ${e.id}`,
+    );
+    if ((e.maxRuns ?? 1) > 1)
+      check(
+        Number.isInteger(e.cooldown) && e.cooldown >= 1,
+        `repeat event ${e.id} needs a positive cooldown`,
+      );
     condition(e.when);
     effect(e.effects);
   }

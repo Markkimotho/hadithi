@@ -403,3 +403,30 @@ test("survival opens a patrol response earned through route scouting", () => {
   assert.ok(g.state.stats.alert < before);
   assert.equal(g.state.returnScene, null);
 });
+
+test("recurring events respect a cooldown and a finite run limit", () => {
+  const ep = structuredClone(wisdom);
+  ep.events = [
+    {
+      id: "gust",
+      when: { turn: 1 },
+      maxRuns: 2,
+      cooldown: 1,
+      text: "Another gust.",
+      effects: { stats: { danger: 1 } },
+    },
+  ];
+  const g = new Game(ep);
+  choose(g, "takeCord");
+  assert.equal(g.state.eventRuns.gust, 1);
+  choose(g, "tracks");
+  assert.equal(g.state.eventRuns.gust, 1);
+  path(g, "market", "home", "market");
+  assert.equal(g.state.eventRuns.gust, 2);
+  assert.equal(g.state.stats.danger, 2);
+  assert.deepEqual(Game.load(ep, g.save()).state, g.state);
+  ep.events[0].cooldown = 0;
+  assert.ok(
+    validateEpisode(ep).some((error) => error.includes("positive cooldown")),
+  );
+});
