@@ -60,7 +60,7 @@ Browser tests use installed Google Chrome locally. In CI they use Playwright Chr
 
 The live site is in the `main` Render workspace: [Hadithi](https://hadithi-i2us.onrender.com) · [service Dashboard](https://dashboard.render.com/static/srv-db9vii7avr4c73fj59ng). Build command: `npm ci && npm test && npm run build`. Publish directory: `dist`. No database or secrets are required. GitHub Actions verifies the build and browser tests; Render publishes the static app.
 
-The live service was created directly through the Render connector and deploys on commits. `render.yaml` is a validated provisioning reference that additionally specifies security headers and deployment after CI passes. Those additional settings are not automatically synced to a directly created service; apply them through its Dashboard if desired. Review the existing service before creating a Blueprint to avoid a duplicate site. The local server is for previewing and is not needed on Render. See [deployment details](docs/DEPLOYMENT.md).
+The live service was created directly through the Render connector. Render reports auto-deploy enabled, but Git pushes did not queue deployments during setup, so the release was deployed manually. Check the Git provider connection in the service Dashboard before relying on automatic deployments. `render.yaml` is a validated provisioning reference that additionally specifies security headers and deployment after CI passes. Those additional settings are not automatically synced to a directly created service. Review the existing service before creating a Blueprint to avoid a duplicate site. The local server is for previewing and is not needed on Render. See [deployment details](docs/DEPLOYMENT.md).
 
 ## Authoring and sources
 
