@@ -277,6 +277,9 @@ export class Game {
       encounter: Boolean(s.returnScene),
       puzzleData: scene.puzzle,
       endingData: s.ending ? this.episode.endings[s.ending] : null,
+      recap: (this.episode.recaps ?? [])
+        .filter((r) => matches(r.when, s))
+        .map((r) => r.text),
     };
   }
   save() {
@@ -436,6 +439,7 @@ export function validateEpisode(ep) {
     effect(e.effects);
   }
   for (const t of Object.values(ep.themes)) effect(t.effects);
+  for (const recap of ep.recaps ?? []) condition(recap.when);
   for (const r of ep.recipes ?? [])
     for (const id of [...r.ingredients, r.result])
       check(Boolean(ep.items[id]), `unknown recipe item ${id}`);

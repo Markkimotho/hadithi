@@ -109,6 +109,8 @@ test("all three wisdom endings can be reached through different decisions", () =
   solve(shared);
   path(shared, "show", "hands", "council", "share");
   assert.equal(shared.state.ending, "shared");
+  assert.ok(shared.view().recap.some((text) => text.includes("potter")));
+  assert.ok(shared.view().recap.some((text) => text.includes("carrying-knot")));
   const keeper = new Game(wisdom);
   shift(keeper, "mystery");
   path(

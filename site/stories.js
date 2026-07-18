@@ -102,6 +102,36 @@ export const wisdom = {
   opening:
     "Dawn. A pot scrapes the courtyard wall. Your father is leaving before anyone can ask him for advice.",
   initialStats: { trust: 1, insight: 0, danger: 0 },
+  recaps: [
+    {
+      when: flag("listened"),
+      text: "You helped the potter and learned to put a load behind its carrier.",
+    },
+    {
+      when: flag("favor"),
+      text: "Your help at the river brought the ferryman back with a safer crossing.",
+    },
+    {
+      when: flag("highRoute"),
+      text: "The carrying sling opened the high crossing above the river.",
+    },
+    {
+      when: flag("knotTaught"),
+      text: "Your carrying-knot demonstration gave Anansi a reason to listen.",
+    },
+    {
+      when: flag("secured"),
+      text: "The sling held the cracked pot without anyone carrying it alone.",
+    },
+    {
+      when: flag("secondSeal"),
+      text: "The second seal revealed that keeping the wisdom was a promise, not a lock.",
+    },
+    {
+      when: flag("savedWhisper"),
+      text: "Your gourd preserved one small answer outside the pot.",
+    },
+  ],
   statLabels: { trust: "Trust", insight: "Insight", danger: "Storm pressure" },
   themes: themes(
     {
@@ -834,6 +864,36 @@ export const tide = {
   opening:
     "The sea pulls away from the shore. Something trapped in a bright loop of line moves beneath a rock.",
   initialStats: { trust: 1, insight: 0, tide: 0 },
+  recaps: [
+    {
+      when: flag("rescued"),
+      text: "Freeing the turtle gave you a guide below the sea.",
+    },
+    {
+      when: flag("safeCurrent"),
+      text: "The tethered shell found a sheltered passage through the current.",
+    },
+    {
+      when: flag("dialSolved"),
+      text: "Aligning the seasonal dial opened the still-water passage.",
+    },
+    {
+      when: flag("chart"),
+      text: "You copied a tide chart from the palace’s still-water passage.",
+    },
+    {
+      when: flag("agreement"),
+      text: "Research and trust let you negotiate an honest return with Otohime.",
+    },
+    {
+      when: flag("chartedReturn"),
+      text: "A chart or a trusted guide anchored your return to a remembered shore.",
+    },
+    {
+      when: flag("openedBox"),
+      text: "You chose to open the box and accept the years it held.",
+    },
+  ],
   statLabels: {
     trust: "Turtle’s trust",
     insight: "Understanding",
@@ -1561,6 +1621,36 @@ export const orchestra = {
   opening:
     "The farm gate falls shut behind you. Ahead is the road to Bremen. For the first time in years, no one is telling you what to carry.",
   initialStats: { harmony: 1, evidence: 0, alert: 0 },
+  recaps: [
+    {
+      when: flag("meal"),
+      text: "Sharing your bread gave the dog a reason to volunteer for the watch.",
+    },
+    {
+      when: flag("rehearsed"),
+      text: "Rehearsal gave all four voices a place in the entrance.",
+    },
+    {
+      when: flag("distracted"),
+      text: "An object used as a distraction opened the pantry route.",
+    },
+    {
+      when: flag("ledger"),
+      text: "The stolen-goods ledger gave the night’s suspicions names and dates.",
+    },
+    {
+      when: flag("witness"),
+      text: "The miller agreed to meet you and identify the stolen goods.",
+    },
+    {
+      when: flag("safeExit"),
+      text: "Scouting the orchard created a safer response to the patrol.",
+    },
+    {
+      when: flag("restored"),
+      text: "Setting aside the marked sacks made the house a shelter instead of another theft.",
+    },
+  ],
   statLabels: {
     harmony: "Harmony",
     evidence: "Evidence",

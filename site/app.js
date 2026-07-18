@@ -437,7 +437,9 @@ function renderPanel(ep, v) {
   return `<div class="bag-heading"><span>YOUR SATCHEL</span><span>${String(v.inventory.length).padStart(2, "0")} OBJECTS</span></div>${v.inventory.length ? `<div class="inventory-grid">${v.inventoryItems.map((i) => `<button class="inventory-item ${selectedItem === i.id ? "selected" : ""}" data-item="${i.id}" aria-expanded="${selectedItem === i.id}"><span class="item-glyph" aria-hidden="true">${i.glyph}</span><span>${escape(i.name)}</span></button>`).join("")}</div>${selectedItem ? `<div class="item-detail"><b>${escape(ep.items[selectedItem].name)}</b><p>${escape(ep.items[selectedItem].description)}</p><small>${v.actions.some((a) => a.uses === selectedItem && a.enabled) ? "USE AVAILABLE IN YOUR MOVE" : "Select a matching action when the situation allows."}</small></div>` : ""}` : '<div class="empty-bag"><span>◇</span><p>A little room for possibility.</p><small>Collect objects by interacting with the scene.</small></div>'}${v.recipes.length ? `<div class="crafting"><span class="eyebrow">PUT THINGS TOGETHER</span>${v.recipes.map((r) => `<button data-recipe="${r.id}">${escape(r.label)} <span>＋</span><small>${r.ingredients.map((id) => escape(ep.items[id].name)).join(" + ")} · 1 turn</small></button>`).join("")}</div>` : ""}`;
 }
 function renderEnding(ep, v) {
-  const meaningful = v.log.filter((e) => e.kind === "action").slice(-4);
+  const meaningful = v.recap.length
+    ? v.recap.map((text) => ({ text }))
+    : v.log.filter((e) => e.kind === "action").slice(-4);
   return `<div class="ending-reflection"><span class="eyebrow">${escape(v.endingData.kind)} / ${(discoveries[ep.id] ?? []).length} OF 3 FOUND</span><p>${escape(v.endingData.reflection)}</p><h2>The footsteps that brought you here</h2><ul>${meaningful.map((e) => `<li>${escape(e.text)}</li>`).join("")}</ul><div class="ending-buttons">${v.checkpoint ? '<button id="rewind" class="button">Try the last turning point ↶</button>' : ""}<button id="another-story" class="button secondary">Choose another tale →</button></div></div>`;
 }
 function showThemes() {
