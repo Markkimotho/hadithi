@@ -127,10 +127,31 @@ Avoid live fetching of third-party stories at play time: availability, rights, f
 - Decide whether the desktop Tkinter edition should later receive the new engine or be archived as the original version. Browser work does not need to wait for this.
 - Decide whether accounts and cross-device sync have actual player demand after the static release.
 
-## Implementation status — 18 October 2026
+## Implementation status — 18 October 2026 (second edition)
 
-The first playable anthology is implemented and deployed at [Hadithi](https://hadithi-i2us.onrender.com) in the `main` Render workspace. It contains 44 authored scenes and encounters, 30 world events, three puzzles, and nine reachable endings. Three genre directions, object use and combination, delayed consequences, interruptions, turn pressure, a journal, replay checkpoints, portable saves, keyboard controls, and accessibility settings are implemented. The engine also supports bounded recurring events with cooldowns.
+**First edition.** Three tales, 44 scenes, 30 events, nine endings, deployed at [Hadithi](https://hadithi-i2us.onrender.com).
 
-Validation covers all nine endings with 18 engine tests and desktop/phone interactions with 16 browser tests. The build validates story references and rules. Live verification checks new play, save/resume, restored inventory, illustration loading, phone layout, and browser errors. GitHub Actions verifies changes; Render serves the static build. The Render Blueprint passes the current public JSON schema; the live service uses direct-creation settings documented in `docs/DEPLOYMENT.md`.
+**Second edition (this release).** The anthology grows to four tales with *The Olive Jar* (Ali Cogia, Lang's *Arabian Nights* from Galland; the first step of §4's "extend to the Middle East"). Every tale is deepened with systems drawn from modern narrative games. The engine stays deterministic and testable throughout:
 
-The episodes use newly authored adaptations and original SVG illustrations; source editions and editorial distinctions are recorded in `docs/EPISODES.md`. Regional editorial review, commercial international rights review, and human blind playtesting remain outstanding before a broad commercial launch. Automated tests are not represented as those reviews. The first anthology is labeled 10–20 minutes per story; the original 15–25 minute target should be revisited through real playtests rather than adding filler. Broader regional coverage and an offline cache remain follow-on work.
+- **Seeded dice checks** (2d6 + itemized modifiers vs DC) with exact odds shown before committing, one-try and retry rules, and fail-forward outcomes. §5's randomness rule is met: seeded, shown, reproducible, and undo cannot reroll.
+- **Deductions**: connect two clues to reach a conclusion that changes what is possible.
+- **Echoes and secret endings**: endings teach knowledge that later tellings remember; each tale has one ending reachable only that way.
+- **Characters, marks, a travelable map, a chronicle of runs**, procedural weather and light, procedural WebAudio sound (off by default), undo, shareable seeds, Storyteller's grace (an assist mode), three text sizes, and offline play via a versioned service worker.
+- **Save migration policy** (§5): saves from listed earlier revisions are replayed through current rules and carried forward when legal; first-edition saves load.
+
+Totals: 57 scenes and encounters, 49 events, 18 dice checks, 16 deductions, 16 endings (4 secret), 12 echoes, 20 marks.
+
+**Verification.**
+- 36 gate tests (<2 s) cover rules, dice math, migration, and all 18 authored walkthroughs (every ending). They also prove secrets are unreachable without echoes.
+- The build proves a path to every ending.
+- A seeded playtest eval (9,600 agent runs, trap checks, dead-content coverage, balance thresholds) runs in CI and nightly.
+- 45 browser tests replay every walkthrough through the real UI and cover offline play and an axe WCAG 2 AA audit at desktop and phone sizes.
+
+Exhaustive state-space proof is infeasible (over 2M states per tale). The checks are strong but sampled, and `docs/ENGINE.md` says so.
+
+**Still outstanding** (unchanged honesty):
+- Regional editorial and sensitivity review, especially for the new Baghdad tale and its Galland/Diyab provenance.
+- Commercial international rights review.
+- Human blind playtests.
+
+Automated agents measure fairness and reachability, not fun. Agents reach *The Olive Jar*'s losing ending in most runs because they rarely make its key deduction. Human playtests should confirm the tale is fair rather than obscure.

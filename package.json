@@ -1,6 +1,6 @@
 {
   "name": "hadithi",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": true,
   "type": "module",
   "engines": {
@@ -11,9 +11,12 @@
     "build": "node scripts/build.mjs",
     "dev": "node scripts/serve.mjs",
     "start": "node scripts/serve.mjs dist",
-    "test:browser": "playwright test"
+    "test:browser": "npm run build && playwright test",
+    "eval": "node evals/playtest.mjs",
+    "verify": "npm test && npm run build && npm run eval"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
     "@playwright/test": "^1.64.1"
   }
 }
