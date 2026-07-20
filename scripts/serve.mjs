@@ -9,6 +9,7 @@ const types = {
   ".css": "text/css; charset=utf-8",
   ".json": "application/json; charset=utf-8",
   ".svg": "image/svg+xml",
+  ".webmanifest": "application/manifest+json; charset=utf-8",
 };
 createServer(async (req, res) => {
   try {
@@ -26,6 +27,7 @@ createServer(async (req, res) => {
     res.writeHead(200, {
       "Content-Type": types[extname(file)] || "application/octet-stream",
       "Cache-Control": "no-cache",
+      ...(file.endsWith("sw.js") ? { "Service-Worker-Allowed": "/" } : {}),
       "X-Content-Type-Options": "nosniff",
     });
     res.end(body);
