@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 560">
+<defs>
+  <pattern id="d" width="7" height="7" patternUnits="userSpaceOnUse"><path d="M1 1h1v1H1zM4 5h1v1H4z" fill="#f0dcae" opacity=".2"/></pattern>
+  <linearGradient id="sky" x2="0" y2="1"><stop stop-color="#e9d3a0"/><stop offset="1" stop-color="#d9b47a"/></linearGradient>
+  <linearGradient id="river" x2="0" y2="1"><stop stop-color="#6f8d86"/><stop offset="1" stop-color="#3f5a58"/></linearGradient>
+</defs>
+<path fill="url(#sky)" d="M0 0h900v560H0z"/>
+<circle cx="210" cy="110" r="54" fill="#f3e2b0"/>
+<!-- Far bank. -->
+<path d="M0 250h900v30H0z" fill="#9a8a5c"/><path d="M40 250v-40h50v40m40 0v-60q20-24 40 0v60m60 0v-30h70v30m420 0v-50h60v50m40 0v-34q16-18 32 0v34" fill="#8b7752"/>
+<!-- The Tigris. -->
+<path d="M0 280h900v120H0z" fill="url(#river)"/>
+<path d="M60 310h90m60 20h120m80-10h70m120 24h110m-560 26h100m200 6h80" stroke="#c9dcd2" stroke-width="3" opacity=".6"/>
+<!-- A boat. -->
+<path d="M560 330h160q-20 26-60 30h-60q-30-6-40-30z" fill="#6a4a2e" stroke="#2c1a10" stroke-width="4"/><path d="M640 330V250l50 70z" fill="#efe1bd" stroke="#2c1a10" stroke-width="3"/>
+<!-- Palms. -->
+<path d="M820 400q-6-110 14-190" stroke="#5a4630" stroke-width="12" fill="none"/>
+<path d="M834 214q-60-10-90 20m90-20q-40-40-80-36m80 36q30-50 66-50m-66 50q60-6 66 30m-66-30q10-50-10-80" stroke="#4f6436" stroke-width="10" fill="none" stroke-linecap="round"/>
+<!-- Inn terrace. -->
+<path d="M0 380h900v180H0z" fill="#b08654"/>
+<path d="M0 380h900" stroke="#6a4a2e" stroke-width="6"/>
+<path d="M30 200h120v180H30z" fill="#c79b63" stroke="#6a4a2e" stroke-width="5"/><path d="M60 380V280q30-40 60 0v100z" fill="#4b3322"/>
+<path d="M20 200h140l-10-24H30z" fill="#8a5e3b"/>
+<!-- Low table, plates of olives, the jar. -->
+<path d="M250 440h400v24H250zM280 464h20v50h-20zm320 0h20v50h-20z" fill="#6e4a2e" stroke="#2c1a10" stroke-width="4"/>
+<ellipse cx="330" cy="436" rx="44" ry="10" fill="#e9dcc0" stroke="#2c1a10" stroke-width="3"/>
+<ellipse cx="450" cy="436" rx="44" ry="10" fill="#e9dcc0" stroke="#2c1a10" stroke-width="3"/>
+<ellipse cx="560" cy="436" rx="40" ry="9" fill="#e9dcc0" stroke="#2c1a10" stroke-width="3"/>
+<path d="M310 432h6v4h-6zm14-2h6v4h-6zm14 3h6v4h-6zm86-3h6v4h-6zm14 2h6v4h-6zm14-3h6v4h-6zm14 3h6v4h-6zm92-1h6v4h-6zm14-2h6v4h-6z" fill="#4c5a2a"/>
+<path d="M700 300h70v14q44 22 46 78 2 54-34 80h-94q-36-26-34-80 2-56 46-78z" fill="#a85f3a" stroke="#2c1a10" stroke-width="6"/>
+<path d="M694 290h82v14h-82z" fill="#d8c08a" stroke="#2c1a10" stroke-width="5"/>
+<path d="M680 380q55 14 110 0" fill="none" stroke="#e2a565" stroke-width="4" opacity=".7"/>
+<!-- Ali Cogia, seated, head in hands. -->
+<path d="M150 520v-64q10-34 44-34t44 34v64z" fill="#3e3550"/><circle cx="194" cy="404" r="20" fill="#2a2430"/><path d="M174 392q20-18 40 0" fill="none" stroke="#e9dcc0" stroke-width="8"/>
+<path d="M176 440l-16 24m52-24 16 24" stroke="#2a2430" stroke-width="10"/>
+<path fill="url(#d)" d="M0 0h900v560H0z"/>
+</svg>

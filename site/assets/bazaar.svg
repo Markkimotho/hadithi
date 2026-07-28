@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 560">
+<defs>
+  <pattern id="d" width="6" height="6" patternUnits="userSpaceOnUse"><path d="M1 1h1v1H1z" fill="#f2d9a2" opacity=".22"/></pattern>
+  <pattern id="s" width="28" height="10" patternUnits="userSpaceOnUse"><path d="M0 0h14v10H0z" fill="#b65e3c"/><path d="M14 0h14v10H14z" fill="#e1c48c"/></pattern>
+  <pattern id="g" width="26" height="26" patternUnits="userSpaceOnUse"><path d="M13 1 25 13 13 25 1 13z" fill="none" stroke="#8a5e3b" stroke-width="2"/></pattern>
+</defs>
+<path fill="#d7b77d" d="M0 0h900v560H0z"/>
+<path d="M0 0h900v120H0z" fill="#e6cf98"/>
+<!-- Far walls and an arch at the street's end. -->
+<path d="M330 90h240v300H330z" fill="#c29a62"/><path d="M390 390V210q60-80 120 0v180z" fill="#5c3c28"/><path d="M402 390V214q48-66 96 0v176" fill="none" stroke="#e8c88e" stroke-width="4"/>
+<path d="M330 90h240" stroke="#8a5e3b" stroke-width="8"/><path d="M330 108h240v14H330z" fill="url(#g)"/>
+<!-- Left shops. -->
+<path d="M0 60h330v440H0z" fill="#b8874f" stroke="#5e3f27" stroke-width="6"/>
+<path d="M-10 150h360l-30 70H20z" fill="url(#s)" stroke="#5e3f27" stroke-width="5"/>
+<path d="M30 230h270v190H30z" fill="#4b3322"/>
+<path d="M44 248h242v8H44zM44 300h242v8H44zM44 352h242v8H44z" fill="#8a5e3b"/>
+<path d="M60 226h40v22H60zm60 0h28v22h-28zm46 0h36v22h-36zm52 0h30v22h-30zm46 0h26v22h-26z" fill="#d3a35c"/>
+<path d="M58 274q12-22 24 0v26H58zm40 0q14-24 28 0v26H98zm46 4h24v22h-24zm40-6q12-20 24 0v28h-24zm40 2h28v26h-28z" fill="#b8693f" stroke="#2c1a10" stroke-width="3"/>
+<path d="M60 322h54v30H60zm62 4h46v26h-46zm54-6h50v32h-50zm58 4h44v28h-44z" fill="#6f7a8e" stroke="#2c1a10" stroke-width="3"/>
+<path d="M60 324h54M176 322h50" stroke="#c3cbd6" stroke-width="3"/>
+<path d="M20 420h300v30H20z" fill="#6e4a2e" stroke="#2c1a10" stroke-width="4"/>
+<!-- Right shops. -->
+<path d="M570 60h330v440H570z" fill="#b08049" stroke="#5e3f27" stroke-width="6"/>
+<path d="M550 150h360v70H580z" fill="url(#s)" stroke="#5e3f27" stroke-width="5"/>
+<path d="M600 230h270v190H600z" fill="#43301f"/>
+<path d="M618 250h44v120h-44zm56 0h44v120h-44zm56 0h44v120h-44zm56 0h44v120h-44z" fill="#2f5f74"/>
+<path d="M618 250h44v120h-44z" fill="#a43f3a"/><path d="M730 250h44v120h-44z" fill="#d8b25e"/>
+<path d="M610 420h280v30H610z" fill="#6e4a2e" stroke="#2c1a10" stroke-width="4"/>
+<!-- Hanging lamps. -->
+<path d="M175 120v34M450 60v40M725 120v34" stroke="#3a2a1a" stroke-width="3"/>
+<path d="M162 154h26l-4 24h-18zM437 100h26l-4 24h-18zM712 154h26l-4 24h-18z" fill="#e6b45f" stroke="#3a2a1a" stroke-width="3"/>
+<!-- Paving and people. -->
+<path d="M0 450h900v110H0z" fill="#c9a46b"/><path d="M0 450h900v110H0z" fill="url(#g)" opacity=".45"/>
+<path d="M240 560v-70q10-30 30-36 20 6 30 36v70zM258 440a12 12 0 1 0 24 0 12 12 0 1 0-24 0" fill="#3d2c2a"/>
+<path d="M600 560v-62q8-26 26-30 18 4 26 30v62zM614 452a11 11 0 1 0 22 0 11 11 0 1 0-22 0" fill="#33303e"/>
+<path d="M450 560v-50q6-20 18-22 12 2 18 22v50zM458 478a9 9 0 1 0 18 0 9 9 0 1 0-18 0" fill="#4a3324"/>
+<path fill="url(#d)" d="M0 0h900v560H0z"/>
+</svg>

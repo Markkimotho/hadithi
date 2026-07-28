@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 560">
+<defs>
+  <pattern id="d" width="7" height="7" patternUnits="userSpaceOnUse"><path d="M1 1h1v1H1zM4 5h1v1H4z" fill="#dfe6ee" opacity=".16"/></pattern>
+  <pattern id="g" width="34" height="34" patternUnits="userSpaceOnUse"><path d="M17 1 33 17 17 33 1 17z" fill="none" stroke="#6b5a4a" stroke-width="2"/></pattern>
+  <linearGradient id="sky" x2="0" y2="1"><stop stop-color="#1e2740"/><stop offset="1" stop-color="#43506a"/></linearGradient>
+</defs>
+<path fill="url(#sky)" d="M0 0h900v560H0z"/>
+<circle cx="640" cy="92" r="46" fill="#eef0e2"/><circle cx="640" cy="92" r="64" fill="none" stroke="#eef0e2" opacity=".2"/>
+<!-- Courtyard walls with arcade. -->
+<path d="M0 150h900v270H0z" fill="#8f7a64"/>
+<path d="M0 150h900" stroke="#5a4a3a" stroke-width="10"/>
+<path d="M40 420V250q50-70 100 0v170zm160 0V250q50-70 100 0v170zm160 0V250q50-70 100 0v170zm160 0V250q50-70 100 0v170zm160 0V250q50-70 100 0v170z" fill="#3b3440"/>
+<path d="M40 250q50-70 100 0m60 0q50-70 100 0m60 0q50-70 100 0m60 0q50-70 100 0m60 0q50-70 100 0" fill="none" stroke="#c9b28a" stroke-width="4"/>
+<!-- Wall lamps. -->
+<path d="M170 200h12v20h-12zm320 0h12v20h-12zm320 0h12v20h-12z" fill="#f0c374" stroke="#3a2a1a" stroke-width="3"/>
+<circle cx="176" cy="210" r="26" fill="#f0c374" opacity=".18"/><circle cx="496" cy="210" r="26" fill="#f0c374" opacity=".18"/><circle cx="816" cy="210" r="26" fill="#f0c374" opacity=".18"/>
+<!-- Floor and fountain. -->
+<path d="M0 420h900v140H0z" fill="#6f6255"/><path d="M0 420h900v140H0z" fill="url(#g)" opacity=".6"/>
+<ellipse cx="450" cy="470" rx="140" ry="30" fill="#9b8a76" stroke="#3a2f28" stroke-width="5"/>
+<ellipse cx="450" cy="466" rx="112" ry="20" fill="#4e6a78"/>
+<path d="M440 466v-60h20v60z" fill="#9b8a76" stroke="#3a2f28" stroke-width="4"/><ellipse cx="450" cy="404" rx="30" ry="8" fill="#9b8a76" stroke="#3a2f28" stroke-width="4"/>
+<path d="M450 396q-14-24-28-6m28 6q14-24 28-6" fill="none" stroke="#b8d0da" stroke-width="3"/>
+<!-- The cadi's cushion and the children. -->
+<path d="M200 500h90v24h-90z" fill="#a23f3a" stroke="#2c1a10" stroke-width="4"/><path d="M200 500q45-14 90 0" fill="none" stroke="#e1c48c" stroke-width="3"/>
+<path d="M232 500v-40q12-22 26 0v40zM245 446a11 11 0 1 0 1 0" fill="#2a2532"/><circle cx="245" cy="446" r="11" fill="#2a2532"/>
+<path d="M600 520v-44q10-20 22-20t22 20v44zm60 0v-52q12-24 26-24t26 24v52zm70 0v-40q10-18 20-18t20 18v40z" fill="#2a2532"/>
+<circle cx="622" cy="448" r="10" fill="#2a2532"/><circle cx="686" cy="436" r="11" fill="#2a2532"/><circle cx="750" cy="454" r="9" fill="#2a2532"/>
+<path d="M120 520v-36q8-16 16-16t16 16v36zm40 0v-40q9-18 18-18t18 18v40z" fill="#2a2532"/><circle cx="136" cy="460" r="8" fill="#2a2532"/><circle cx="178" cy="454" r="9" fill="#2a2532"/>
+<!-- Gate and the dark corner with three still figures. -->
+<path d="M820 420V300h80v120z" fill="#1c1a24"/>
+<path d="M830 420v-84q10-20 20-20t20 20v84z" fill="#100f16"/><path d="M862 420v-70q8-16 16-16t16 16v70z" fill="#100f16"/>
+<path fill="url(#d)" d="M0 0h900v560H0z"/>
+</svg>
