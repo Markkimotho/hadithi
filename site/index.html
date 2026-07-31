@@ -2,14 +2,15 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#20261f" />
     <meta
       name="description"
-      content="Hadithi — an atlas of playable tales. Explore, collect, solve, and change the story. Three free adventures from Ghana, Japan, and Germany."
+      content="Hadithi — an atlas of playable tales. Explore, roll, deduce, remember, and change the story. Four free adventures from Ghana, Japan, Germany, and Baghdad."
     />
     <title>Hadithi — An atlas of playable tales</title>
     <link rel="icon" href="./assets/icon.svg" type="image/svg+xml" />
+    <link rel="manifest" href="./manifest.webmanifest" />
     <link rel="stylesheet" href="./style.css" />
     <script type="module" src="./app.js"></script>
   </head>
@@ -22,13 +23,12 @@
       </button>
       <nav aria-label="Main navigation">
         <button id="library-link">The collection</button
-        ><button id="sources-link">
-          Field notes <span aria-hidden="true">↗</span></button
-        ><button
-          id="settings-link"
-          class="settings-button"
-          aria-label="Open game settings"
-        >
+        ><button id="chronicle-link">Chronicle</button
+        ><button id="help-link" aria-keyshortcuts="?">How to play</button
+        ><button id="sources-link">Field notes <span aria-hidden="true">↗</span></button
+        ><button id="sound-link" class="sound-button" aria-pressed="false" aria-keyshortcuts="S" aria-label="Toggle sound">
+          <i aria-hidden="true">♪</i> <span>Sound off</span></button
+        ><button id="settings-link" class="settings-button" aria-label="Open game settings">
           ⚙ <span>Settings</span>
         </button>
       </nav>
@@ -37,33 +37,16 @@
       <p class="loading">Opening the atlas…</p>
     </main>
     <footer class="site-footer">
-      <span>HADITHI <i>n.</i> stories, in Swahili.</span
-      ><span>Old tales. Your next move.</span
+      <span>HADITHI <i>n.</i> stories, in Swahili.</span><span>Old tales. Your next move.</span
       ><button id="footer-sources">Sources & credits</button>
     </footer>
-    <div
-      id="announcement"
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-    ></div>
+    <div id="announcement" class="sr-only" role="status" aria-live="polite"></div>
     <div id="toast" class="toast" role="status" hidden></div>
     <dialog id="modal" aria-labelledby="modal-title">
       <div id="modal-body"></div>
-      <button id="close-modal" class="dialog-close" aria-label="Close dialog">
-        ×
-      </button>
+      <button id="close-modal" class="dialog-close" aria-label="Close dialog">×</button>
     </dialog>
-    <input
-      id="import-file"
-      type="file"
-      accept="application/json,.json"
-      hidden
-    />
-    <noscript
-      ><p class="loading">
-        Hadithi needs JavaScript to play. Enable it and reload this page.
-      </p></noscript
-    >
+    <input id="import-file" type="file" accept="application/json,.json" hidden />
+    <noscript><p class="loading">Hadithi needs JavaScript to play. Enable it and reload this page.</p></noscript>
   </body>
 </html>

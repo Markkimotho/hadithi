@@ -1,0 +1,11 @@
+{
+  "name": "Hadithi — An atlas of playable tales",
+  "short_name": "Hadithi",
+  "description": "Play old tales from Ghana, Japan, Germany, and Baghdad. Roll, deduce, remember, and change the story.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#20261f",
+  "theme_color": "#20261f",
+  "icons": [{ "src": "./assets/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}
