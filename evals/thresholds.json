@@ -1,0 +1,20 @@
+{
+  "runsPerMode": 400,
+  "trapCheckedRuns": 40,
+  "trapEvery": 8,
+  "trapBudget": 30000,
+  "bfsStates": 30000,
+  "maxStalledRate": 0.02,
+  "checkPassRate": [
+    0.45,
+    0.85
+  ],
+  "minBreadth": 2.5,
+  "curiousMedianTurns": [
+    12,
+    45
+  ],
+  "minEndingRate": 0.005,
+  "minDistinctRoutes": 25,
+  "minEventSequences": 20
+}
