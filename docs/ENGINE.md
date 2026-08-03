@@ -1,61 +1,72 @@
 # Event engine and episode authoring
 
-`site/game.js` owns game state. `site/stories.js` exports three versioned episode objects. `site/app.js` renders the engine's view and dispatches actions. The browser UI never changes inventory, story flags, or encounter state directly.
+`site/engine/` owns all game rules. `site/stories/<id>.js` holds each tale as plain declarative data. `site/app.js` and `site/ui/` render the engine's view and dispatch commands. The UI never changes inventory, flags, dice, or encounter state directly, and story data never refers to UI selectors.
 
-## One action
+| Module | Responsibility |
+| --- | --- |
+| `engine/game.js` | `Game`: dispatch, triggers, event queue, checks, deductions, echoes, marks, save/load/undo/rewind, view |
+| `engine/conditions.js` | The condition vocabulary shared by every rule |
+| `engine/rng.js` | Seeded dice (`rollFor`), exact odds (`checkOdds`), seed codes |
+| `engine/validate.js` | Build-time structural validation |
+| `engine/explore.js` | Bounded state-space exploration, A* witness search, dead-content analysis |
+| `engine/simulate.js` | Seeded playtest agents (random, curious, hasty) |
+| `game.js` | Stable public entry point re-exporting the engine |
 
-`dispatch({ type, id })` checks the action against the current scene, visibility, prerequisites, and puzzle state. It records the player's choice, charges its turn cost, applies its effects, checks triggers, and processes due events. A rejected action restores the entire prior state. Inspection defaults to zero turns; other scene actions default to one.
+## One command
 
-Events are considered after each action and after each event's effects. They fire once per journey by default. A matching event enters the queue at `turn + delay`. Due events sort by priority descending, due turn ascending, then ID. An interrupt saves the destination scene and enters an encounter. Queued events remain pending until that encounter resolves with `to: '$return'`. Resolving the encounter then drains due events. Processing is bounded at 64 immediate events per action to catch broken content.
+`dispatch(command)` validates the command against the current state, records it, charges its turn cost, applies effects, evaluates triggers, and drains due events. A rejected command restores the prior state exactly. Inspection and deduction cost no turns; other scene actions default to one.
 
-For recurring events, specify `maxRuns` (2–20) and a positive `cooldown` in turns. The engine tracks counts and last-fired turns, prevents a recurring event from immediately retriggering itself, and stops at the authored limit. Cooldowns do not advance during free inspection. The initial anthology uses one-shot story events; bounded recurrence is available for future patrol cycles and hazards.
+Commands: scene actions (`TRAVEL`, `INSPECT`, `TAKE_ITEM`, `USE_ITEM`, `TALK`, `BARGAIN`, `SOLVE`, `WAIT`, `CHOOSE`) plus `PUZZLE`, `CLEAR_PUZZLE`, `COMBINE`, `SHIFT_THEME`, and `DEDUCE { ids: [a, b] }`.
+
+Events enter the queue at `turn + delay` and fire by priority, then due turn, then ID. An `interrupt` pushes an encounter scene; queued events wait until it resolves with `to: "$return"`. `recheck: true` re-tests a delayed event's guard when it lands. Recurring events use `maxRuns` (≤20) with a positive `cooldown`. More than 64 events in one command is treated as a content bug.
 
 ## Conditions
 
-Conditions support `all`, `any`, `not`, `item`, `flag`, `scene`, `theme`, `visited`, `event`, `turn`, and `stat` with `gte`/`lte`. Examples:
+`all`, `any`, `not`, `item`, `flag`, `scene`, `theme`, `visited`, `event`, `turn` (≥), `stat` (`gte`/`lte`), `clue`, `deduction`, `echo`, `ending`, `check` (`passed`), and `count` over `turn`, `inventory`, `items` (ever held), `clues`, `deductions`, `wrongLinks`, `visited`, `checksPassed`, `checksFailed`.
 
-```js
-{
-  all: [{ item: "chart" }, { theme: "mystery" }, { stat: "trust", gte: 3 }];
-}
-{
-  not: {
-    flag: "takeCord";
-  }
-}
-```
-
-`when` disables an unavailable action, preserving its explanation. `visible` controls whether it is shown at all. Use `requires` to explain a disabled action in player language. Repeated pickups should have a persistent flag: checking inventory alone would let a player pick the same object up again after consuming it.
+`when` disables an action and requires a player-facing `requires` explanation (validation enforces it). `visible` hides it. Repeated pickups need a persistent flag.
 
 ## Effects
 
-Supported effects are `give`, `remove`, `flags`, `stats`, `clues`, `objective`, `to`, and `ending`. Give/remove use arrays of item IDs. Stats use deltas and are clamped from 0 to 10. Clues are deduplicated. Scene transitions clear partial puzzle input. Event interrupts also clear the interrupted scene's partial puzzle input; completed puzzle flags remain. No real-time deadlines run during menus or reading.
+`give`, `remove`, `flags`, `stats` (deltas, clamped 0–10), `clues` (IDs from the episode's `clues` map), `objective`, `to`, `ending`.
+
+## Dice checks
 
 ```js
-{
-  id: 'chart', type: 'TAKE_ITEM', label: 'Copy the return current',
-  when: { flag: 'passage' }, visible: { not: { flag: 'chartTaken' } },
-  effects: { give: ['chart'], flags: { chartTaken: true }, stats: { insight: 1 } },
-  text: 'You mark the sheltered current on your chart.'
-}
+C("leap", "Leap the stepping stones", "TRAVEL",
+  roll("insight", 8,
+    outcome("You land on the firm stones.", { to: "grove" }),
+    outcome("You arrive soaked.", { to: "grove", stats: { danger: 2 } }),
+    { mods: [against("danger", "Storm pressure"), mod("Ferryman’s tip", 2, flag("favor"))] }))
 ```
 
-## Puzzles, recipes, and themes
+A check rolls 2d6 + stat + modifiers against `dc`. Double six always succeeds and double one always fails, so nothing is certain. Every modifier has a label, and the UI shows the exact probability before the player commits. **Red** checks (default) can be tried once. **White** checks can be retried only after the bonus improves. Both outcomes must have text, because failure moves the story forward.
 
-A scene's `puzzle` specifies labeled options, a solution sequence, a solved flag, success/failure text, and optional effects. `PUZZLE` adds one symbol. A complete attempt costs one turn and can trigger world events; partial input is saved. `CLEAR_PUZZLE` clears input without a turn. Scene actions of type `SOLVE` remain disabled until the puzzle's solved flag is set. Retrying does not consume an irreplaceable object.
+Dice are a pure function of `(seed, scene/action, attempt)`. Replaying a save, undoing, or reloading always reproduces the same roll, so undo cannot be used to reroll. Each journey's seed is shown as a seven-character code. `?seed=CODE` in the URL, or the new-telling dialog, replays a seed. Storyteller's grace (`assist`) adds an itemized +2 and is stored in the save.
 
-Recipes name ingredients and a result. `COMBINE` requires every ingredient, consumes them, gives the result, and takes one turn. Item-specific scene actions use `uses` and `requires` so the bag can explain when use is available. Consumption belongs in the action's `remove` effect.
+## Deductions
 
-`SHIFT_THEME` allows one genre change per journey and costs one turn. A theme has descriptive copy and optional effects; scene variants and action/event conditions can then react to it. It is unavailable during an active interrupt. New themes need reachable routes and ending tests, not only a visual treatment.
+Episodes define `clues: { id: text }` and `deductions: [{ id, from: [clueA, clueB], title, text, effects }]`. `DEDUCE` with two known clues either makes the deduction (applying its effects) or records a free wrong link (`wrongLinks`). Deductions are conditions, so they open conversations, add check modifiers, and gate endings.
 
-## Persistence and replay
+## Echoes, secret endings, and marks
 
-`save()` serializes `{ version, episodeId, revision, actions, savedAt }`. `Game.load()` checks versions and reconstructs state by replaying at most 3,000 validated actions. This avoids trusting a stored inventory or fabricated story flags. The latest checkpoint records the action prefix that entered a marked scene; `rewind()` replays that prefix. Discovered endings are kept separately so replaying a branch preserves collection progress.
+`echoes: { id: { title, text, from: condition } }` are earned when an ending's final state matches `from`. The browser keeps known echoes per tale and passes them to `new Game(ep, { echoes })`. Actions whose conditions mention an echo are flagged `remembered` in the view. Each tale has one ending with `secret: true`. Validation requires every action that reaches a secret ending to be gated by an echo, so secrets need knowledge from an earlier telling. `marks` are achievement conditions evaluated at the ending.
 
-Story content changes that alter action IDs, costs, rules, or event order must increment `revision`. Current migration policy is explicit incompatibility with an option to start a fresh journey. Never silently replay a different edition.
+## View data
 
-## Validation and limits
+`view()` adds `actions` (available actions with `enabled`, `odds`, `remembered`), `clueItems`, `deductionItems`, `people` (met characters with conditional notes and an optional disposition stat), `map` (discovered nodes, edges, exits; `mapAs` places staged scenes), `atmosphere` (`weather`, `light`, `ambience` from episode defaults, scene fields, then ordered `atmosphere` rules), `earnedEchoItems`, `markItems`, and `canUndo`. Note that `view().actions` lists available moves; the command history is `state.actions`.
 
-`validateEpisode()` is build-time structural validation, including static scene reachability. Conditional feasibility is covered by authored path tests for every ending and a browser playthrough for each episode. Static reachability does not prove that all possible state combinations are safe. New content needs tests for conditional branches, consuming objects before later requirements, interrupted puzzles, and routes with high pressure.
+## Persistence
 
-First-release limits: one active interrupt at a time, one latest checkpoint, authored deterministic encounters, three text-and-scene adventures, no combat simulator, no live story scraping, and no cloud save service. A service worker is intentionally deferred until asset and save revision caching are designed together. Regional editorial review and real human blind playtests remain important before a broad launch; automated playthroughs do not replace either.
+`save()` → `{ version: 2, episodeId, revision, seed, echoes, assist, actions, savedAt }`. `Game.load()` replays at most 3,000 validated commands rather than trusting stored state. **Migration policy:** an episode lists `compatibleRevisions`. A save from one of those revisions is replayed through the current rules, and if every command is still legal it is carried forward (`migratedFrom`). Otherwise the player gets a clear "start a new journey" message. Version 1 saves (no seed) replay with the episode's default seed. Increment `revision` whenever rules, action IDs, costs, or event order change.
+
+## Verification lanes
+
+| Lane | Command | Budget | What it proves |
+| --- | --- | --- | --- |
+| Gate | `npm test` | < 2 s | Rules, dice math, migration, every authored walkthrough (all 16 endings), witness search for every ending, secrets unreachable without echoes, no dead ends near the start |
+| Build | `npm run build` | seconds | Structural validation plus a witness path to every ending; build fails otherwise |
+| Eval | `npm run eval` | ~30 s | 2,400 seeded agent runs per tale, trap checks, dead-content coverage, balance thresholds in `evals/thresholds.json`; report in `artifacts/eval/` |
+| Browser | `npm run test:browser` | ~40 s | Every walkthrough through the real UI, dice/undo, deductions, echoes, map, saves, migration, reduced motion, offline service worker, axe WCAG 2 AA audit, desktop and phone |
+
+Exhaustive search of the full state space is infeasible: turn timing multiplies every configuration past two million states for a single tale. The engine therefore combines a bounded breadth-first search near the start, requirement-aware A* witnesses for every ending, authored walkthroughs for needle-thin routes, and Monte Carlo agents whose sampled states must each still reach an ending. These are strong checks, not a proof of every state.
