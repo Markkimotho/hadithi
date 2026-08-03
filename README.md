@@ -56,10 +56,12 @@ Saves contain the episode ID, schema version, content revision, seed, echoes, as
 ## Verify
 
 ```sh
-npm test              # gate: rules, dice, migration, all walkthroughs, ending witnesses (<2 s)
+npm test              # gate: rules, dice, migration, walkthroughs, witnesses, type scale, prose lint, LLM service (<2 s)
+npm run lint:prose    # the prose lint alone, with every issue printed
 npm run build         # validation + a proven path to every ending
 npm run eval          # 9,600 seeded agent playthroughs, trap checks, balance thresholds
-npm run test:browser  # every walkthrough through the real UI, offline, axe audit, desktop + phone
+npm run test:browser  # every walkthrough through the real UI, offline, axe audit, 14px floor, desktop + phone
+npm run eval:prose    # paid: blind judge of rewritten text vs the baseline, via local Claude Code
 ```
 
 Browser tests use installed Google Chrome locally and Playwright Chromium in CI (`CI=1` with `npx playwright install chromium`). The eval writes `artifacts/eval/playtest-report.md`; thresholds live in `evals/thresholds.json`. Screenshots land in `artifacts/`, failure traces in `test-results/`. See [engine and verification](docs/ENGINE.md).
@@ -74,7 +76,10 @@ The live service was created directly through the Render connector. Render repor
 
 - [Episode briefs and source ledger](docs/EPISODES.md)
 - [Engine and content rules](docs/ENGINE.md)
+- [Voice guide: how the text should sound](docs/VOICE.md)
 - [Original implementation plan](PLAN.md)
+
+Text uses three self-hosted OFL faces from Fontsource (Literata for reading, Fraunces for titles, Atkinson Hyperlegible Next for the interface). They are installed by npm and copied at build by `scripts/vendor.mjs`, never committed. No text renders below 14px; `test/typography.test.js` and the browser suite enforce it. The only model access is `services/llm`, which shells out to the local Claude Code CLI.
 
 Each tale lives in `site/stories/<id>.js`, written with small helpers from `site/stories/helpers.js` that produce plain declarative objects. Conditions and effects are data, not executable story scripts. Validation rejects broken references, unexplained locked actions, checks without a failure outcome, clues nobody can find, echoes that unlock nothing, endings nothing reaches, and secret endings not gated by an echo. New routes belong in `test/walkthroughs.js`, which feeds the gate tests, the eval, and the browser suite. Traditional narrative motifs inspired newly written text, original SVG artwork, and procedural sound. Read the in-game source notes or source ledger for edition details, the distinction between tradition and adaptation, and outstanding international rights/editorial review.
 

@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "hadithi/llm-judge/v1",
+  "title": "Pairwise prose judgement",
+  "description": "Output of services/llm/judge.mjs judgePair(). Passed to the model as its structured-output schema and validated again on return.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["winner", "a", "b", "reason"],
+  "properties": {
+    "winner": { "type": "string", "enum": ["a", "b"] },
+    "a": { "$ref": "#/$defs/scores" },
+    "b": { "$ref": "#/$defs/scores" },
+    "reason": { "type": "string", "maxLength": 400 }
+  },
+  "$defs": {
+    "scores": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["specific", "voice", "rhythm", "human"],
+      "properties": {
+        "specific": { "type": "integer", "minimum": 1, "maximum": 5 },
+        "voice": { "type": "integer", "minimum": 1, "maximum": 5 },
+        "rhythm": { "type": "integer", "minimum": 1, "maximum": 5 },
+        "human": { "type": "integer", "minimum": 1, "maximum": 5 }
+      }
+    }
+  }
+}

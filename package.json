@@ -1,22 +1,31 @@
 {
   "name": "hadithi",
-  "version": "2.0.0",
+  "version": "3.0.0-alpha.0",
   "private": true,
   "type": "module",
   "engines": {
     "node": ">=22"
   },
   "scripts": {
-    "test": "node --test test/*.test.js",
+    "test": "node --test test/*.test.js services/*/test/*.test.js",
     "build": "node scripts/build.mjs",
     "dev": "node scripts/serve.mjs",
     "start": "node scripts/serve.mjs dist",
     "test:browser": "npm run build && playwright test",
     "eval": "node evals/playtest.mjs",
-    "verify": "npm test && npm run build && npm run eval"
+    "verify": "npm test && npm run build && npm run eval",
+    "lint:prose": "node scripts/prose-lint.mjs",
+    "eval:prose": "node evals/prose.mjs"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.14.0",
     "@playwright/test": "^1.64.1"
+  },
+  "dependencies": {
+    "@fontsource-variable/atkinson-hyperlegible-next": "5.3.0",
+    "@fontsource-variable/fraunces": "5.3.0",
+    "@fontsource-variable/literata": "5.3.0",
+    "phaser": "4.2.1",
+    "planck": "1.5.0"
   }
 }
