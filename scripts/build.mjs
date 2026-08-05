@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 import { episodes } from "../site/stories.js";
 import { validateEpisode } from "../site/game.js";
 import { endingWitnesses } from "../site/engine/explore.js";
+import { VENDOR, vendorSource } from "./vendor.mjs";
 
 // 1. Structural validation: every reference resolves, every rule is fair.
 const errors = episodes.flatMap(validateEpisode);
@@ -19,6 +20,10 @@ const dist = fileURLToPath(new URL("../dist/", import.meta.url));
 await rm(dist, { recursive: true, force: true });
 await mkdir(dist, { recursive: true });
 await cp(site, dist, { recursive: true });
+for (const published of Object.keys(VENDOR)) {
+  await mkdir(join(dist, published, ".."), { recursive: true });
+  await cp(vendorSource(published), join(dist, published));
+}
 
 // 3. Version the offline cache by content, and precache every shipped file.
 async function files(dir) {
