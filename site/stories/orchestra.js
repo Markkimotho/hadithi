@@ -645,7 +645,7 @@ export const orchestra = {
             "harmony",
             11,
             outcome("Four voices from one dark doorway. The thief does not wait to count them.", { ending: "home" }),
-            outcome("The thief laughs. He is not fooled—yet—and now he is listening for you.", { stats: { alert: 2 } }),
+            outcome("The thief laughs. He is not fooled. Not yet. And now he is listening for you.", { stats: { alert: 2 } }),
             {
               mods: [
                 mod("The rehearsed entrance", 2, flag("rehearsed")),
