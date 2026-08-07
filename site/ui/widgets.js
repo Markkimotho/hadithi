@@ -29,14 +29,14 @@ export function diceTray(roll, statLabels, { fresh }) {
   return `<section class="dice-tray ${roll.success ? "pass" : "fail"} ${fresh ? "fresh" : ""}" aria-label="${escape(
     `${statName} check: rolled ${roll.dice[0]} and ${roll.dice[1]}, ${signed(roll.bonus)}, total ${roll.total} against ${roll.dc}. ${roll.success ? "Success" : "Failure"}.`,
   )}">
-    <div class="dice-head"><span>${escape(statName).toUpperCase()} CHECK · ${roll.kind === "white" ? "RETRY IF ODDS IMPROVE" : "ONE CHANCE"}</span><span>${Math.round(roll.chance * 100)}% ODDS</span></div>
+    <div class="dice-head"><span>${escape(statName)} check · ${roll.kind === "white" ? "you can retry if your odds improve" : "one chance"}</span><span>${Math.round(roll.chance * 100)}% odds</span></div>
     <div class="dice-body">
       <div class="dice-pair">${die(roll.dice[0], "d1")}${die(roll.dice[1], "d2")}</div>
       <div class="dice-math">
         <div class="dice-sum"><b>${roll.dice[0] + roll.dice[1]}</b><span>${signed(roll.bonus)}</span><span>=</span><b>${roll.total}</b><span class="vs">vs ${roll.dc}</span></div>
         <ul class="dice-parts">${parts.map((p) => `<li><span>${escape(p.label)}</span><b>${signed(p.value)}</b></li>`).join("")}</ul>
       </div>
-      <div class="dice-stamp" aria-hidden="true">${roll.success ? "SUCCESS" : "FAILURE"}</div>
+      <div class="dice-stamp" aria-hidden="true">${roll.success ? "Success" : "Failure"}</div>
     </div>
     ${roll.dice.join() === "6,6" ? '<p class="dice-note">Double six: fortune favours the bold.</p>' : roll.dice.join() === "1,1" ? '<p class="dice-note">Double one: no plan survives everything.</p>' : ""}
   </section>`;
@@ -47,7 +47,7 @@ export function oddsBadge(odds, statLabels) {
   const pct = Math.round(odds.chance * 100);
   const name = odds.stat ? statLabels[odds.stat] : "Chance";
   const breakdown = odds.parts.map((p) => `${p.label} ${signed(p.value)}`).join(" · ");
-  return `<span class="odds ${odds.kind}" title="${escape(breakdown)}"><span class="odds-meter"><i style="width:${pct}%"></i></span>${escape(name).toUpperCase()} ${pct}% · ${odds.kind === "white" ? "RETRY" : "ONE TRY"}</span><span class="odds-parts">${escape(breakdown || "No modifiers")} · need ${odds.dc}</span>`;
+  return `<span class="odds ${odds.kind}" title="${escape(breakdown)}"><span class="odds-meter"><i style="width:${pct}%"></i></span>${escape(name)} ${pct}% · ${odds.kind === "white" ? "can retry" : "one try"}</span><span class="odds-parts">${escape(breakdown || "No modifiers")} · need ${odds.dc}</span>`;
 }
 
 /** Node map of discovered places. Exits from here are drawn dashed. */
@@ -56,7 +56,7 @@ export function mapSvg(map) {
   const hereNode = map.nodes.find((n) => n.id === map.here);
   const here = hereNode?.pos;
   const label = (text, [x, y], cls = "") =>
-    `<text class="${cls}" x="${x}" y="${y > 85 ? y - 5.5 : y + 7.5}" text-anchor="${x > 82 ? "end" : x < 18 ? "start" : "middle"}">${escape(text)}</text>`;
+    `<text class="${cls}" x="${x}" y="${y > 85 ? y - 5 : y + 8.6}" text-anchor="${x > 82 ? "end" : x < 18 ? "start" : "middle"}">${escape(text)}</text>`;
   const edges = map.edges
     .map(([a, b]) => `<line class="edge" x1="${pos[a][0]}" y1="${pos[a][1]}" x2="${pos[b][0]}" y2="${pos[b][1]}"/>`)
     .join("");
@@ -65,7 +65,7 @@ export function mapSvg(map) {
         .map(
           (e) =>
             `<line class="exit ${e.enabled ? "" : "locked"}" x1="${here[0]}" y1="${here[1]}" x2="${e.pos[0]}" y2="${e.pos[1]}"/>${
-              e.known ? "" : `<g class="unknown"><circle cx="${e.pos[0]}" cy="${e.pos[1]}" r="3.2"/><text x="${e.pos[0]}" y="${e.pos[1] + 1.4}" text-anchor="middle">?</text></g>`
+              e.known ? "" : `<g class="unknown"><circle cx="${e.pos[0]}" cy="${e.pos[1]}" r="3.6"/><text x="${e.pos[0]}" y="${e.pos[1] + 1.6}" text-anchor="middle">?</text></g>`
             }`,
         )
         .join("")
