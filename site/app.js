@@ -80,7 +80,7 @@ $("#sound-link").addEventListener("click", () => {
 document.addEventListener("visibilitychange", () => (document.hidden ? audio.pause() : audio.resume()));
 
 // ── Dialogs ───────────────────────────────────────────────────────────────
-function showDialog(title, content, eyebrow = "HADITHI / FIELD GUIDE") {
+function showDialog(title, content, eyebrow = "Hadithi") {
   $("#modal-body").innerHTML = `<span class="eyebrow">${eyebrow}</span><h2 id="modal-title">${escape(title)}</h2>${content}`;
   if (!modal.open) modal.showModal();
 }
@@ -194,7 +194,7 @@ function showChronicle(id) {
         const found = discoveries[ep.id];
         const echoes = knownEchoes[ep.id];
         const marks = earnedMarks[ep.id];
-        return `<article class="chronicle-tale"><span class="eyebrow">TALE ${ep.number} · ${escape(ep.tradition)}</span><h3>${escape(flat(ep.title))}</h3>
+        return `<article class="chronicle-tale"><span class="eyebrow">Tale ${Number(ep.number)} · ${escape(ep.tradition)}</span><h3>${escape(flat(ep.title))}</h3>
         <h4>Endings <small>${found.length}/${Object.keys(ep.endings).length}</small></h4><ul class="ending-list">${Object.entries(ep.endings)
           .map(([eid, e]) =>
             found.includes(eid)
@@ -223,7 +223,7 @@ function showChronicle(id) {
         }</article>`;
       })
       .join("")}`,
-    "HADITHI / CHRONICLE",
+    "Your chronicle",
   );
 }
 $("#chronicle-link").addEventListener("click", () => showChronicle());
@@ -244,22 +244,22 @@ function library() {
   audio.setAmbience("none");
   main.className = "collection";
   delete main.dataset.theme;
-  document.title = "Hadithi — An atlas of playable tales";
+  document.title = "Hadithi · Old tales you can play";
   const total = episodes.reduce((n, ep) => n + Object.keys(ep.endings).length, 0);
   const secrets = episodes.reduce((n, ep) => n + Object.values(ep.endings).filter((e) => e.secret).length, 0);
   const found = Object.values(discoveries).reduce((n, list) => n + list.length, 0);
-  main.innerHTML = `<section class="collection-intro"><div class="intro-copy"><div class="edition"><span class="small-star">✳</span> VOLUME TWO <span class="rule"></span> THE SECOND CROSSING</div><h1>Every story has<br>a <em>turning point.</em></h1><p>Step inside an old tale. Find what others miss.<br>Remember it next time.</p><div class="intro-meta"><span>${pad(episodes.length)} PLAYABLE TALES</span><span>${pad(total - secrets)} ENDINGS + ${pad(secrets)} SECRETS</span><span>ONE NEXT MOVE</span></div></div><div class="atlas-seal" aria-hidden="true"><span class="seal-top">A WORLD OF STORIES</span><div class="compass"><span class="compass-letter north">N</span><span class="compass-letter east">E</span><span class="compass-letter south">S</span><span class="compass-letter west">W</span><svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="90"/><circle cx="100" cy="100" r="74"/><path d="m100 12 12 76 76 12-76 12-12 76-12-76-76-12 76-12z"/><path class="needle" d="m100 28 12 60 60 12-72 0zM100 172l-12-60-60-12h72z"/><path d="m46 46 54 32 54-32-32 54 32 54-54-32-54 32 32-54z"/><circle cx="100" cy="100" r="8"/></svg></div><span class="seal-bottom">EXPLORE · REMEMBER · CHANGE</span></div></section>
-  <section class="shelf"><div class="shelf-header"><div><span class="eyebrow">CHOOSE YOUR FIRST FOOTSTEP</span><h2>The collection <sup>01—${pad(episodes.length)}</sup></h2></div><button class="discovery-count" id="shelf-chronicle">${pad(found)} / ${pad(total)} endings found · Chronicle ↗</button></div><div class="filters" role="group" aria-label="Filter stories">${["All tales", ...regions]
+  main.innerHTML = `<section class="collection-intro"><div class="intro-copy"><div class="edition"><span class="small-star">✳</span> Second edition <span class="rule"></span> ${episodes.length} tales</div><h1>Four old stories,<br>and <em>you in each one.</em></h1><p>Chase Anansi and his pot into the rain. Ride a turtle down to the sea palace. Scare robbers out of a house with a donkey, a dog, a cat and a rooster. Win back a jar of gold with a children’s game.</p><div class="intro-meta"><span>${episodes.length} tales</span><span>${total - secrets} endings, ${secrets} hidden</span><span>Saves as you go</span></div></div><div class="atlas-seal" aria-hidden="true"><span class="seal-top">Hadithi</span><div class="compass"><span class="compass-letter north">N</span><span class="compass-letter east">E</span><span class="compass-letter south">S</span><span class="compass-letter west">W</span><svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="90"/><circle cx="100" cy="100" r="74"/><path d="m100 12 12 76 76 12-76 12-12 76-12-76-76-12 76-12z"/><path class="needle" d="m100 28 12 60 60 12-72 0zM100 172l-12-60-60-12h72z"/><path d="m46 46 54 32 54-32-32 54 32 54-54-32-54 32 32-54z"/><circle cx="100" cy="100" r="8"/></svg></div><span class="seal-bottom">Ghana · Japan · Germany · Baghdad</span></div></section>
+  <section class="shelf"><div class="shelf-header"><div><span class="eyebrow">Pick a tale</span><h2>The collection</h2></div><button class="discovery-count" id="shelf-chronicle">${found} of ${total} endings found · Chronicle ↗</button></div><div class="filters" role="group" aria-label="Filter stories">${["All tales", ...regions]
     .map((f) => `<button class="filter ${filter === f ? "active" : ""}" data-filter="${f}" aria-pressed="${filter === f}">${f}</button>`)
-    .join("")}<span class="filter-note">FREE TO PLAY · SAVES AS YOU GO</span></div><div class="story-grid">${episodes
+    .join("")}<span class="filter-note">Free. No account.</span></div><div class="story-grid">${episodes
     .filter((ep) => filter === "All tales" || ep.region === filter)
     .map((ep) => {
       const save = read(`save.${ep.id}`, null);
       const echoes = knownEchoes[ep.id].length;
       const marks = earnedMarks[ep.id].length;
-      return `<article class="story-card ${ep.id}"><div class="cover"><img src="./assets/${ep.id}.svg" alt="" /><div class="cover-top"><span>TALE / ${ep.number}</span><span class="cover-region">${ep.region.toUpperCase()}</span></div><div class="cover-caption"><span>${escape(ep.genre)}</span><h3>${escape(ep.title).replace("\n", "<br>")}</h3></div><span class="cover-corner" aria-hidden="true">✧</span></div><div class="card-body"><div class="story-origin">${escape(ep.tradition)} <span>${ep.duration}</span></div><p>${escape(ep.hook)}</p><div class="card-bottom"><button class="button start-button" data-start="${ep.id}">${save ? "Resume journey" : "Enter the story"} <span>→</span></button><button class="source-button" data-source="${ep.id}" aria-label="Source notes for ${escape(flat(ep.title))}">ⓘ</button></div><div class="card-progress"><span class="slots" aria-label="${discoveries[ep.id].length} of ${Object.keys(ep.endings).length} endings found">${endingSlots(ep)}</span><span>${echoes ? `◈ ${echoes} ECHO${echoes === 1 ? "" : "ES"}` : "NO ECHOES YET"}</span><span>★ ${marks}/${ep.marks.length}</span></div><div class="card-foot"><span>${save ? "JOURNEY ON THIS BROWSER" : "NO ACCOUNT NEEDED"}</span><button class="new-run" data-new="${ep.id}">${save ? "Begin again" : "Journey options"}</button></div></div></article>`;
+      return `<article class="story-card ${ep.id}"><div class="cover"><img src="./assets/${ep.id}.svg" alt="" /><div class="cover-top"><span>Tale ${Number(ep.number)}</span><span class="cover-region">${ep.region}</span></div><div class="cover-caption"><span>${escape(ep.genre)}</span><h3>${escape(ep.title).replace("\n", "<br>")}</h3></div><span class="cover-corner" aria-hidden="true">✧</span></div><div class="card-body"><div class="story-origin">${escape(ep.tradition)} <span>${ep.duration}</span></div><p>${escape(ep.hook)}</p><div class="card-bottom"><button class="button start-button" data-start="${ep.id}">${save ? "Resume journey" : "Enter the story"} <span>→</span></button><button class="source-button" data-source="${ep.id}" aria-label="Source notes for ${escape(flat(ep.title))}">ⓘ</button></div><div class="card-progress"><span class="slots" aria-label="${discoveries[ep.id].length} of ${Object.keys(ep.endings).length} endings found">${endingSlots(ep)}</span><span>${echoes ? `◈ ${echoes} echo${echoes === 1 ? "" : "es"}` : "No echoes yet"}</span><span>★ ${marks}/${ep.marks.length}</span></div><div class="card-foot"><span>${save ? "Saved in this browser" : "No account needed"}</span><button class="new-run" data-new="${ep.id}">${save ? "Begin again" : "Journey options"}</button></div></div></article>`;
     })
-    .join("")}</div></section><section class="how-to"><span class="how-number">HOW TO PLAY</span><div><b>01. Look closely.</b><p>Inspect freely. Connect clues in your Mind.</p></div><div><b>02. Make your move.</b><p>Use your bag, your allies, and the dice.</p></div><div><b>03. Remember.</b><p>Each ending echoes into the next telling.</p></div><button class="how-help" id="shelf-help">The full guide ↗</button></section>`;
+    .join("")}</div></section><section class="how-to"><span class="how-number">How to play</span><div><b>01. Look closely.</b><p>Inspect freely. Connect clues in your Mind.</p></div><div><b>02. Make your move.</b><p>Use your bag, your allies, and the dice.</p></div><div><b>03. Remember.</b><p>Each ending echoes into the next telling.</p></div><button class="how-help" id="shelf-help">The full guide ↗</button></section>`;
   bind("[data-filter]", (el) => {
     filter = el.dataset.filter;
     library();
@@ -324,7 +324,7 @@ function newJourney(id) {
     <div class="setting-row"><label for="assist-now">Storyteller’s grace<small>+2 to every dice check this journey.</small></label><input id="assist-now" type="checkbox" ${settings.assist ? "checked" : ""}></div>
     <div class="setting-row"><label for="seed-now">Seed<small>Leave blank for fresh fortune, or enter a seed from your chronicle to replay the same dice.</small></label><input id="seed-now" type="text" inputmode="text" autocomplete="off" spellcheck="false" maxlength="7" placeholder="random" class="seed-input"></div>
     <div class="dialog-actions"><button class="button" id="begin-fresh">Begin →</button><button class="button secondary" id="keep-save">${hasSave ? "Keep my journey" : "Not yet"}</button></div>`,
-    "HADITHI / NEW TELLING",
+    "A new telling",
   );
   $("#begin-fresh").onclick = () => {
     const code = $("#seed-now").value.trim();
@@ -445,6 +445,16 @@ const actionIcons = {
   WAIT: "◷",
   CHOOSE: "✧",
 };
+const verbs = {
+  TRAVEL: "Go",
+  TAKE_ITEM: "Take",
+  USE_ITEM: "Use",
+  TALK: "Talk",
+  BARGAIN: "Bargain",
+  SOLVE: "Try",
+  WAIT: "Wait",
+  CHOOSE: "Choose",
+};
 
 function showTip(v) {
   const offer = (id, text) => {
@@ -466,23 +476,23 @@ function renderGame() {
   const ep = game.episode,
     v = game.view(),
     atm = v.atmosphere;
-  document.title = `${flat(ep.title)} — Hadithi`;
+  document.title = `${flat(ep.title)} · Hadithi`;
   main.className = `play-screen ${ep.id}`;
   main.dataset.theme = v.theme;
-  const status = v.ending ? "JOURNEY COMPLETE" : v.encounter ? "ENCOUNTER IN PROGRESS" : "JOURNEY IN PROGRESS";
-  main.innerHTML = `<div class="journey-heading"><button class="back-link" id="back-library">← The collection</button><span>${escape(ep.tradition)} <span class="separator">/</span> TALE ${ep.number}</span><button class="back-link" id="story-source">Source notes ↗</button></div>
-  <div class="game-cabinet"><div class="cabinet-bar"><span class="status-light"></span><span>${status}</span><span class="bar-right"><button id="undo" ${v.canUndo ? "" : "disabled"} aria-keyshortcuts="U">↶ Undo</button><span class="seed" title="This journey’s seed. Enter it in a new telling to replay the same dice.">SEED ${seedCode(v.seed)}</span>${v.assist ? '<span class="grace" title="Storyteller’s grace: +2 to every check">GRACE +2</span>' : ""}${v.echoes.length ? `<span class="echo-count" title="Echoes carried into this telling">◈ ${v.echoes.length}</span>` : ""}</span></div>
+  const status = v.ending ? "The tale is told" : v.encounter ? "Interrupted" : "On the road";
+  main.innerHTML = `<div class="journey-heading"><button class="back-link" id="back-library">← The collection</button><span>${escape(ep.tradition)} <span class="separator">/</span> Tale ${Number(ep.number)}</span><button class="back-link" id="story-source">Source notes ↗</button></div>
+  <div class="game-cabinet"><div class="cabinet-bar"><span class="status-light"></span><span>${status}</span><span class="bar-right"><button id="undo" ${v.canUndo ? "" : "disabled"} aria-keyshortcuts="U">↶ Undo</button><span class="seed" title="This journey’s seed. Enter it in a new telling to replay the same dice.">Seed ${seedCode(v.seed)}</span>${v.assist ? '<span class="grace" title="Storyteller’s grace: +2 to every check">Grace +2</span>' : ""}${v.echoes.length ? `<span class="echo-count" title="Echoes carried into this telling">◈ ${v.echoes.length}</span>` : ""}</span></div>
   <div class="game-layout"><section class="play-column" aria-label="Current scene">
-    <div class="scene-stage ${v.encounter ? "interrupted" : ""}" data-weather="${atm.weather}"><img class="scene-image" src="./assets/${v.sceneArt}.svg" alt="" /><div class="light-layer" data-light="${atm.light}"></div><canvas class="weather-layer" aria-hidden="true"></canvas><div class="stage-grid" aria-hidden="true"></div><span class="stage-coordinate">${ep.number} / ${pad(v.visited.length)}</span><div class="scene-location"><span class="eyebrow">${escape(v.kicker)}</span><span class="location-marker">⌖</span></div>${
+    <div class="scene-stage ${v.encounter ? "interrupted" : ""}" data-weather="${atm.weather}"><img class="scene-image" src="./assets/${v.sceneArt}.svg" alt="" /><div class="light-layer" data-light="${atm.light}"></div><canvas class="weather-layer" aria-hidden="true"></canvas><div class="stage-grid" aria-hidden="true"></div><div class="scene-location"><span class="eyebrow">${escape(v.kicker)}</span><span class="location-marker">⌖</span></div>${
       v.ending
         ? '<div class="ending-seal" aria-hidden="true">✧</div>'
         : v.actions
             .filter((a) => a.spot && a.enabled)
             .map((a) => `<button class="hotspot" style="--x:${a.spot[0]}%;--y:${a.spot[1]}%" data-hotspot="${a.id}" aria-label="On scene: ${escape(a.label)}"><span>＋</span><small>${escape(a.label)}</small></button>`)
             .join("")
-    }<div class="stage-bottom"><span>${escape(ep.role)}</span><span class="clock">TURN ${pad(v.turn)} · ${atm.light.toUpperCase()}</span><span>${escape(ep.themes[v.theme].name)} ${ep.themes[v.theme].icon}</span></div></div>
-    <div class="narrative ${animateNext ? "enter" : ""}"><div class="chapter-line"><span>${v.ending ? "THE TALE YOU MADE" : v.encounter ? "THE WORLD MAKES ITS MOVE" : "YOUR NEXT FOOTSTEP"}</span><span>TURN ${pad(v.turn)}</span></div><h1 id="scene-title" tabindex="-1">${escape(v.endingData?.title || v.title)}</h1><p class="story-text">${escape(v.endingData?.text || v.description)}</p>${v.variant && !v.ending ? `<p class="scene-variant">${escape(v.variant)}</p>` : ""}${trayRoll ? diceTray(trayRoll, ep.statLabels, { fresh: trayFresh && settings.motion }) : ""}${renderConsequence(v)}${v.ending ? renderEnding(ep, v) : `${renderPuzzle(v)}<div class="action-heading"><span>YOUR MOVE</span><span>Inspect and think freely · actions take turns</span></div><div class="actions">${v.actions.map((a, i) => renderAction(ep, a, i)).join("")}</div>`}</div></section>
-  <aside class="field-panel" aria-label="Your field journal"><div class="field-panel-head"><span>FIELD JOURNAL</span><span>${ep.number} / ${escape(ep.themes[v.theme].name.toUpperCase())}</span></div><div class="objective"><span class="eyebrow">${v.ending ? "JOURNEY COMPLETE" : "CURRENT OBJECTIVE"}</span><p>${escape(v.endingData?.reflection || v.objective)}</p></div><div class="stats">${Object.entries(v.stats)
+    }<div class="stage-bottom"><span>${escape(ep.role)}</span><span class="clock">${atm.light[0].toUpperCase()}${atm.light.slice(1)}</span><span>${escape(ep.themes[v.theme].name)} ${ep.themes[v.theme].icon}</span></div></div>
+    <div class="narrative ${animateNext ? "enter" : ""}"><div class="chapter-line"><span>${v.ending ? "How it ended" : v.encounter ? "Interrupted" : escape(v.kicker)}</span><span>Turn ${v.turn}</span></div><h1 id="scene-title" tabindex="-1">${escape(v.endingData?.title || v.title)}</h1><p class="story-text">${escape(v.endingData?.text || v.description)}</p>${v.variant && !v.ending ? `<p class="scene-variant">${escape(v.variant)}</p>` : ""}${trayRoll ? diceTray(trayRoll, ep.statLabels, { fresh: trayFresh && settings.motion }) : ""}${renderConsequence(v)}${v.ending ? renderEnding(ep, v) : `${renderPuzzle(v)}<div class="action-heading"><span>What do you do?</span><span>Looking is free. Doing takes a turn.</span></div><div class="actions">${v.actions.map((a, i) => renderAction(ep, a, i)).join("")}</div>`}</div></section>
+  <aside class="field-panel" aria-label="Your field journal"><div class="field-panel-head"><span>Journal</span><span>${escape(ep.themes[v.theme].name)}</span></div><div class="objective"><span class="eyebrow">${v.ending ? "What it meant" : "What you want"}</span><p>${escape(v.endingData?.reflection || v.objective)}</p></div><div class="stats">${Object.entries(v.stats)
     .map(([key, n]) => `<div><label>${escape(ep.statLabels[key])}<b>${n}<small>/10</small></b></label><div class="stat-track"><span style="width:${n * 10}%"></span></div></div>`)
     .join("")}</div><div class="panel-tabs" role="tablist" aria-label="Field journal sections">${[
     ["inventory", "Bag", v.inventory.length, "B"],
@@ -494,8 +504,8 @@ function renderGame() {
       ([id, label, n, key]) =>
         `<button id="tab-${id}" role="tab" aria-controls="panel-content" aria-selected="${panel === id}" aria-keyshortcuts="${key}" data-panel="${id}" ${panel === id ? 'class="selected"' : ""}>${label} <small>${n}</small></button>`,
     )
-    .join("")}</div><div id="panel-content" role="tabpanel" aria-labelledby="tab-${panel}" class="panel-content">${renderPanel(ep, v)}</div><div class="theme-box"><span class="eyebrow">THE DIRECTION OF THE TALE</span><button id="shift-theme" ${v.flags.themeShifted || v.encounter || v.ending ? "disabled" : ""}><span>${ep.themes[v.theme].icon} ${escape(ep.themes[v.theme].name)}</span><span>${v.flags.themeShifted ? "TURN TAKEN" : "Shift the tale ↗"}</span></button><p>${v.flags.themeShifted ? "Your chosen direction is changing the events ahead." : "One turning point per journey. Choose a new genre and change what can happen."}</p></div><div class="save-tools"><span id="save-label">${storageFailed() ? "SAVE EXPORT RECOMMENDED" : "✓ SAVED ON THIS BROWSER"}</span><button id="export-save">Export save ↓</button></div></aside></div>
-  <div class="cabinet-footer"><span>LOOK · THINK · ACT</span><span>Every action leaves a trace.</span><button id="restart-story">Begin again ↺</button></div></div>`;
+    .join("")}</div><div id="panel-content" role="tabpanel" aria-labelledby="tab-${panel}" class="panel-content">${renderPanel(ep, v)}</div><div class="theme-box"><span class="eyebrow">What kind of story</span><button id="shift-theme" ${v.flags.themeShifted || v.encounter || v.ending ? "disabled" : ""}><span>${ep.themes[v.theme].icon} ${escape(ep.themes[v.theme].name)}</span><span>${v.flags.themeShifted ? "Already turned" : "Turn the tale ↗"}</span></button><p>${v.flags.themeShifted ? "Your chosen direction is changing the events ahead." : "One turning point per journey. Choose a new genre and change what can happen."}</p></div><div class="save-tools"><span id="save-label">${storageFailed() ? "This browser will not keep your save. Export it." : "✓ Saved in this browser"}</span><button id="export-save">Export save ↓</button></div></aside></div>
+  <div class="cabinet-footer"><span>${escape(flat(ep.title))}</span><span>${escape(ep.tradition)}</span><button id="restart-story">Begin again ↺</button></div></div>`;
 
   // Animate a move once; tab switches and other re-renders show it settled.
   trayFresh = false;
@@ -561,8 +571,8 @@ function renderAction(ep, a, i) {
   let meta;
   if (!a.enabled) meta = `<small class="requires">${escape(a.requires || "Complete the puzzle first")}</small>`;
   else if (a.odds) meta = `<small>${oddsBadge(a.odds, ep.statLabels)}</small>`;
-  else meta = `<small>${a.type === "INSPECT" ? "LOOK · NO TURN" : `${a.type.replace("_", " ")} · ${a.cost ?? 1} ${(a.cost ?? 1) === 1 ? "TURN" : "TURNS"}`}</small>`;
-  return `<button class="action-button ${a.enabled ? "" : "unavailable"} ${a.odds ? `check ${a.odds.kind}` : ""} ${a.remembered ? "remembered" : ""}" data-action="${a.id}" ${a.enabled ? "" : "disabled"}><span class="action-icon" aria-hidden="true">${a.odds ? "⚄" : actionIcons[a.type]}</span><span>${a.remembered ? '<em class="remembered-badge">◈ REMEMBERED</em>' : ""}<b>${escape(a.label)}</b>${meta}</span>${i < 9 ? `<span class="action-key" aria-hidden="true">${i + 1}</span>` : ""}</button>`;
+  else meta = `<small>${a.type === "INSPECT" ? "Look · free" : `${verbs[a.type] ?? "Act"} · ${a.cost ?? 1} ${(a.cost ?? 1) === 1 ? "turn" : "turns"}`}</small>`;
+  return `<button class="action-button ${a.enabled ? "" : "unavailable"} ${a.odds ? `check ${a.odds.kind}` : ""} ${a.remembered ? "remembered" : ""}" data-action="${a.id}" ${a.enabled ? "" : "disabled"}><span class="action-icon" aria-hidden="true">${a.odds ? "⚄" : actionIcons[a.type]}</span><span>${a.remembered ? '<em class="remembered-badge">◈ Remembered</em>' : ""}<b>${escape(a.label)}</b>${meta}</span>${i < 9 ? `<span class="action-key" aria-hidden="true">${i + 1}</span>` : ""}</button>`;
 }
 
 function renderConsequence(v) {
@@ -570,7 +580,7 @@ function renderConsequence(v) {
   const start = v.log.findLastIndex((e) => ["action", "deduction", "deduction-miss"].includes(e.kind));
   const recent = v.log.slice(Math.max(0, start)).filter((e) => e.kind !== "action" && e.kind !== "roll");
   if (!recent.length) return "";
-  const label = { world: "WORLD EVENT", encounter: "INTERRUPTION", consequence: "WHAT CHANGED", deduction: "CONNECTION MADE", "deduction-miss": "NO CONNECTION" };
+  const label = { world: "Meanwhile", encounter: "Interrupted", consequence: "What happened", deduction: "It fits", "deduction-miss": "It does not fit" };
   const cls = { encounter: "encounter-note", deduction: "deduction-note", "deduction-miss": "miss-note" };
   const shown = recent.map((e) => (e.kind === "deduction" ? { ...e, title: true } : e));
   const worlds = shown.filter((e) => e.kind === "world");
@@ -578,7 +588,7 @@ function renderConsequence(v) {
   return keep
     .map(
       (e) =>
-        `<div class="consequence ${cls[e.kind] ?? ""} ${trayFresh && settings.motion ? "after-roll" : ""} ${animateNext ? "enter" : ""}"><span>${label[e.kind] ?? "WHAT CHANGED"}</span><p>${e.title ? `<b>${escape(e.text)}</b>` : escape(e.text)}</p></div>`,
+        `<div class="consequence ${cls[e.kind] ?? ""} ${trayFresh && settings.motion ? "after-roll" : ""} ${animateNext ? "enter" : ""}"><span>${label[e.kind] ?? "What happened"}</span><p>${e.title ? `<b>${escape(e.text)}</b>` : escape(e.text)}</p></div>`,
     )
     .join("");
 }
@@ -587,7 +597,7 @@ function renderPuzzle(v) {
   const p = v.puzzleData;
   if (!p) return "";
   const solved = v.flags[p.solvedFlag];
-  return `<section class="puzzle"><div class="puzzle-top"><h2 id="puzzle-heading" tabindex="-1">${escape(p.prompt)}</h2><span>${solved ? "✓ SOLVED" : "HANDS ON"}</span></div><p>${escape(p.clue)}</p><div class="puzzle-slots" aria-label="Your sequence">${p.solution
+  return `<section class="puzzle"><div class="puzzle-top"><h2 id="puzzle-heading" tabindex="-1">${escape(p.prompt)}</h2><span>${solved ? "✓ Solved" : "Your turn"}</span></div><p>${escape(p.clue)}</p><div class="puzzle-slots" aria-label="Your sequence">${p.solution
     .map((_, i) => `<span class="${v.puzzle[i] ? "filled" : ""}">${escape(p.options.find((o) => o.id === v.puzzle[i])?.label || pad(i + 1))}</span>`)
     .join("")}</div>${
     solved
@@ -600,7 +610,7 @@ function renderPanel(ep, v) {
   if (panel === "mind") {
     const used = new Set(v.deductionItems.flatMap((d) => d.from));
     const ready = selectedClues.length === 2 && selectedClues.every((id) => v.clues.includes(id));
-    return `<div class="bag-heading"><span>CLUES</span><span>${v.clues.length >= 2 ? "CHOOSE TWO TO CONNECT" : "LOOK CLOSELY"}</span></div>${
+    return `<div class="bag-heading"><span>What you know</span><span>${v.clues.length >= 2 ? "Pick two that fit together" : "Look around to learn more"}</span></div>${
       v.clueItems.length
         ? `<ol class="clue-list selectable">${v.clueItems
             .map(
@@ -609,7 +619,7 @@ function renderPanel(ep, v) {
             )
             .join("")}</ol><button id="connect" class="button full connect" ${ready ? "" : "disabled"}>${ready ? "Connect these two clues ⟷" : `Select ${2 - Math.min(2, selectedClues.length)} more clue${selectedClues.length === 1 ? "" : "s"}`}</button>`
         : '<div class="empty-bag"><span>⌕</span><p>No clues recorded yet.</p><small>Look closely. Inspecting a scene costs no turns.</small></div>'
-    }<div class="conclusions"><span class="eyebrow">CONCLUSIONS ${v.deductions.length}/${v.deductionsTotal}</span>${
+    }<div class="conclusions"><span class="eyebrow">Worked out: ${v.deductions.length} of ${v.deductionsTotal}</span>${
       v.deductionItems.length
         ? v.deductionItems.map((d) => `<article class="conclusion"><b>⟷ ${escape(d.title)}</b><p>${escape(d.text)}</p></article>`).join("")
         : '<p class="fineprint">Conclusions you reach will appear here, and open new possibilities.</p>'
@@ -633,7 +643,7 @@ function renderPanel(ep, v) {
       : '<div class="empty-bag"><span>❞</span><p>Nobody met yet.</p></div>';
   if (panel === "map") {
     const exits = v.map.exits;
-    return `${mapSvg(v.map)}<div class="exits"><span class="eyebrow">ROADS FROM HERE</span>${
+    return `${mapSvg(v.map)}<div class="exits"><span class="eyebrow">Roads from here</span>${
       exits.length && !v.encounter
         ? exits
             .map(
@@ -644,7 +654,7 @@ function renderPanel(ep, v) {
         : `<p class="fineprint">${v.encounter ? "Deal with the encounter first." : "No roads lead on from here; act to move the story."}</p>`
     }</div>${v.checkpoint ? '<button id="rewind-map" class="button secondary full">Replay from last turning point ↶</button>' : ""}<p class="fineprint">◆ turning point · ○ place · ? unexplored road. Replaying replaces the current browser save.</p>`;
   }
-  return `<div class="bag-heading"><span>YOUR SATCHEL</span><span>${pad(v.inventory.length)} OBJECTS</span></div>${
+  return `<div class="bag-heading"><span>Your bag</span><span>${v.inventory.length} ${v.inventory.length === 1 ? "thing" : "things"}</span></div>${
     v.inventory.length
       ? `<div class="inventory-grid">${v.inventoryItems
           .map(
@@ -653,13 +663,13 @@ function renderPanel(ep, v) {
           )
           .join("")}</div>${
           selectedItem
-            ? `<div class="item-detail"><b>${escape(ep.items[selectedItem].name)}</b><p>${escape(ep.items[selectedItem].description)}</p><small>${v.actions.some((a) => a.uses === selectedItem && a.enabled) ? "USE AVAILABLE IN YOUR MOVE" : "Select a matching action when the situation allows."}</small></div>`
+            ? `<div class="item-detail"><b>${escape(ep.items[selectedItem].name)}</b><p>${escape(ep.items[selectedItem].description)}</p><small>${v.actions.some((a) => a.uses === selectedItem && a.enabled) ? "You can use this now. Look in your actions." : "Select a matching action when the situation allows."}</small></div>`
             : ""
         }`
       : '<div class="empty-bag"><span>◇</span><p>A little room for possibility.</p><small>Collect objects by interacting with the scene.</small></div>'
   }${
     v.recipes.length
-      ? `<div class="crafting"><span class="eyebrow">PUT THINGS TOGETHER</span>${v.recipes
+      ? `<div class="crafting"><span class="eyebrow">Put things together</span>${v.recipes
           .map((r) => `<button data-recipe="${r.id}">${escape(r.label)} <span>＋</span><small>${r.ingredients.map((id) => escape(ep.items[id].name)).join(" + ")} · 1 turn</small></button>`)
           .join("")}</div>`
       : ""
@@ -678,18 +688,18 @@ function renderEnding(ep, v) {
     ["Objects", v.taken.length],
     ["Seed", seedCode(v.seed)],
   ];
-  return `<div class="ending-reflection"><span class="eyebrow">${escape(v.endingData.kind)} / ${discoveries[ep.id].length} OF ${Object.keys(ep.endings).length} FOUND</span><p>${escape(v.endingData.reflection)}</p>
+  return `<div class="ending-reflection"><span class="eyebrow">${escape(v.endingData.kind)} · ${discoveries[ep.id].length} of ${Object.keys(ep.endings).length} endings found</span><p>${escape(v.endingData.reflection)}</p>
   <dl class="run-stats">${stats.map(([k, x]) => `<div><dt>${k}</dt><dd>${escape(x)}</dd></div>`).join("")}</dl>
   ${
     v.earnedEchoItems.length
       ? `<h2>What this telling teaches</h2><div class="echo-cards">${v.earnedEchoItems
-          .map((e) => `<article class="echo-card ${news.echoes.includes(e.id) ? "new" : ""}"><span class="eyebrow">◈ ECHO${news.echoes.includes(e.id) ? " · NEW" : ""}</span><b>${escape(e.title)}</b><p>${escape(e.text)}</p></article>`)
+          .map((e) => `<article class="echo-card ${news.echoes.includes(e.id) ? "new" : ""}"><span class="eyebrow">◈ Echo${news.echoes.includes(e.id) ? " · new" : ""}</span><b>${escape(e.title)}</b><p>${escape(e.text)}</p></article>`)
           .join("")}</div><p class="fineprint">Echoes reveal remembered actions in your next telling of this tale.</p>`
       : ""
   }
   ${
     v.markItems.length
-      ? `<h2>Marks</h2><ul class="mark-chips">${v.markItems.map((m) => `<li class="${news.marks.includes(m.id) ? "new" : ""}" title="${escape(m.text)}">★ ${escape(m.title)}${news.marks.includes(m.id) ? " · NEW" : ""}</li>`).join("")}</ul>`
+      ? `<h2>Marks</h2><ul class="mark-chips">${v.markItems.map((m) => `<li class="${news.marks.includes(m.id) ? "new" : ""}" title="${escape(m.text)}">★ ${escape(m.title)}${news.marks.includes(m.id) ? " · new" : ""}</li>`).join("")}</ul>`
       : ""
   }
   <h2>The footsteps that brought you here</h2><ul>${meaningful.map((text) => `<li>${escape(text)}</li>`).join("")}</ul>

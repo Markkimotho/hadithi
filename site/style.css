@@ -6,8 +6,23 @@
   --rust: #bc6b43;
   --line: #455044;
   --dark: #191f1a;
-  --story-size: 1.07rem;
-  font-family: Georgia, "Times New Roman", serif;
+  /* Type. Three families: a reading serif, a storybook display face, and a
+     low-vision UI face. Nothing renders below 14px; test/typography.test.js
+     enforces it. --scale follows the text-size setting. */
+  --font-body: "Literata Variable", Literata, Georgia, serif;
+  --font-display: "Fraunces Variable", Fraunces, Georgia, serif;
+  --font-ui: "Atkinson Hyperlegible Next Variable", "Atkinson Hyperlegible Next", system-ui, sans-serif;
+  --scale: 1;
+  --fs-label: calc(15px * var(--scale));
+  --fs-ui-sm: calc(16px * var(--scale));
+  --fs-ui: calc(17px * var(--scale));
+  --fs-body: calc(19px * var(--scale));
+  --fs-lead: calc(22px * var(--scale));
+  --fs-h3: calc(27px * var(--scale));
+  --story-size: calc(clamp(20px, 0.6vw + 15px, 23px) * var(--scale));
+  font-family: var(--font-body);
+  font-size: 19px;
+  line-height: 1.5;
   color: var(--paper);
   background: var(--ink);
   font-synthesis: none;
@@ -61,6 +76,24 @@ h2,
 h3,
 p {
   margin-top: 0;
+}
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  font-optical-sizing: auto;
+  font-weight: 560;
+  letter-spacing: -0.01em;
+}
+.eyebrow,
+button,
+input,
+select,
+label,
+small,
+dt,
+dd {
+  font-family: var(--font-ui);
 }
 button,
 h1,
@@ -125,7 +158,7 @@ main {
   text-align: left;
   font-size: 1.6rem;
   font-weight: bold;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.01em;
 }
 .brand-mark {
   font-size: 1.8rem;
@@ -143,10 +176,8 @@ main {
 }
 .brand small {
   display: block;
-  font:
-    10px/1.6 "Courier New",
-    monospace;
-  letter-spacing: 0.17em;
+  font: var(--fs-label)/1.6 var(--font-ui);
+  letter-spacing: 0.01em;
   margin-top: 4px;
   color: #a4a78c;
 }
@@ -156,9 +187,7 @@ main {
   gap: 29px;
 }
 .masthead nav button {
-  font:
-    11px "Courier New",
-    monospace;
+  font: var(--fs-label)/1.4 var(--font-ui);
   padding: 10px 0;
 }
 .masthead nav button:hover {
@@ -218,19 +247,19 @@ main {
 .trail-list,
 .clue-list > li > span,
 .history small {
-  font-family: "Courier New", Courier, monospace;
+  font-family: var(--font-ui);
 }
 .edition {
   display: flex;
   align-items: center;
   gap: 12px;
-  font-size: 10px;
-  letter-spacing: 0.14em;
+  font-size: var(--fs-label);
+  letter-spacing: 0.01em;
   color: var(--gold);
   margin-bottom: 23px;
 }
 .small-star {
-  font-size: 22px;
+  font-size: var(--fs-lead);
 }
 .edition .rule {
   display: block;
@@ -258,13 +287,13 @@ main {
 .intro-meta {
   display: flex;
   gap: 23px;
-  font-size: 11px;
+  font-size: var(--fs-label);
   color: #b0ad90;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.01em;
 }
 .intro-meta span + span:before {
   content: "◆";
-  font-size: 9px;
+  font-size: var(--fs-label);
   margin-right: 23px;
   color: #b2764d;
 }
@@ -277,8 +306,8 @@ main {
 }
 .seal-top,
 .seal-bottom {
-  font-size: 11px;
-  letter-spacing: 0.19em;
+  font-size: var(--fs-label);
+  letter-spacing: 0.01em;
 }
 .compass {
   width: 220px;
@@ -299,7 +328,7 @@ main {
 }
 .compass-letter {
   position: absolute;
-  font: 10px Georgia;
+  font: var(--fs-label)/1.3 var(--font-display);
   background: var(--ink);
   padding: 4px;
 }
@@ -328,8 +357,8 @@ main {
   border-top: 1px solid #65705a;
 }
 .eyebrow {
-  font-size: 11px;
-  letter-spacing: 0.13em;
+  font-size: var(--fs-label);
+  letter-spacing: 0.01em;
   color: var(--gold);
 }
 .shelf-header h2 {
@@ -339,7 +368,7 @@ main {
   margin: 8px 0 20px;
 }
 .shelf-header sup {
-  font-size: 11px;
+  font-size: var(--fs-label);
   vertical-align: top;
   letter-spacing: 0;
   color: #9b9e86;
@@ -347,7 +376,7 @@ main {
   line-height: 2.8;
 }
 .discovery-count {
-  font-size: 11px;
+  font-size: var(--fs-label);
   color: #b6b49a;
   margin-bottom: 23px;
 }
@@ -359,7 +388,7 @@ main {
   padding-bottom: 21px;
 }
 .filter {
-  font-size: 10px;
+  font-size: var(--fs-label);
   border: 1px solid #4e5846;
   padding: 8px 17px;
   color: #b9b9a5;
@@ -374,8 +403,8 @@ main {
 }
 .filter-note {
   margin-left: auto;
-  font-size: 10px;
-  letter-spacing: 0.08em;
+  font-size: var(--fs-label);
+  letter-spacing: 0.01em;
   color: #9da38c;
 }
 .story-grid {
@@ -426,15 +455,15 @@ main {
   justify-content: space-between;
   align-items: center;
   gap: 8px;
-  font-size: 11px;
+  font-size: var(--fs-label);
   color: #f0dfba;
   z-index: 1;
 }
 .cover-region {
   border: 1px solid #c2b68a85;
   padding: 5px 8px;
-  font-size: 10px;
-  letter-spacing: 0.08em;
+  font-size: var(--fs-label);
+  letter-spacing: 0.01em;
   background: #1d2b2470;
 }
 .cover-caption {
@@ -444,10 +473,9 @@ main {
   z-index: 1;
 }
 .cover-caption > span {
-  font-size: 10px;
-  letter-spacing: 0.12em;
+  font-size: var(--fs-label);
+  letter-spacing: 0.01em;
   color: #c7b58a;
-  text-transform: uppercase;
 }
 .cover-caption h3 {
   font-size: 2rem;
@@ -460,7 +488,7 @@ main {
   position: absolute;
   right: 18px;
   bottom: 21px;
-  font-size: 28px;
+  font-size: var(--fs-h3);
   color: #d0bd88;
   z-index: 1;
 }
@@ -477,7 +505,7 @@ main {
   display: flex;
   justify-content: space-between;
   gap: 12px;
-  font-size: 11px;
+  font-size: var(--fs-label);
   color: #c5b78d;
 }
 .story-origin > span {
@@ -485,7 +513,7 @@ main {
   white-space: nowrap;
 }
 .card-body > p {
-  font-size: 0.98rem;
+  font-size: var(--fs-ui);
   line-height: 1.6;
   color: #c3c6b4;
   min-height: 76px;
@@ -501,11 +529,9 @@ main {
   align-items: center;
   justify-content: space-between;
   gap: 20px;
-  font:
-    11px/1.3 "Courier New",
-    monospace;
+  font: var(--fs-label)/1.3 var(--font-ui);
   text-decoration: none;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.01em;
   background: var(--gold);
   color: #21261e;
   padding: 14px 17px;
@@ -535,7 +561,7 @@ main {
   flex: 1;
 }
 .source-button {
-  font-size: 21px;
+  font-size: var(--fs-lead);
   padding: 8px 4px;
   color: #b4b69c;
 }
@@ -549,13 +575,13 @@ main {
   border-top: 1px solid #464e3d;
   padding-top: 13px;
   margin-top: 19px;
-  font-size: 10px;
-  letter-spacing: 0.04em;
+  font-size: var(--fs-label);
+  letter-spacing: 0.01em;
   color: #9da38b;
 }
 .new-run {
   color: #c5b78d;
-  font-size: 11px;
+  font-size: var(--fs-label);
   text-decoration: underline;
   padding: 12px 0 0;
 }
@@ -569,17 +595,17 @@ main {
   padding: 25px 0;
 }
 .how-number {
-  font-size: 11px;
+  font-size: var(--fs-label);
   color: var(--gold);
-  letter-spacing: 0.12em;
+  letter-spacing: 0.01em;
   align-self: center;
 }
 .how-to b {
   font-weight: normal;
-  font-size: 1.02rem;
+  font-size: var(--fs-body);
 }
 .how-to p {
-  font-size: 0.85rem;
+  font-size: var(--fs-label);
   line-height: 1.5;
   color: #a9ad96;
   margin: 8px 0 0;
@@ -589,15 +615,15 @@ main {
   justify-content: space-between;
   gap: 20px;
   color: #919a82;
-  font-size: 10px;
+  font-size: var(--fs-label);
   padding: 29px 55px 31px;
 }
 .site-footer i {
-  font-family: Georgia;
+  font-family: var(--font-display);
 }
 .site-footer button {
   padding: 0;
-  font-size: 10px;
+  font-size: var(--fs-label);
   color: #b6b69b;
 }
 .site-footer button:hover {
@@ -619,12 +645,12 @@ main {
   justify-content: space-between;
   align-items: center;
   gap: 16px;
-  font-size: 11px;
+  font-size: var(--fs-label);
   color: #a1aa92;
   padding-bottom: 20px;
 }
 .back-link {
-  font-size: 11px;
+  font-size: var(--fs-label);
   padding: 7px 0;
   color: #c2be9c;
 }
@@ -647,8 +673,8 @@ main {
   border-bottom: 3px solid #10170f;
   background: #575b43;
   color: #e7ddbc;
-  font-size: 11px;
-  letter-spacing: 0.07em;
+  font-size: var(--fs-label);
+  letter-spacing: 0.01em;
 }
 .status-light {
   width: 7px;
@@ -715,11 +741,11 @@ main {
   padding: 8px 10px;
   color: #ecdfb9;
   max-width: 80%;
-  font-size: 10px;
+  font-size: var(--fs-label);
   border: 1px solid #c9c6a03d;
 }
 .location-marker {
-  font-size: 29px;
+  font-size: var(--fs-h3);
   color: #e2d4a7;
   opacity: 0.6;
 }
@@ -727,8 +753,8 @@ main {
   position: absolute;
   top: 55px;
   left: 20px;
-  font-size: 10px;
-  letter-spacing: 0.08em;
+  font-size: var(--fs-label);
+  letter-spacing: 0.01em;
   color: #ecdfb9;
   opacity: 0.7;
   z-index: 2;
@@ -743,9 +769,8 @@ main {
   justify-content: space-between;
   gap: 15px;
   background: #14221be0;
-  font-size: 10px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  font-size: var(--fs-label);
+  letter-spacing: 0.01em;
   color: #d6ccaa;
   border-top: 1px solid #a5ad7b44;
   z-index: 2;
@@ -771,7 +796,7 @@ main {
   background: #1d2d25bd;
   box-shadow: 0 0 0 4px #17281b55;
   color: #eddbab;
-  font-size: 20px;
+  font-size: var(--fs-lead);
   transition: background 0.2s;
 }
 .hotspot small {
@@ -783,9 +808,7 @@ main {
   max-width: 180px;
   border: 1px solid #b0a67e;
   color: #e7ddbc;
-  font:
-    11px "Courier New",
-    monospace;
+  font: var(--fs-label)/1.4 var(--font-ui);
   opacity: 0;
   pointer-events: none;
 }
@@ -806,8 +829,8 @@ main {
   display: flex;
   justify-content: space-between;
   gap: 16px;
-  font-size: 10px;
-  letter-spacing: 0.1em;
+  font-size: var(--fs-label);
+  letter-spacing: 0.01em;
   color: #aeb194;
   margin-bottom: 13px;
 }
@@ -826,7 +849,7 @@ main {
   max-width: 70ch;
 }
 .scene-variant {
-  font-size: 0.95rem;
+  font-size: var(--fs-ui);
   line-height: 1.65;
   font-style: italic;
   color: #b9c1a8;
@@ -838,12 +861,12 @@ main {
   background: #46503b38;
 }
 .consequence > span {
-  font-size: 10px;
-  letter-spacing: 0.12em;
+  font-size: var(--fs-label);
+  letter-spacing: 0.01em;
   color: #c6b88c;
 }
 .consequence > p {
-  font-size: 0.88rem;
+  font-size: var(--fs-label);
   line-height: 1.5;
   color: #bdc6af;
   margin: 5px 0 0;
@@ -859,12 +882,12 @@ main {
   border-top: 1px solid #4a5543;
   padding-top: 18px;
   margin-top: 21px;
-  font-size: 10px;
-  letter-spacing: 0.1em;
+  font-size: var(--fs-label);
+  letter-spacing: 0.01em;
   color: #c6b88c;
 }
 .action-heading > span + span {
-  font-size: 10px;
+  font-size: var(--fs-label);
   letter-spacing: 0;
   color: #8c9a81;
 }
@@ -899,26 +922,26 @@ main {
 }
 .action-button b {
   display: block;
-  font-size: 0.88rem;
+  font-size: var(--fs-label);
   font-weight: normal;
   line-height: 1.35;
 }
 .action-button small {
   display: block;
-  font-size: 10px;
-  letter-spacing: 0.03em;
+  font-size: var(--fs-label);
+  letter-spacing: 0.01em;
   color: #9eae8f;
   margin-top: 6px;
   line-height: 1.4;
 }
 .action-icon {
-  font-size: 20px;
+  font-size: var(--fs-lead);
   color: #b8bb8e;
   min-width: 19px;
   text-align: center;
 }
 .action-key {
-  font-size: 10px;
+  font-size: var(--fs-label);
   border: 1px solid #6a775955;
   color: #8e9c81;
   padding: 2px 4px;
@@ -939,7 +962,7 @@ main {
 .unavailable small {
   color: #a1ab90;
   text-transform: none;
-  font-size: 10px;
+  font-size: var(--fs-label);
 }
 .field-panel {
   display: flex;
@@ -951,15 +974,15 @@ main {
   display: flex;
   justify-content: space-between;
   gap: 12px;
-  font-size: 10px;
-  letter-spacing: 0.06em;
+  font-size: var(--fs-label);
+  letter-spacing: 0.01em;
   padding: 17px 19px;
   background: #3c4734;
   border-bottom: 1px solid #637054;
   color: #d4cfaa;
 }
 .field-panel-head > span + span {
-  font-size: 10px;
+  font-size: var(--fs-label);
   color: #adb89b;
 }
 .objective {
@@ -978,7 +1001,7 @@ main {
   gap: 15px;
 }
 .stats label {
-  font-size: 10px;
+  font-size: var(--fs-label);
   color: #abb89e;
   display: flex;
   justify-content: space-between;
@@ -989,7 +1012,7 @@ main {
   font-weight: normal;
 }
 .stats label small {
-  font-size: 10px;
+  font-size: var(--fs-label);
   color: #b3b294;
   margin-left: 2px;
 }
@@ -1018,7 +1041,7 @@ main {
   justify-content: center;
   gap: 8px;
   flex: 1;
-  font-size: 11px;
+  font-size: var(--fs-label);
   padding: 12px 0;
   border: 1px solid transparent;
   border-bottom: none;
@@ -1031,7 +1054,7 @@ main {
   box-shadow: 0 1px #34412e;
 }
 .panel-tabs small {
-  font-size: 10px;
+  font-size: var(--fs-label);
   opacity: 0.8;
 }
 .panel-content {
@@ -1044,8 +1067,8 @@ main {
   display: flex;
   justify-content: space-between;
   gap: 8px;
-  font-size: 10px;
-  letter-spacing: 0.06em;
+  font-size: var(--fs-label);
+  letter-spacing: 0.01em;
   color: #a6b394;
   margin-bottom: 13px;
 }
@@ -1065,7 +1088,7 @@ main {
   gap: 9px;
   padding: 9px 5px;
   color: #d9d8b8;
-  font-size: 10px;
+  font-size: var(--fs-label);
   text-align: center;
   box-shadow:
     inset 1px 1px #87916b55,
@@ -1077,7 +1100,7 @@ main {
   border-color: var(--gold);
 }
 .item-glyph {
-  font: 31px Georgia;
+  font: 31px/1.1 var(--font-display);
   color: #d5c48f;
   text-shadow: 2px 2px #162319;
 }
@@ -1088,19 +1111,19 @@ main {
   background: #1b2819;
 }
 .item-detail b {
-  font-size: 0.95rem;
+  font-size: var(--fs-ui);
   font-weight: normal;
   color: #dfd5b1;
 }
 .item-detail p {
-  font-size: 0.85rem;
+  font-size: var(--fs-label);
   line-height: 1.6;
   color: #b9c4a7;
   margin: 8px 0 12px;
 }
 .item-detail small {
-  font-size: 10px;
-  letter-spacing: 0.03em;
+  font-size: var(--fs-label);
+  letter-spacing: 0.01em;
   line-height: 1.6;
   color: #a3b18f;
 }
@@ -1110,17 +1133,15 @@ main {
   color: #b2bea1;
 }
 .empty-bag > span {
-  font: 44px Georgia;
+  font: 44px/1 var(--font-display);
   opacity: 0.5;
 }
 .empty-bag > p {
-  font-size: 1rem;
+  font-size: var(--fs-body);
   margin: 11px 0 8px;
 }
 .empty-bag small {
-  font:
-    11px/1.7 "Courier New",
-    monospace;
+  font: var(--fs-label)/1.7 var(--font-ui);
   color: #94a086;
 }
 .crafting {
@@ -1134,7 +1155,7 @@ main {
   margin-top: 10px;
   padding: 12px;
   color: #e0d4a8;
-  font-size: 11px;
+  font-size: var(--fs-label);
   background: #414d3233;
 }
 .crafting button:hover {
@@ -1146,7 +1167,7 @@ main {
 .crafting small {
   display: block;
   margin-top: 8px;
-  font-size: 10px;
+  font-size: var(--fs-label);
   color: #a9b598;
   line-height: 1.7;
 }
@@ -1155,7 +1176,7 @@ main {
   border-top: 1px solid #526044;
 }
 .theme-box > .eyebrow {
-  font-size: 10px;
+  font-size: var(--fs-label);
   color: #adb597;
 }
 .theme-box button {
@@ -1171,10 +1192,7 @@ main {
   background: #303e28;
 }
 .theme-box button > span + span {
-  font:
-    7px "Courier New",
-    monospace;
-  text-transform: uppercase;
+  font: var(--fs-label)/1.4 var(--font-ui);
 }
 .theme-box button:hover:enabled {
   background: #4a5836;
@@ -1183,9 +1201,7 @@ main {
   opacity: 0.75;
 }
 .theme-box p {
-  font:
-    10px/1.7 "Courier New",
-    monospace;
+  font: var(--fs-label)/1.7 var(--font-ui);
   color: #9eac8f;
   margin: 0;
 }
@@ -1193,14 +1209,14 @@ main {
   display: flex;
   justify-content: space-between;
   gap: 8px;
-  font-size: 9px;
+  font-size: var(--fs-label);
   padding: 15px 19px;
   background: #1d291b;
   border-top: 1px solid #49593a;
   color: #a9b798;
 }
 .save-tools button {
-  font-size: 10px;
+  font-size: var(--fs-label);
   text-decoration: underline;
   padding: 0;
   color: #d4c69b;
@@ -1209,19 +1225,19 @@ main {
   display: flex;
   justify-content: space-between;
   gap: 15px;
-  font-size: 10px;
+  font-size: var(--fs-label);
   padding: 12px 17px;
   background: #424b35;
   border-top: 3px solid #152010;
   color: #bdc3a5;
 }
 .cabinet-footer > span + span {
-  font-family: Georgia;
+  font-family: var(--font-display);
   font-style: italic;
   color: #c9c9ad;
 }
 .cabinet-footer button {
-  font-size: 10px;
+  font-size: var(--fs-label);
   padding: 0;
   color: #d6c798;
 }
@@ -1238,12 +1254,12 @@ main {
   margin-bottom: 15px;
 }
 .clue-list > li > span {
-  font-size: 10px;
+  font-size: var(--fs-label);
   color: #c1b481;
   margin-top: 4px;
 }
 .clue-list p {
-  font-size: 0.9rem;
+  font-size: var(--fs-ui);
   line-height: 1.6;
   color: #becbb0;
   margin: 0;
@@ -1252,15 +1268,13 @@ main {
   margin-top: 20px;
 }
 .history summary {
-  font:
-    11px "Courier New",
-    monospace;
+  font: var(--fs-label)/1.4 var(--font-ui);
   color: #c5bc94;
   cursor: pointer;
   padding: 10px 0;
 }
 .history p {
-  font-size: 0.8rem;
+  font-size: var(--fs-label);
   line-height: 1.5;
   border-top: 1px solid #46553b;
   padding-top: 10px;
@@ -1268,16 +1282,15 @@ main {
 }
 .history small {
   display: block;
-  font-size: 10px;
+  font-size: var(--fs-label);
   color: #95a485;
   margin-bottom: 5px;
-  text-transform: uppercase;
 }
 .trail-list {
   list-style: none;
   padding: 0;
   margin: 0 0 22px;
-  font-size: 10px;
+  font-size: var(--fs-label);
 }
 .trail-list li {
   position: relative;
@@ -1304,7 +1317,7 @@ main {
   color: #e3d6ad;
 }
 .trail-list span {
-  font-size: 10px;
+  font-size: var(--fs-label);
   color: #b4af78;
 }
 .trail-list small {
@@ -1312,17 +1325,17 @@ main {
   width: 100%;
   padding-left: 20px;
   margin-top: -5px;
-  font-size: 9px;
+  font-size: var(--fs-label);
   color: #b8ae7d;
 }
 .fineprint {
-  font-size: 11px;
+  font-size: var(--fs-label);
   line-height: 1.8;
   color: #a7b497;
 }
 .full {
   width: 100%;
-  font-size: 11px !important;
+  font-size: var(--fs-label) !important;
   line-height: 1.6;
 }
 .puzzle {
@@ -1339,19 +1352,17 @@ main {
   align-items: center;
 }
 .puzzle-top h2 {
-  font-size: 1.08rem;
+  font-size: var(--fs-body);
   font-weight: normal;
   margin: 0;
 }
 .puzzle-top > span {
-  font-size: 10px;
+  font-size: var(--fs-label);
   color: #d3bd7b;
   white-space: nowrap;
 }
 .puzzle > p {
-  font:
-    11px/1.7 "Courier New",
-    monospace;
+  font: var(--fs-label)/1.7 var(--font-ui);
   color: #bfc5a3;
   margin: 9px 0 15px;
 }
@@ -1365,7 +1376,7 @@ main {
   min-height: 38px;
   display: grid;
   place-items: center;
-  font-size: 10px;
+  font-size: var(--fs-label);
   border: 1px dashed #8b9865;
   color: #9aa77c;
   padding: 5px;
@@ -1383,9 +1394,7 @@ main {
 }
 .puzzle-options button {
   flex: 1;
-  font:
-    10px/1.5 "Courier New",
-    monospace;
+  font: var(--fs-label)/1.5 var(--font-ui);
   border: 1px solid #8a9863;
   background: #4b5835;
   padding: 10px 5px;
@@ -1398,7 +1407,7 @@ main {
 }
 .puzzle-options button > span {
   display: block;
-  font-size: 19px;
+  font-size: var(--fs-body);
   margin-bottom: 4px;
 }
 .puzzle-options .puzzle-clear {
@@ -1417,7 +1426,7 @@ main {
   border-top: 1px solid #657050;
 }
 .ending-reflection > p {
-  font-size: 1rem;
+  font-size: var(--fs-body);
   line-height: 1.6;
   color: #c7cead;
   margin: 12px 0 23px;
@@ -1430,7 +1439,7 @@ main {
 .ending-reflection ul {
   padding-left: 18px;
   color: #a8b798;
-  font-size: 0.88rem;
+  font-size: var(--fs-label);
   line-height: 1.9;
 }
 .ending-buttons {
@@ -1479,9 +1488,7 @@ dialog::backdrop {
   position: absolute;
   top: 10px;
   right: 12px;
-  font:
-    27px/1 "Courier New",
-    monospace;
+  font: var(--fs-h3)/1 var(--font-ui);
   padding: 5px;
   color: #b9bd9b;
 }
@@ -1496,7 +1503,7 @@ dialog h2 {
 }
 dialog > div > p,
 .source-note p {
-  font-size: 0.98rem;
+  font-size: var(--fs-ui);
   line-height: 1.75;
   color: #bfc9ad;
 }
@@ -1511,12 +1518,10 @@ dialog > div > p,
   margin: 9px 0 14px;
 }
 .source-note a {
-  font:
-    10px "Courier New",
-    monospace;
+  font: var(--fs-label)/1.4 var(--font-ui);
 }
 .source-note .fineprint {
-  font-size: 11px;
+  font-size: var(--fs-label);
 }
 .setting-row {
   display: flex;
@@ -1527,14 +1532,12 @@ dialog > div > p,
   padding: 19px 0;
 }
 .setting-row label {
-  font-size: 1rem;
+  font-size: var(--fs-body);
 }
 .setting-row small {
   display: block;
   margin-top: 7px;
-  font:
-    11px/1.5 "Courier New",
-    monospace;
+  font: var(--fs-label)/1.5 var(--font-ui);
   color: #a7b495;
 }
 .setting-row input {
@@ -1548,9 +1551,7 @@ dialog > div > p,
   background: #33452b;
   border: 1px solid #7b8962;
   color: #e2d6b0;
-  font:
-    11px "Courier New",
-    monospace;
+  font: var(--fs-label)/1.4 var(--font-ui);
 }
 .dialog-actions {
   display: flex;
@@ -1585,15 +1586,13 @@ dialog > div > p,
   font-weight: normal;
 }
 .theme-choices p {
-  font-size: 0.9rem;
+  font-size: var(--fs-ui);
   line-height: 1.6;
   color: #c0cbae;
   margin: 10px 0 15px;
 }
 .theme-choices small {
-  font:
-    10px/1.8 "Courier New",
-    monospace;
+  font: var(--fs-label)/1.8 var(--font-ui);
   color: #b9c79e;
 }
 .toast {
@@ -1611,12 +1610,10 @@ dialog > div > p,
   max-width: calc(100% - 35px);
   width: max-content;
   padding: 14px 20px;
-  font:
-    11px/1.6 "Courier New",
-    monospace;
+  font: var(--fs-label)/1.6 var(--font-ui);
 }
 body[data-text="large"] {
-  --story-size: 1.3rem;
+  --scale: 1.15;
 }
 body[data-motion="off"] *,
 body[data-motion="off"] *:before,
@@ -1695,10 +1692,10 @@ body[data-motion="off"] *:after {
     font-size: 1.8rem;
   }
   .story-origin {
-    font-size: 10px;
+    font-size: var(--fs-label);
   }
   .card-body > p {
-    font-size: 0.92rem;
+    font-size: var(--fs-ui);
     min-height: 92px;
   }
   .collection-intro {
@@ -1720,7 +1717,7 @@ body[data-motion="off"] *:after {
     display: none;
   }
   .action-button b {
-    font-size: 0.85rem;
+    font-size: var(--fs-label);
   }
 }
 @media (max-width: 850px) {
@@ -1734,7 +1731,7 @@ body[data-motion="off"] *:after {
     font-size: 1.4rem;
   }
   .brand small {
-    font-size: 10px;
+    font-size: var(--fs-label);
   }
   .collection {
     padding: 0 24px;
@@ -1755,7 +1752,7 @@ body[data-motion="off"] *:after {
   }
   .intro-meta {
     gap: 12px;
-    font-size: 10px;
+    font-size: var(--fs-label);
   }
   .intro-meta span + span:before {
     margin-right: 12px;
@@ -1770,15 +1767,15 @@ body[data-motion="off"] *:after {
     font-size: 1.55rem;
   }
   .cover-caption > span {
-    font-size: 10px;
+    font-size: var(--fs-label);
   }
   .cover-top {
     left: 15px;
     right: 15px;
-    font-size: 10px;
+    font-size: var(--fs-label);
   }
   .cover-region {
-    font-size: 9px;
+    font-size: var(--fs-label);
     padding: 4px;
   }
   .cover-caption {
@@ -1796,7 +1793,7 @@ body[data-motion="off"] *:after {
   }
   .button {
     padding: 12px 10px;
-    font-size: 10px;
+    font-size: var(--fs-label);
   }
   .card-foot {
     flex-direction: column;
@@ -1825,7 +1822,7 @@ body[data-motion="off"] *:after {
     font-size: 1.8rem;
   }
   .story-text {
-    font-size: 1rem;
+    font-size: var(--fs-body);
   }
   .narrative {
     padding: 20px;
@@ -1843,10 +1840,10 @@ body[data-motion="off"] *:after {
     padding-right: 14px;
   }
   .chapter-line {
-    font-size: 10px;
+    font-size: var(--fs-label);
   }
   .journey-heading {
-    font-size: 10px;
+    font-size: var(--fs-label);
   }
   .journey-heading .separator {
     margin: 0 5px;
@@ -1855,7 +1852,7 @@ body[data-motion="off"] *:after {
     display: none;
   }
   .filter-note {
-    font-size: 10px;
+    font-size: var(--fs-label);
   }
   .site-footer {
     padding: 25px 24px;
@@ -1875,14 +1872,14 @@ body[data-motion="off"] *:after {
     padding: 8px;
   }
   .brand small {
-    font-size: 9px;
-    letter-spacing: 0.08em;
+    font-size: var(--fs-label);
+    letter-spacing: 0.01em;
   }
   .masthead nav {
     gap: 14px;
   }
   .masthead nav button {
-    font-size: 11px;
+    font-size: var(--fs-label);
   }
   .masthead #library-link {
     display: none;
@@ -1914,10 +1911,10 @@ body[data-motion="off"] *:after {
     margin-bottom: 20px;
   }
   .intro-copy > p {
-    font-size: 1rem;
+    font-size: var(--fs-body);
   }
   .edition {
-    font-size: 10px;
+    font-size: var(--fs-label);
     gap: 9px;
     margin-bottom: 21px;
   }
@@ -1925,7 +1922,7 @@ body[data-motion="off"] *:after {
     width: 22px;
   }
   .small-star {
-    font-size: 18px;
+    font-size: var(--fs-body);
   }
   .atlas-seal {
     position: absolute;
@@ -1937,7 +1934,7 @@ body[data-motion="off"] *:after {
     pointer-events: none;
   }
   .intro-meta {
-    font-size: 10px;
+    font-size: var(--fs-label);
     gap: 10px;
   }
   .intro-meta span + span:before {
@@ -1950,19 +1947,21 @@ body[data-motion="off"] *:after {
     font-size: 1.8rem;
   }
   .eyebrow {
-    font-size: 10px;
+    font-size: var(--fs-label);
   }
   .discovery-count {
-    font-size: 10px;
-    white-space: nowrap;
+    font-size: var(--fs-label);
+    white-space: normal;
+    text-align: left;
   }
   .filters {
     gap: 6px;
     padding-bottom: 18px;
+    flex-wrap: wrap;
   }
   .filter {
     padding: 8px 13px;
-    font-size: 11px;
+    font-size: var(--fs-label);
   }
   .filter-note {
     display: none;
@@ -1979,10 +1978,10 @@ body[data-motion="off"] *:after {
     left: 20px;
     right: 20px;
     top: 18px;
-    font-size: 11px;
+    font-size: var(--fs-label);
   }
   .cover-region {
-    font-size: 10px;
+    font-size: var(--fs-label);
     padding: 5px 8px;
   }
   .cover-caption {
@@ -1993,7 +1992,7 @@ body[data-motion="off"] *:after {
     font-size: 2.3rem;
   }
   .cover-caption > span {
-    font-size: 10px;
+    font-size: var(--fs-label);
   }
   .cover-corner {
     display: block;
@@ -2005,19 +2004,19 @@ body[data-motion="off"] *:after {
   }
   .story-origin {
     flex-direction: row;
-    font-size: 11px;
+    font-size: var(--fs-label);
   }
   .card-body > p {
     min-height: 0;
-    font-size: 1rem;
+    font-size: var(--fs-body);
     margin: 16px 0 22px;
   }
   .card-foot {
     flex-direction: row;
-    font-size: 10px;
+    font-size: var(--fs-label);
   }
   .button {
-    font-size: 11px;
+    font-size: var(--fs-label);
     padding: 14px 16px;
   }
   .how-to {
@@ -2042,13 +2041,13 @@ body[data-motion="off"] *:after {
     padding: 24px 20px;
     flex-wrap: wrap;
     gap: 15px;
-    font-size: 10px;
+    font-size: var(--fs-label);
   }
   .site-footer > span:nth-child(2) {
     display: none;
   }
   .site-footer button {
-    font-size: 10px;
+    font-size: var(--fs-label);
     margin-left: auto;
   }
   .play-screen {
@@ -2057,24 +2056,24 @@ body[data-motion="off"] *:after {
   .journey-heading {
     gap: 10px;
     flex-wrap: wrap;
-    font-size: 10px;
+    font-size: var(--fs-label);
     padding: 0 3px 13px;
   }
   .journey-heading > span {
     order: 3;
     width: 100%;
-    font-size: 10px;
+    font-size: var(--fs-label);
   }
   .journey-heading button {
-    font-size: 11px;
+    font-size: var(--fs-label);
   }
   .cabinet-bar {
-    font-size: 10px;
+    font-size: var(--fs-label);
     padding: 10px;
     gap: 8px;
   }
   .bar-right {
-    font-size: 9px;
+    font-size: var(--fs-label);
   }
   .game-layout {
     grid-template-columns: 1fr;
@@ -2092,17 +2091,17 @@ body[data-motion="off"] *:after {
     right: 13px;
   }
   .scene-location .eyebrow {
-    font-size: 10px;
+    font-size: var(--fs-label);
     padding: 7px 8px;
   }
   .stage-coordinate {
     left: 14px;
     top: 47px;
-    font-size: 10px;
+    font-size: var(--fs-label);
   }
   .stage-bottom {
     padding: 9px 13px;
-    font-size: 10px;
+    font-size: var(--fs-label);
   }
   .narrative {
     padding: 21px 18px 24px;
@@ -2123,19 +2122,19 @@ body[data-motion="off"] *:after {
     gap: 12px;
   }
   .action-button b {
-    font-size: 0.98rem;
+    font-size: var(--fs-ui);
   }
   .action-button small {
-    font-size: 10px;
+    font-size: var(--fs-label);
   }
   .action-key {
     display: block;
   }
   .action-heading {
-    font-size: 10px;
+    font-size: var(--fs-label);
   }
   .action-heading > span + span {
-    font-size: 9px;
+    font-size: var(--fs-label);
   }
   .field-panel-head {
     padding: 15px 19px;
@@ -2144,7 +2143,7 @@ body[data-motion="off"] *:after {
     padding: 19px;
   }
   .objective p {
-    font-size: 1.07rem;
+    font-size: var(--fs-body);
   }
   .stats {
     grid-template-columns: repeat(3, 1fr);
@@ -2152,21 +2151,21 @@ body[data-motion="off"] *:after {
     padding: 17px 19px 23px;
   }
   .stats label {
-    font-size: 10px;
+    font-size: var(--fs-label);
     flex-direction: column;
     gap: 5px;
   }
   .stats label b {
-    font-size: 11px;
+    font-size: var(--fs-label);
   }
   .stats label small {
-    font-size: 10px;
+    font-size: var(--fs-label);
   }
   .panel-tabs {
     padding: 0 19px;
   }
   .panel-tabs button {
-    font-size: 10px;
+    font-size: var(--fs-label);
     padding: 14px 0;
   }
   .panel-content {
@@ -2178,7 +2177,7 @@ body[data-motion="off"] *:after {
   }
   .inventory-item {
     min-height: 93px;
-    font-size: 10px;
+    font-size: var(--fs-label);
   }
   .empty-bag {
     padding: 10px;
@@ -2193,43 +2192,43 @@ body[data-motion="off"] *:after {
     padding: 14px;
   }
   .theme-box p {
-    font-size: 11px;
+    font-size: var(--fs-label);
   }
   .save-tools {
     padding: 16px 20px;
-    font-size: 10px;
+    font-size: var(--fs-label);
   }
   .save-tools button {
-    font-size: 10px;
+    font-size: var(--fs-label);
   }
   .cabinet-footer {
-    font-size: 10px;
+    font-size: var(--fs-label);
     padding: 12px;
   }
   .cabinet-footer button {
-    font-size: 10px;
+    font-size: var(--fs-label);
   }
   .puzzle {
     padding: 14px;
   }
   .puzzle-top h2 {
-    font-size: 1rem;
+    font-size: var(--fs-body);
   }
   .puzzle-top > span {
-    font-size: 9px;
+    font-size: var(--fs-label);
   }
   .puzzle-options {
     gap: 6px;
   }
   .puzzle-options button {
     min-width: 55px;
-    font-size: 10px;
+    font-size: var(--fs-label);
   }
   .puzzle-slots {
     gap: 5px;
   }
   .puzzle-slots span {
-    font-size: 10px;
+    font-size: var(--fs-label);
   }
   .hotspot small {
     display: none;
@@ -2238,7 +2237,7 @@ body[data-motion="off"] *:after {
     flex-direction: column;
   }
   .ending-buttons .button {
-    font-size: 10px;
+    font-size: var(--fs-label);
   }
   .theme-choices {
     grid-template-columns: 1fr;
@@ -2247,7 +2246,7 @@ body[data-motion="off"] *:after {
     padding: 18px;
   }
   .theme-choices > button > span {
-    font-size: 25px;
+    font-size: var(--fs-h3);
     margin-bottom: 10px;
   }
   .theme-choices b {
@@ -2265,10 +2264,10 @@ body[data-motion="off"] *:after {
     gap: 15px;
   }
   .setting-row small {
-    font-size: 10px;
+    font-size: var(--fs-label);
   }
   .toast {
-    font-size: 10px;
+    font-size: var(--fs-label);
     padding: 12px 15px;
   }
 }
@@ -2282,12 +2281,7 @@ body[data-motion="off"] *:after {
   --fail: #d48a5e;
 }
 body[data-text="larger"] {
-  --story-size: 1.5rem;
-}
-body[data-text="larger"] .action-button b,
-body[data-text="larger"] .clue-list p,
-body[data-text="larger"] .people-list li {
-  font-size: 1.05rem;
+  --scale: 1.3;
 }
 .masthead nav {
   gap: 22px;
@@ -2334,7 +2328,7 @@ body[data-text="larger"] .people-list li {
 }
 .bar-right button {
   font: inherit;
-  letter-spacing: 0.07em;
+  letter-spacing: 0.01em;
   border: 1px solid #8f9070;
   padding: 3px 8px;
   color: #f0e6c5;
@@ -2409,7 +2403,7 @@ body[data-text="larger"] .people-list li {
   display: flex;
   align-items: center;
   gap: 7px;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.01em;
   color: #e2d6a6;
 }
 .odds-meter {
@@ -2442,8 +2436,8 @@ body[data-text="larger"] .people-list li {
 .remembered-badge {
   display: block;
   font-style: normal;
-  font-size: 10px;
-  letter-spacing: 0.1em;
+  font-size: var(--fs-label);
+  letter-spacing: 0.01em;
   color: var(--echo);
   margin-bottom: 4px;
 }
@@ -2465,8 +2459,8 @@ body[data-text="larger"] .people-list li {
   justify-content: space-between;
   gap: 10px;
   padding: 8px 12px;
-  font-size: 10px;
-  letter-spacing: 0.1em;
+  font-size: var(--fs-label);
+  letter-spacing: 0.01em;
   color: #cbbf91;
   border-bottom: 1px solid #3e4836;
 }
@@ -2498,7 +2492,7 @@ body[data-text="larger"] .people-list li {
   align-items: baseline;
   gap: 8px;
   flex-wrap: wrap;
-  font-size: 1.05rem;
+  font-size: var(--fs-body);
   color: #d9d4b8;
 }
 .dice-sum b {
@@ -2507,7 +2501,7 @@ body[data-text="larger"] .people-list li {
   color: #f0e6c5;
 }
 .dice-sum .vs {
-  font-size: 0.9rem;
+  font-size: var(--fs-ui);
   color: #a7ae92;
 }
 .dice-parts {
@@ -2517,7 +2511,7 @@ body[data-text="larger"] .people-list li {
   display: flex;
   flex-wrap: wrap;
   gap: 4px 12px;
-  font-size: 11px;
+  font-size: var(--fs-label);
   color: #a7b097;
 }
 .dice-parts li {
@@ -2529,8 +2523,8 @@ body[data-text="larger"] .people-list li {
   color: #d9d4b8;
 }
 .dice-stamp {
-  font: 700 12px/1 "Courier New", monospace;
-  letter-spacing: 0.14em;
+  font: 700 var(--fs-ui-sm)/1 var(--font-ui);
+  letter-spacing: 0.01em;
   padding: 8px 9px;
   border: 2px solid currentColor;
   transform: rotate(-6deg);
@@ -2550,7 +2544,7 @@ body[data-text="larger"] .people-list li {
 .dice-note {
   margin: 0;
   padding: 0 14px 12px;
-  font-size: 0.85rem;
+  font-size: var(--fs-label);
   font-style: italic;
   color: #c7c0a0;
 }
@@ -2613,7 +2607,7 @@ body[data-text="larger"] .people-list li {
 }
 .consequence.deduction-note b {
   font-weight: normal;
-  font-size: 1rem;
+  font-size: var(--fs-body);
   color: #e3eee8;
 }
 .consequence.miss-note {
@@ -2651,18 +2645,18 @@ body[data-text="larger"] .people-list li {
   box-shadow: inset 3px 0 var(--echo);
 }
 .clue-list.selectable span {
-  font-size: 10px;
+  font-size: var(--fs-label);
   color: #a7b294;
 }
 .clue-list.selectable p {
   margin: 0;
-  font-size: 0.85rem;
+  font-size: var(--fs-label);
   line-height: 1.45;
   color: #dad9c2;
 }
 .clue-list.selectable i {
   font-style: normal;
-  font-size: 10px;
+  font-size: var(--fs-label);
   color: var(--echo);
 }
 .button.connect {
@@ -2692,7 +2686,7 @@ body[data-text="larger"] .people-list li {
 }
 .conclusion p {
   margin: 0;
-  font-size: 0.82rem;
+  font-size: var(--fs-label);
   line-height: 1.5;
   color: #b9cbc4;
 }
@@ -2725,7 +2719,7 @@ body[data-text="larger"] .people-list li {
   height: 32px;
   border: 1px solid #7c7f5c;
   color: var(--gold);
-  font-size: 15px;
+  font-size: var(--fs-ui);
 }
 .people-list b {
   display: block;
@@ -2734,12 +2728,12 @@ body[data-text="larger"] .people-list li {
 }
 .people-list small {
   display: block;
-  font-size: 11px;
+  font-size: var(--fs-label);
   color: #a2ad91;
   margin: 2px 0 6px;
 }
 .people-list ul li {
-  font-size: 0.82rem;
+  font-size: var(--fs-label);
   line-height: 1.45;
   color: #c7ccb5;
   padding-left: 12px;
@@ -2756,7 +2750,7 @@ body[data-text="larger"] .people-list li {
   margin: 4px 0 6px;
 }
 .disposition span {
-  font-size: 10px;
+  font-size: var(--fs-label);
   color: #b8b591;
 }
 
@@ -2799,7 +2793,7 @@ body[data-text="larger"] .people-list li {
   stroke-width: 0.6 !important;
 }
 .map-svg text {
-  font: 3.6px Georgia, serif;
+  font: 5.2px var(--font-ui); /* svg user units: ~14px at panel width */
   fill: #d8d2b3;
   paint-order: stroke;
   stroke: #1d281c;
@@ -2812,7 +2806,7 @@ body[data-text="larger"] .people-list li {
   stroke-dasharray: 1 0.8;
 }
 .map-svg .unknown text {
-  font-size: 3.6px;
+  font-size: 4.4px; /* svg user units */
   fill: #e3d29c;
 }
 @media (prefers-reduced-motion: no-preference) {
@@ -2851,12 +2845,12 @@ body[data-text="larger"] .people-list li {
 }
 .exits button span {
   display: block;
-  font-size: 0.85rem;
+  font-size: var(--fs-label);
   color: #e7e0c4;
 }
 .exits button small {
   display: block;
-  font-size: 11px;
+  font-size: var(--fs-label);
   color: #a8b297;
   margin-top: 3px;
 }
@@ -2881,10 +2875,9 @@ body[data-text="larger"] .people-list li {
   padding: 10px 12px;
 }
 .run-stats dt {
-  font-size: 10px;
-  letter-spacing: 0.1em;
+  font-size: var(--fs-label);
+  letter-spacing: 0.01em;
   color: #a7b294;
-  text-transform: uppercase;
 }
 .run-stats dd {
   margin: 4px 0 0;
@@ -2912,13 +2905,13 @@ body[data-text="larger"] .people-list li {
 .echo-card b {
   display: block;
   font-weight: normal;
-  font-size: 1.05rem;
+  font-size: var(--fs-body);
   margin: 6px 0;
   color: #e3eee8;
 }
 .echo-card p {
   margin: 0;
-  font-size: 0.85rem;
+  font-size: var(--fs-label);
   line-height: 1.5;
   color: #b9cbc4;
 }
@@ -2933,7 +2926,7 @@ body[data-text="larger"] .people-list li {
 .mark-chips li {
   border: 1px solid #8a7e55;
   padding: 6px 10px;
-  font-size: 0.85rem;
+  font-size: var(--fs-label);
   color: #e4d6a8;
 }
 .mark-chips li.new {
@@ -2948,8 +2941,8 @@ body[data-text="larger"] .people-list li {
   align-items: center;
   gap: 10px;
   margin-top: 14px;
-  font-size: 10px;
-  letter-spacing: 0.07em;
+  font-size: var(--fs-label);
+  letter-spacing: 0.01em;
   color: #a8ad94;
 }
 .slots {
@@ -2958,7 +2951,7 @@ body[data-text="larger"] .people-list li {
 }
 .slot {
   color: #4e5845;
-  font-size: 13px;
+  font-size: var(--fs-ui-sm);
 }
 .slot.found {
   color: var(--gold);
@@ -2981,7 +2974,7 @@ button.discovery-count:hover {
 }
 .how-help {
   align-self: center;
-  font-size: 11px;
+  font-size: var(--fs-label);
   color: var(--gold);
   border: 1px solid #5b6450;
   padding: 10px 14px;
@@ -2997,12 +2990,12 @@ button.discovery-count:hover {
 .help-grid h3,
 dialog h3 {
   font-weight: normal;
-  font-size: 1.05rem;
+  font-size: var(--fs-body);
   margin: 0 0 6px;
   color: #ecdfb9;
 }
 .help-grid p {
-  font-size: 0.88rem;
+  font-size: var(--fs-label);
   line-height: 1.55;
   color: #c7ccb5;
   margin: 0;
@@ -3011,10 +3004,10 @@ dialog h3 {
   display: grid;
   grid-template-columns: auto 1fr;
   gap: 6px 14px;
-  font-size: 0.9rem;
+  font-size: var(--fs-ui);
 }
 .keys dt {
-  font: 12px "Courier New", monospace;
+  font: var(--fs-ui-sm)/1.4 var(--font-ui);
   color: var(--gold);
 }
 .keys dd {
@@ -3036,9 +3029,8 @@ dialog h3 {
   background: #1a2219;
   border: 1px solid #6b7556;
   color: var(--paper);
-  font: 13px "Courier New", monospace;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
+  font: var(--fs-ui-sm)/1.4 var(--font-ui);
+  letter-spacing: 0.01em;
 }
 .chronicle-tale {
   border-top: 1px solid #47523f;
@@ -3047,12 +3039,12 @@ dialog h3 {
 }
 .chronicle-tale h4 {
   font-weight: normal;
-  font-size: 0.95rem;
+  font-size: var(--fs-ui);
   color: #d8cfa9;
   margin: 14px 0 6px;
 }
 .chronicle-tale h4 small {
-  font-size: 11px;
+  font-size: var(--fs-label);
   color: #9fa58b;
   margin-left: 6px;
 }
@@ -3081,7 +3073,7 @@ dialog h3 {
 }
 .ending-list li small,
 .mark-list li small {
-  font-size: 11px;
+  font-size: var(--fs-label);
   text-align: right;
 }
 .ending-list li.found,
@@ -3101,19 +3093,19 @@ dialog h3 {
 }
 .echo-list p {
   margin: 4px 0 0;
-  font-size: 0.85rem;
+  font-size: var(--fs-label);
   color: #b9cbc4;
 }
 .runs {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.85rem;
+  font-size: var(--fs-label);
 }
 .runs th {
   text-align: left;
   font-weight: normal;
-  font-size: 10px;
-  letter-spacing: 0.08em;
+  font-size: var(--fs-label);
+  letter-spacing: 0.01em;
   color: #a7b294;
   border-bottom: 1px solid #47523f;
   padding: 5px 4px;
@@ -3124,7 +3116,7 @@ dialog h3 {
   color: #d3d2bd;
 }
 .runs code {
-  font: 12px "Courier New", monospace;
+  font: var(--fs-ui-sm)/1.4 var(--font-ui);
   color: var(--gold);
 }
 dialog {
@@ -3179,6 +3171,6 @@ dialog {
   }
   .exits button small,
   .people-list small {
-    font-size: 11px;
+    font-size: var(--fs-label);
   }
 }

@@ -6,11 +6,14 @@
     <meta name="theme-color" content="#20261f" />
     <meta
       name="description"
-      content="Hadithi — an atlas of playable tales. Explore, roll, deduce, remember, and change the story. Four free adventures from Ghana, Japan, Germany, and Baghdad."
+      content="Four old tales from Ghana, Japan, Germany and Baghdad, retold as games you can play in a browser. Free, no account."
     />
-    <title>Hadithi — An atlas of playable tales</title>
+    <title>Hadithi · Old tales you can play</title>
     <link rel="icon" href="./assets/icon.svg" type="image/svg+xml" />
     <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="preload" href="./fonts/literata-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="./fonts/atkinson-hyperlegible-next-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="stylesheet" href="./fonts.css" />
     <link rel="stylesheet" href="./style.css" />
     <script type="module" src="./app.js"></script>
   </head>
@@ -19,7 +22,7 @@
     <header class="masthead">
       <button id="brand" class="brand" aria-label="Hadithi story library">
         <span class="brand-mark" aria-hidden="true">H</span
-        ><span>HADITHI<small>AN ATLAS OF PLAYABLE TALES</small></span>
+        ><span>Hadithi<small>Old tales you can play</small></span>
       </button>
       <nav aria-label="Main navigation">
         <button id="library-link">The collection</button
@@ -37,7 +40,7 @@
       <p class="loading">Opening the atlas…</p>
     </main>
     <footer class="site-footer">
-      <span>HADITHI <i>n.</i> stories, in Swahili.</span><span>Old tales. Your next move.</span
+      <span>Hadithi <i>n.</i> stories, in Swahili.</span><span>Retold from public-domain collections.</span
       ><button id="footer-sources">Sources & credits</button>
     </footer>
     <div id="announcement" class="sr-only" role="status" aria-live="polite"></div>
