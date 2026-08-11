@@ -55,7 +55,7 @@ test.describe("every walkthrough plays through the real interface", () => {
       for (const command of commandsOf(w)) await perform(page, command);
       const ending = episodeById(w.episode).endings[w.expect.ending];
       await expect(page.getByRole("heading", { name: ending.title })).toBeVisible();
-      await expect(page.getByText("JOURNEY COMPLETE").first()).toBeVisible();
+      await expect(page.getByText("The tale is told", { exact: true }).first()).toBeVisible();
       for (const m of w.expect.marks ?? []) {
         const mark = episodeById(w.episode).marks.find((x) => x.id === m);
         await expect(page.locator(".mark-chips")).toContainText(mark.title);
@@ -68,9 +68,9 @@ test.describe("every walkthrough plays through the real interface", () => {
 test("collection, filters, sources, chronicle and layout", async ({ page }, info) => {
   const errors = watchErrors(page);
   await page.goto("/?nosw");
-  await expect(page.getByRole("heading", { name: /Every story has/ })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Four old stories/ })).toBeVisible();
   await expect(page.locator(".story-card")).toHaveCount(4);
-  await expect(page.locator(".intro-meta")).toContainText("12 ENDINGS + 04 SECRETS");
+  await expect(page.locator(".intro-meta")).toContainText("12 endings, 4 hidden");
   await page.screenshot({ path: `artifacts/collection-${info.project.name}.png`, fullPage: true, animations: "disabled" });
   await page.getByRole("button", { name: "Middle East", exact: true }).click();
   await expect(page.locator(".story-card")).toHaveCount(1);
@@ -93,7 +93,7 @@ test("dice show odds first, roll visibly, and undo cannot reroll", async ({ page
   await enter(page, "wisdom");
   for (const id of ["trail", "river", "ford"]) await perform(page, { id });
   const leap = page.locator('.actions [data-action="leap"]');
-  await expect(leap).toContainText(/INSIGHT \d+% · ONE TRY/);
+  await expect(leap).toContainText(/Insight \d+% · one try/);
   await expect(leap).toContainText("need 8");
   await leap.click();
   const tray = page.locator(".dice-tray");
@@ -120,7 +120,7 @@ test("connecting clues in the Mind opens a new conversation", async ({ page }, i
   await page.locator("#connect").click();
   await expect(page.locator(".conclusion")).toContainText("He carries it where he can watch it");
   await expect(page.locator(".consequence.deduction-note")).toBeVisible();
-  await expect(page.getByText("TURN 02", { exact: true })).toBeVisible();
+  await expect(page.getByText("Turn 2", { exact: true })).toBeVisible();
   await page.screenshot({ path: `artifacts/mind-${info.project.name}.png`, fullPage: true, animations: "disabled" });
   for (const id of ["home", "trail", "river", "ford", "wade", "tree"]) await perform(page, { id });
   await expect(page.locator('.actions [data-action="behind"]')).toBeVisible();
@@ -136,9 +136,9 @@ test("an ending teaches an echo that appears as a remembered action next time", 
   await expect(page.locator(".echo-count")).toContainText("◈ 1");
   for (const id of ["trail", "river", "ford", "wade", "tree"]) await perform(page, { id });
   const remembered = page.locator('.actions [data-action="childStory"]');
-  await expect(remembered).toContainText("◈ REMEMBERED");
+  await expect(remembered).toContainText("◈ Remembered");
   await page.locator("#back-library").click();
-  await expect(page.locator(".story-card.wisdom .card-progress")).toContainText("◈ 1 ECHO");
+  await expect(page.locator(".story-card.wisdom .card-progress")).toContainText("◈ 1 echo");
   await expect(page.locator(".story-card.wisdom .slot.found")).toHaveCount(1);
 });
 
@@ -279,8 +279,41 @@ test("no serious accessibility violations on the shelf, a scene, the mind, and a
     if (command.id === "hear" || command.id === "borrow") continue;
     await perform(page, command);
   }
-  await expect(page.getByText("JOURNEY COMPLETE").first()).toBeVisible();
+  await expect(page.getByText("The tale is told", { exact: true }).first()).toBeVisible();
   await audit("ending");
   await page.locator("#open-chronicle").click();
   await audit("chronicle");
+});
+
+/** Every visible text node with its computed size, outside SVG art. */
+const textSizes = (page) =>
+  page.evaluate(() =>
+    [...document.querySelectorAll("body *")]
+      .filter((el) => !el.closest("svg") && [...el.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim()))
+      .filter((el) => el.getClientRects().length && getComputedStyle(el).visibility !== "hidden")
+      .map((el) => ({ size: parseFloat(getComputedStyle(el).fontSize), text: el.textContent.trim().slice(0, 40) })),
+  );
+
+test("all text is at least 14px and nothing scrolls sideways at 320px", async ({ page }, info) => {
+  test.skip(info.project.name !== "desktop", "sets its own viewports");
+  const check = async (name, width) => {
+    expect((await textSizes(page)).filter((t) => t.size < 14), `${name} at ${width}px`).toEqual([]);
+    const overflow = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
+    expect(overflow, `${name} at ${width}px scrolls sideways`).toBeLessThanOrEqual(0);
+  };
+  for (const width of [320, 1280]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto(url("wisdom"));
+    await page.evaluate(() => document.fonts.ready);
+    await check("shelf", width);
+    await page.locator('[data-start="wisdom"]').click();
+    await expect(page.locator("#scene-title")).toBeVisible();
+    await check("scene", width);
+    for (const tab of ["mind", "people", "map"]) {
+      await page.locator(`#tab-${tab}`).click();
+      await check(`${tab} tab`, width);
+    }
+  }
+  // The story text itself reads at 20px or more.
+  expect(await page.locator(".story-text").evaluate((el) => parseFloat(getComputedStyle(el).fontSize))).toBeGreaterThanOrEqual(20);
 });
