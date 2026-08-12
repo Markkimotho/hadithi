@@ -1,7 +1,7 @@
 import { matches, refersTo } from "./conditions.js";
-import { rollFor, checkOdds, checkSucceeds, hash32 } from "./rng.js";
+import { rollFor, checkOdds, checkSucceeds, diceFor, hash32 } from "./rng.js";
 
-export const SAVE_VERSION = 2;
+export const SAVE_VERSION = 3;
 export const SCHEMA_VERSION = 2;
 export const ACTION_TYPES = new Set([
   "TRAVEL",
@@ -21,6 +21,7 @@ export const SYSTEM_COMMANDS = new Set([
   "SHIFT_THEME",
   "COMBINE",
   "DEDUCE",
+  "PHYSICS",
 ]);
 export const EVENT_SIGNALS = new Set([
   ...ACTION_TYPES,
@@ -33,6 +34,23 @@ export const MAX_SAVE_ACTIONS = 3000;
 export const ASSIST_BONUS = 2;
 
 const copy = (value) => structuredClone(value);
+/** Effects a physics flag may carry: story facts only, never movement or endings. */
+export const PHYSICS_EFFECT_KEYS = ["flags", "stats", "clues"];
+
+/** A skill attempt's result as sent by the world. */
+function readOutcome(outcome) {
+  if (outcome === undefined) return null;
+  if (
+    !outcome ||
+    typeof outcome !== "object" ||
+    outcome.mode !== "skill" ||
+    typeof outcome.pass !== "boolean" ||
+    typeof outcome.score !== "number" ||
+    !(outcome.score >= 0 && outcome.score <= 1)
+  )
+    throw new Error("This action could not be read");
+  return { mode: "skill", pass: outcome.pass, score: outcome.score };
+}
 const sameSet = (a, b) =>
   a.length === b.length && a.every((x) => b.includes(x));
 
@@ -46,6 +64,14 @@ export function destinations(action) {
     action.check?.success?.effects?.to,
     action.check?.failure?.effects?.to,
   ].filter((to) => to && to !== "$return");
+}
+
+function sanitizeLedger(ledger) {
+  const out = {};
+  if (!ledger || typeof ledger !== "object") return out;
+  for (const [key, value] of Object.entries(ledger))
+    if (typeof key === "string" && key.length < 200 && typeof value === "boolean") out[key] = value;
+  return out;
 }
 
 export class Game {
@@ -85,6 +111,9 @@ export class Game {
         .filter((id) => Object.hasOwn(known, id))
         .sort(),
       assist: Boolean(options.assist),
+      // Results of every skill attempt ever made in this journey, keyed like
+      // dice rolls. Undo keeps it, so retrying a skill cannot change fate.
+      ledger: sanitizeLedger(options.ledger),
     };
     this.enter(episode.start);
     this.record("world", episode.opening);
@@ -141,6 +170,23 @@ export class Game {
     return { bonus: parts.reduce((n, p) => n + p.value, 0), parts };
   }
 
+  /** Odds for a check action in the current state, for the dice or a skill. */
+  checkProfile(action) {
+    const check = action.check;
+    if (!check) return null;
+    const { bonus, parts } = this.checkBonus(check);
+    return {
+      kind: check.kind ?? "red",
+      stat: check.stat ?? null,
+      dc: check.dc,
+      bonus,
+      parts,
+      chance: checkOdds(bonus, check.dc),
+      assist: this.state.assist,
+      skill: check.skill ?? null,
+    };
+  }
+
   availableActions() {
     if (this.state.ending) return [];
     const s = this.state,
@@ -160,21 +206,13 @@ export class Game {
         // A passed check is spent; a failed red check cannot be retried.
         if (record?.passed) continue;
         if (record?.attempts && a.check.kind !== "white") continue;
-        const { bonus, parts } = this.checkBonus(a.check);
-        const retryBlocked = Boolean(record?.attempts) && bonus <= record.bonus;
+        const profile = this.checkProfile(a);
+        const retryBlocked = Boolean(record?.attempts) && profile.bonus <= record.bonus;
         if (retryBlocked) {
           enabled = false;
           view.requires = "Improve your odds to try again";
         }
-        view.odds = {
-          kind: a.check.kind ?? "red",
-          stat: a.check.stat ?? null,
-          dc: a.check.dc,
-          bonus,
-          parts,
-          chance: checkOdds(bonus, a.check.dc),
-          attempts: record?.attempts ?? 0,
-        };
+        view.odds = { ...profile, attempts: record?.attempts ?? 0 };
       }
       view.enabled = enabled;
       result.push(view);
@@ -286,10 +324,19 @@ export class Game {
         throw new Error("This action could not be read");
     } else if (command.type !== "CLEAR_PUZZLE" && typeof command.id !== "string")
       throw new Error("This action could not be read");
+    const outcome = readOutcome(command.outcome);
     // Explorer mode discards a failed game, so it skips the rollback copy.
     const previous = this.unsafe ? null : copy(this.state);
     try {
+      if (outcome && !ACTION_TYPES.has(command.type))
+        throw new Error("This action could not be read");
       if (command.type === "PUZZLE") return this.puzzleStep(command);
+      if (command.type === "PHYSICS") {
+        this.physics(command);
+        this.evaluateTriggers(command);
+        this.processQueue();
+        return;
+      }
       if (command.type === "CLEAR_PUZZLE") {
         if (!this.episode.scenes[this.state.scene].puzzle)
           throw new Error("No puzzle here");
@@ -335,10 +382,11 @@ export class Game {
           (x) => x.id === command.id && x.type === command.type,
         );
         if (!a?.enabled) throw new Error("That action is not available");
+        if (outcome && !a.check) throw new Error("That action has no skill to attempt");
         this.state.actions.push(copy(command));
         this.state.turn += a.cost ?? (a.type === "INSPECT" ? 0 : 1);
         this.record("action", a.label);
-        if (a.check) this.resolveCheck(a);
+        if (a.check) this.resolveCheck(a, outcome);
         else {
           this.apply(a.effects);
           this.record("consequence", a.text);
@@ -352,20 +400,30 @@ export class Game {
     }
   }
 
-  resolveCheck(a) {
+  /**
+   * Resolve a check. Without an outcome the seeded dice decide. With a skill
+   * outcome the player's attempt decides, and the dice shown are chosen to
+   * agree with it. Either way the first result for an attempt is written to
+   * the ledger, and every later resolution of that attempt (after undo, or on
+   * replay) follows the ledger.
+   */
+  resolveCheck(a, outcome = null) {
     const s = this.state,
       key = this.checkKey(a),
       check = a.check;
     const record = (s.checks[key] ??= { attempts: 0, failures: 0, passed: false });
     const { bonus, parts } = this.checkBonus(check);
+    const attempt = `${key}#${record.attempts}`;
     const forced = this.forceRoll?.(key);
-    const dice =
-      forced === true
-        ? [6, 6]
-        : forced === false
-          ? [1, 1]
-          : rollFor(s.seed, `${key}#${record.attempts}`);
+    const fated = s.ledger[attempt];
+    const want = fated ?? outcome?.pass;
+    let dice;
+    if (forced === true) dice = [6, 6];
+    else if (forced === false) dice = [1, 1];
+    else if (want === undefined) dice = rollFor(s.seed, attempt);
+    else dice = diceFor(s.seed, attempt, bonus, check.dc, want);
     const success = checkSucceeds(dice, bonus, check.dc);
+    if (outcome || fated !== undefined) s.ledger[attempt] = success;
     record.attempts++;
     record.bonus = bonus;
     if (success) record.passed = true;
@@ -384,6 +442,8 @@ export class Game {
       success,
       chance: checkOdds(bonus, check.dc),
       turn: s.turn,
+      mode: outcome ? "skill" : "dice",
+      score: outcome?.score ?? null,
     };
     const statName = check.stat
       ? this.episode.statLabels[check.stat]
@@ -394,9 +454,22 @@ export class Game {
       { success, dice, total, dc: check.dc },
     );
     if (a.effects) this.apply(a.effects);
-    const outcome = success ? check.success : check.failure;
-    this.apply(outcome.effects);
-    this.record("consequence", outcome.text);
+    const result = success ? check.success : check.failure;
+    this.apply(result.effects);
+    this.record("consequence", result.text);
+  }
+
+  /** A story fact the world observed in physics, such as a cracked pot. */
+  physics(command) {
+    const def = this.episode.physicsFlags?.[command.id];
+    if (!def || this.state.flags[command.id] || this.state.returnScene)
+      throw new Error("That cannot happen here");
+    if (def.scenes && !def.scenes.includes(this.state.scene))
+      throw new Error("That cannot happen here");
+    this.state.actions.push(copy(command));
+    this.state.flags[command.id] = true;
+    this.apply(def.effects);
+    this.record("consequence", def.text);
   }
 
   deduce(command) {
@@ -574,6 +647,7 @@ export class Game {
       seed: this.state.seed,
       echoes: [...this.state.echoes],
       assist: this.state.assist,
+      ledger: copy(this.state.ledger),
       actions: copy(this.state.actions),
       savedAt: new Date().toISOString(),
     };
@@ -584,7 +658,7 @@ export class Game {
       new Error(
         "This save belongs to a different story edition. Start a new journey.",
       );
-    if (!save || typeof save !== "object" || ![1, 2].includes(save.version))
+    if (!save || typeof save !== "object" || ![1, 2, 3].includes(save.version))
       throw editionError();
     if (save.episodeId !== episode.id) throw editionError();
     const current = save.revision === episode.revision;
@@ -593,12 +667,13 @@ export class Game {
     if (!Array.isArray(save.actions) || save.actions.length > MAX_SAVE_ACTIONS)
       throw new Error("This save could not be read");
     if (
-      save.version === 2 &&
+      save.version >= 2 &&
       (!Number.isInteger(save.seed) || save.seed < 0 || save.seed > 0xffffffff)
     )
       throw new Error("This save could not be read");
     const game = new Game(episode, {
-      seed: save.version === 2 ? save.seed : defaultSeed(episode),
+      seed: save.version >= 2 ? save.seed : defaultSeed(episode),
+      ledger: save.version >= 3 ? save.ledger : {},
       echoes: Array.isArray(save.echoes)
         ? save.echoes.filter((x) => typeof x === "string")
         : [],

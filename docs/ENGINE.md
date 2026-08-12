@@ -44,6 +44,24 @@ A check rolls 2d6 + stat + modifiers against `dc`. Double six always succeeds an
 
 Dice are a pure function of `(seed, scene/action, attempt)`. Replaying a save, undoing, or reloading always reproduces the same roll, so undo cannot be used to reroll. Each journey's seed is shown as a seven-character code. `?seed=CODE` in the URL, or the new-telling dialog, replays a seed. Storyteller's grace (`assist`) adds an itemized +2 and is stored in the save.
 
+### Skill outcomes and the fate ledger
+
+In the third-edition world, a check can be staged as a physical challenge. `roll(..., { skill: { kind: "leap", ...params } })` names one of the kinds in `site/engine/skills.js`. Validation rejects unknown kinds and any parameter that is not plain data. `game.checkProfile(action)` returns `{ kind, stat, dc, bonus, parts, chance, assist, skill }`, the same odds the player sees, so the world can tune the challenge to the dice odds.
+
+The world reports the result as `{ type, id, outcome: { mode: "skill", pass, score } }`. The engine then:
+
+- validates the outcome and rejects it atomically on anything other than a check action;
+- applies the authored success or failure exactly as a roll would;
+- shows dice chosen to agree with the result (`diceFor`).
+
+Without `outcome`, the seeded dice decide, which is Story mode.
+
+Each attempt's result is written to `state.ledger`, keyed `scene/action#attempt`. The ledger is saved and survives undo. Any later resolution of the same attempt, by skill or dice, follows it, so undo cannot reroll fate in either mode. White-check rules still apply: a failed skill attempt needs better odds before a retry.
+
+### Physics flags
+
+`physicsFlags: { id: { text, scenes?, effects? } }` declares facts the world may report, such as a pot cracking in a fall. `{ type: "PHYSICS", id }` sets the flag once, costs no turn, records the text, and triggers events like any command. Effects are limited to `flags`, `stats` and `clues`; movement and endings stay with authored actions. Physics flags are logged commands, so replay matches.
+
 ## Deductions
 
 Episodes define `clues: { id: text }` and `deductions: [{ id, from: [clueA, clueB], title, text, effects }]`. `DEDUCE` with two known clues either makes the deduction (applying its effects) or records a free wrong link (`wrongLinks`). Deductions are conditions, so they open conversations, add check modifiers, and gate endings.
@@ -58,7 +76,7 @@ Episodes define `clues: { id: text }` and `deductions: [{ id, from: [clueA, clue
 
 ## Persistence
 
-`save()` → `{ version: 2, episodeId, revision, seed, echoes, assist, actions, savedAt }`. `Game.load()` replays at most 3,000 validated commands rather than trusting stored state. **Migration policy:** an episode lists `compatibleRevisions`. A save from one of those revisions is replayed through the current rules, and if every command is still legal it is carried forward (`migratedFrom`). Otherwise the player gets a clear "start a new journey" message. Version 1 saves (no seed) replay with the episode's default seed. Increment `revision` whenever rules, action IDs, costs, or event order change.
+`save()` → `{ version: 3, episodeId, revision, seed, echoes, assist, ledger, actions, savedAt }`. Version 2 saves load with an empty ledger. `Game.load()` replays at most 3,000 validated commands rather than trusting stored state. **Migration policy:** an episode lists `compatibleRevisions`. A save from one of those revisions is replayed through the current rules, and if every command is still legal it is carried forward (`migratedFrom`). Otherwise the player gets a clear "start a new journey" message. Version 1 saves (no seed) replay with the episode's default seed. Increment `revision` whenever rules, action IDs, costs, or event order change.
 
 ## Verification lanes
 

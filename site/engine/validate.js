@@ -2,9 +2,11 @@ import { CONDITION_KEYS, COUNTABLE, eachLeaf, refersTo } from "./conditions.js";
 import {
   ACTION_TYPES,
   EVENT_SIGNALS,
+  PHYSICS_EFFECT_KEYS,
   SCHEMA_VERSION,
   destinations,
 } from "./game.js";
+import { skillErrors } from "./skills.js";
 
 const EFFECT_KEYS = [
   "to",
@@ -147,6 +149,7 @@ export function validateEpisode(ep) {
         condition(m.when);
       }
     }
+    if (c.skill) for (const e of skillErrors(c.skill)) check(false, `${where}: ${e}`);
     for (const side of ["success", "failure"]) {
       check(
         Boolean(c[side]?.text),
@@ -226,6 +229,17 @@ export function validateEpisode(ep) {
     effect(e.effects, `event ${e.id}`);
   }
   for (const t of Object.values(ep.themes)) effect(t.effects, "theme");
+  // Physics flags: facts the world reports (a pot cracked in a fall). They may
+  // only add story facts; movement and endings stay with authored actions.
+  for (const [id, def] of Object.entries(ep.physicsFlags ?? {})) {
+    check(Boolean(def?.text), `physics flag ${id} needs text`);
+    check(
+      Object.keys(def?.effects ?? {}).every((k) => PHYSICS_EFFECT_KEYS.includes(k)),
+      `physics flag ${id} may only set ${PHYSICS_EFFECT_KEYS.join(", ")}`,
+    );
+    for (const scene of def?.scenes ?? []) check(Boolean(ep.scenes[scene]), `physics flag ${id}: unknown scene ${scene}`);
+    effect(def?.effects, `physics flag ${id}`);
+  }
   for (const recap of ep.recaps ?? []) condition(recap.when);
   for (const r of ep.recipes ?? []) {
     for (const id of [...r.ingredients, r.result])

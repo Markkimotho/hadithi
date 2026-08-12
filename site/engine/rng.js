@@ -46,6 +46,19 @@ export function checkSucceeds([a, b], bonus, dc) {
   return a + b + bonus >= dc;
 }
 
+/**
+ * Dice that agree with a result decided elsewhere (a skill attempt or the
+ * ledger). Draws seeded rolls until one fits; double six and double one always
+ * fit, so the fallback is never wrong.
+ */
+export function diceFor(seed, key, bonus, dc, success) {
+  for (let i = 0; i < 64; i++) {
+    const dice = rollFor(seed, i ? `${key}~${i}` : key);
+    if (checkSucceeds(dice, bonus, dc) === success) return dice;
+  }
+  return success ? [6, 6] : [1, 1];
+}
+
 /** A fresh 32-bit seed for a new journey. */
 export function newSeed() {
   try {

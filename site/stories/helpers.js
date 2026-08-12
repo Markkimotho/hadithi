@@ -60,6 +60,8 @@ export const roll = (stat, dc, success, failure, extra = {}) => ({
   success,
   failure,
   ...(extra.name ? { name: extra.name } : {}),
+  // How the world stages this check as a physical challenge (site/engine/skills.js).
+  ...(extra.skill ? { skill: extra.skill } : {}),
 });
 export const outcome = (text, effects = {}) => ({ text, effects });
 export const mod = (label, value, when) => ({ label, value, when });
