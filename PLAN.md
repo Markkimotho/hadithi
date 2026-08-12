@@ -155,3 +155,15 @@ Exhaustive state-space proof is infeasible (over 2M states per tale). The checks
 - Human blind playtests.
 
 Automated agents measure fairness and reachability, not fun. Agents reach *The Olive Jar*'s losing ending in most runs because they rarely make its key deduction. Human playtests should confirm the tale is fair rather than obscure.
+
+## Third edition — implementation status, 18 October 2026
+
+The third-edition plan from the recovered Claude session is preserved in [docs/THIRD-EDITION.md](docs/THIRD-EDITION.md). It changes the presentation to a Phaser and Planck top-down world while keeping the current story engine authoritative and deterministic.
+
+**Phases 0 and 1 are complete.** Large self-hosted type, prose linting, and the local-judge service are in place. The engine bridge records seeded skill outcomes, exposes check profiles, migrates v2 saves to v3, and accepts declared physics facts.
+
+**Phase 2 is implemented in the workspace.** Phaser and Planck load only after entering a mapped tale. The Wisdom courtyard and market are walkable, with the well sharing the market ground. The world supports keyboard, controller, joystick, and tap-to-move input; collision, paths, pickup and throwing; hotspot actions and travel; saved story actions; focus and dialog pauses; and a Classic view. Unmapped scenes continue through Classic view. The build now checks every authored world layout against its story scene.
+
+**Phase 3 is implemented locally.** The Wisdom vector tilesheet is generated from a checked manifest and drives the world renderer. Kweku and Anansi now have shared-anchor layered rigs and idle/walk/carry/push/fall clips; Kweku drives the physical player sprite. The art gate validates atlas grids, glyph coverage, rig bones, clips, and SVG part dimensions and runs in production builds. The prop sheet is reserved and documented, while live physics props still use their existing drawn art.
+
+**Phase 4 implementation is complete locally.** All 14 Wisdom scenes use authored Tiled JSON maps with validated entry points and reachable interactions. River and ford currents and squall wind affect Planck physics. World mode layers weather and light over the map. Leap, balance, scale, and brace challenges reflect terrain, story evidence, character choices, check odds, and assist mode. Wisdom narration follows the Fante voice guide and passes strict prose lint. Mark's desktop and phone vertical-slice playtest remains the final human check; the handoff checklist is in [docs/PLAYTEST-WISDOM.md](docs/PLAYTEST-WISDOM.md). The third-edition work remains local and has not been deployed.

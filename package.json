@@ -9,6 +9,8 @@
   "scripts": {
     "test": "node --test test/*.test.js services/*/test/*.test.js",
     "build": "node scripts/build.mjs",
+    "art:generate": "node scripts/generate-tileset.mjs",
+    "art:check": "node scripts/art-check.mjs",
     "dev": "node scripts/serve.mjs",
     "start": "node scripts/serve.mjs dist",
     "test:browser": "npm run build && playwright test",
