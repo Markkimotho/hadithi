@@ -6,9 +6,23 @@ import { episodes } from "../site/stories.js";
 import { validateEpisode } from "../site/game.js";
 import { endingWitnesses } from "../site/engine/explore.js";
 import { VENDOR, vendorSource } from "./vendor.mjs";
+import { layoutsFor, talesWithLayouts } from "../site/world/layouts/index.js";
+import { layoutErrors } from "../site/world/layout.js";
+import "./art-check.mjs";
 
 // 1. Structural validation: every reference resolves, every rule is fair.
 const errors = episodes.flatMap(validateEpisode);
+for (const id of talesWithLayouts()) {
+  const episode = episodes.find((e) => e.id === id);
+  const layouts = layoutsFor(id);
+  if (id === "wisdom") for (const scene of Object.keys(episode?.scenes ?? {}))
+    if (!layouts[scene]) errors.push(`${id}: missing world layout for ${scene}`);
+    else if (layouts[scene].format !== "tiled") errors.push(`${id}/${scene}: Wisdom maps must come from Tiled JSON`);
+  for (const [scene, layout] of Object.entries(layouts)) {
+    if (!episode?.scenes[scene]) errors.push(`${id}: unknown mapped scene ${scene}`);
+    else errors.push(...layoutErrors(layout, episode.scenes[scene], `${id}/${scene}`));
+  }
+}
 // 2. Behavioural proof: a witness path reaches every ending (secrets with echoes).
 for (const ep of episodes)
   for (const [id, w] of Object.entries(endingWitnesses(ep, { budget: 100000 })))
