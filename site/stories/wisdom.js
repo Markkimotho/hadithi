@@ -33,6 +33,7 @@ export const wisdom = {
   revision: 2,
   compatibleRevisions: [1],
   id: "wisdom",
+  voice: 3,
   number: "01",
   title: "The Wisdom\nin the Pot",
   subtitle: "Some things are too large to keep.",
@@ -254,7 +255,7 @@ export const wisdom = {
     courtyard: S(
       "A secret at daybreak",
       "Anansi’s courtyard",
-      "The cooking fire is cold. One enormous pot is missing. Beyond the wall, Anansi’s footprints point toward the forest; someone has brushed leaves over them in a hurry.",
+      "Cold ash. Mother’s big pot is gone from its three stones, and so is Father. “Keep the neighbours asleep,” he calls from beyond the wall. His broom missed a whole row of footprints.",
       [
         inspect(
           "tracks",
@@ -271,7 +272,7 @@ export const wisdom = {
           "Leave word for the neighbours to gather at evening",
           "TALK",
           { flags: { gathered: true }, stats: { trust: 1 } },
-          "You knock on three doors. In another telling a circle formed too late; this time it will be waiting.",
+          "You knock on three doors. In another telling the circle formed too late. Tonight the first neighbour is already carrying a stool.",
           { visible: all(echo("circle"), not(flag("gathered"))) },
         ),
         go("market", "Visit the waking market", "market", "The first sellers are unfolding their awnings."),
@@ -288,7 +289,7 @@ export const wisdom = {
     market: S(
       "Things people know",
       "The market well",
-      "A potter repairs a cracked water jar. “Your father asked whether a tree could keep a secret,” she says. “I told him trees have roots everywhere.” A cloth and a spare gourd lie beside her tools.",
+      "The potter presses a strip of clay over a jar’s crack. “Your father asked whether a tree could keep a secret,” she says. “I told him the roots hear everything.” A spare cloth and gourd wait by her elbow.",
       [
         take("takeCloth", "Ask for the spare cloth", "cloth", "“Bring it back if it survives,” the potter says.", {
           spot: [30, 65],
@@ -326,7 +327,7 @@ export const wisdom = {
     well: S(
       "A small provision",
       "The well",
-      "The bucket is full. Carrying water takes a moment, but a hot day in the forest can make that moment worthwhile.",
+      "The rope bites into your palm. “Take enough for two,” the potter calls from her stall. By noon, the path will sting bare feet.",
       [
         A(
           "fill",
@@ -349,7 +350,7 @@ export const wisdom = {
     trail: S(
       "The path that bends",
       "Forest edge",
-      "One track goes down to the river. The other climbs through thorns toward a high crossing. Anansi has taken the low path. Rain clouds are collecting behind the hills.",
+      "Anansi’s prints drop toward the river. Thorns crowd the ridge path, which climbs above the crossing. “Of course he chose mud,” you mutter. Rain gathers beyond the hills.",
       [
         take("takeReed", "Cut a fallen reed to length", "reed", "You strip the broken leaves from a long reed.", {
           spot: [20, 70],
@@ -368,7 +369,7 @@ export const wisdom = {
     ridge: S(
       "Above the water",
       "A narrow ridge",
-      "A fallen trunk spans the ravine. Rain has polished its bark. From here you can reach the grove without disturbing the ferry, if you can keep both hands free.",
+      "A fallen trunk bridges the ravine, slick as a potter’s wheel. “Both hands free,” you tell yourself. Below, the river keeps its own counsel.",
       [
         A(
           "cross",
@@ -395,7 +396,7 @@ export const wisdom = {
     river: S(
       "A crossing has a price",
       "The riverbank",
-      "A ferryman struggles with a tangled mooring. Anansi has already crossed on stepping stones. Water darkens their edges. You can help, investigate the ford, or spend time finding another route.",
+      "The ferryman hauls at a mooring knotted round a root. “Give me a hand and I’ll give you a crossing,” he says. Anansi’s wet tracks lead toward three pale stones.",
       [
         A(
           "water",
@@ -437,7 +438,7 @@ export const wisdom = {
     ford: S(
       "Measure before you leap",
       "The stepping stones",
-      "Three pale stones break the surface. The center one rocks under drifting branches. The far bank is close, but the color of water does not reveal its depth.",
+      "Three pale stones break the current. A branch bumps the middle one, then slips below the ripples. “That one’s lying,” you say. The far bank looks close.",
       [
         A(
           "probe",
@@ -472,10 +473,10 @@ export const wisdom = {
               to: "grove",
             }),
             outcome(
-              "The center stone rolls. You reach the far bank soaked and shaking; the storm will find you colder.",
+              "The center stone rolls. You reach the far bank soaked and shaking. The storm will find you colder.",
               { to: "grove", stats: { danger: 2 }, flags: { soaked: true } },
             ),
-            { mods: [against("danger", "Storm pressure"), mod("Ferryman’s tip", 2, flag("favor"))] },
+            { skill: { kind: "leap", stones: 3, current: "river" }, mods: [against("danger", "Storm pressure"), mod("Ferryman’s tip", 2, flag("favor"))] },
           ),
           { visible: not(flag("safeFord")) },
         ),
@@ -506,7 +507,7 @@ export const wisdom = {
     grove: S(
       "A voice above the leaves",
       "The silk-cotton grove",
-      "Anansi is not here, but a branch trembles high above. A boy collecting fallen wood says he heard a pot arguing with itself. He offers to show you the tree if you help carry his bundle.",
+      "A branch shakes high in the silk-cotton tree. The boy points up and shifts his armful, nearly dropping the whole bundle. “I heard a pot arguing with itself. The tree won.” He offers to lead if you carry half.",
       [
         A(
           "help",
@@ -534,7 +535,7 @@ export const wisdom = {
     tree: S(
       "All the wisdom, one problem",
       "Beneath Anansi’s tree",
-      "Your father clings to the trunk. The pot hangs in front of his knees. “Go home,” he says. “This is a matter for someone who knows everything.” The cord gives a small, sharp creak.",
+      "Father grips the trunk. The pot swings in front of his knees. “Go home. I know what I’m doing,” he says, just as the cord gives a sharp creak.",
       [
         A(
           "call",
@@ -557,7 +558,7 @@ export const wisdom = {
           "Offer to climb behind him and steady the load",
           "TALK",
           { flags: { behind: true }, stats: { trust: 1 } },
-          "“Behind me?” He considers it. “Where I cannot see you.” Then, quietly: “All right.”",
+          "“Behind me?” He rubs the cord. “I cannot watch you there,” he says, bracing one foot against the trunk. His grip eases. “All right, then.”",
           { visible: all(deduced("wrongWay"), not(flag("behind"))) },
         ),
         A(
@@ -580,12 +581,13 @@ export const wisdom = {
               to: "ledge",
               stats: { trust: 1 },
             }),
-            outcome("A branch gives; you catch the next one. The pot swings dangerously as you arrive.", {
+            outcome("A branch gives. You catch the next one as the pot swings hard against your knees.", {
               to: "ledge",
               stats: { danger: 2 },
             }),
             {
               kind: "red",
+              skill: { kind: "balance", load: "pot", ledge: "tree" },
               mods: [
                 mod("You climb at his pace", 2, deduced("tired")),
                 mod("He lets you climb behind", 1, flag("behind")),
@@ -601,7 +603,7 @@ export const wisdom = {
     knot: S(
       "Let the weight follow",
       "A practical puzzle",
-      "You can show Anansi how to carry the load. Arrange three steps: make a loop, put the weight behind the carrier, then tighten. The order matters; tightening first leaves no space for the pot.",
+      "Anansi eyes the cord. “Show me your clever knot, then,” he says, “and I can decide afterward.” Make a loop, settle the weight behind the carrier, and tighten last.",
       [
         A(
           "show",
@@ -626,14 +628,14 @@ export const wisdom = {
           solution: ["loop", "back", "tighten"],
           solvedFlag: "knotSolved",
           success: "The loop holds without pinning the carrier’s arms. You can demonstrate it now.",
-          failure: "The loop closes before the weight is secure. Lay it out again; no materials are lost.",
+          failure: "The loop closes before the weight is secure. Lay it out again. No materials are lost.",
         },
       },
     ),
     ledge: S(
       "The crack in certainty",
       "A ledge above the grove",
-      "The pot rests on a branch between you. A hairline crack runs beneath its wax. Anansi reaches for it, then hesitates. You have one clear moment to decide what you are trying to save.",
+      "Wax splits along a hairline crack beneath the seal. Anansi reaches for the pot, then lets his hand hover. “The voices are mine,” he says. The branch gives under your feet.",
       [
         A(
           "sling",
@@ -663,7 +665,7 @@ export const wisdom = {
     pot: S(
       "What the clay contains",
       "The open question",
-      "A hundred contradictory answers press against the clay. Some are warnings. Some are jokes. One voice keeps asking who decided that knowing a thing meant owning it.",
+      "Answers crowd the clay: warnings, jokes, a recipe for rain. One small voice asks, “Who said knowing a thing means owning it?” Anansi turns the pot toward the circle.",
       [
         inspect(
           "seal",
@@ -695,7 +697,7 @@ export const wisdom = {
     council: S(
       "A pot is also a circle",
       "The grove at evening",
-      "The ferryman, potter, and wood-gatherer have followed the sound. Anansi sets the pot in the middle. Nobody asks him to be right. They ask what he wants to do next.",
+      "The ferryman, potter, and wood-gatherer arrive as Anansi sets the pot down. “I don’t want to answer every question,” he says. “I want to sit here when you ask.”",
       [
         C(
           "persuade",
@@ -708,9 +710,10 @@ export const wisdom = {
               "The circle quiets. Anansi speaks, haltingly, about being needed only for answers. Nobody interrupts him.",
               { flags: { heard: true }, stats: { trust: 2 } },
             ),
-            outcome("The circle talks over him. Goodwill is not enough; you need to show them why he hid it."),
+            outcome("The circle talks over him. Goodwill alone will not quiet them, so tell the circle why he hid it."),
             {
               kind: "white",
+              skill: { kind: "scale", stones: 3, patience: 4 },
               mods: [
                 mod("You know why he sealed it", 2, deduced("selfSealed")),
                 mod("You know he wanted to be found", 1, deduced("whyHide")),
@@ -775,7 +778,7 @@ export const wisdom = {
     squall: S(
       "The sky interrupts",
       "Storm encounter",
-      "Rain crashes through the canopy. The path becomes a stream. You have to protect your footing before you can return to what you were doing.",
+      "Rain drums on the leaves until the path runs brown. “Under the rock!” Anansi shouts. The sling jerks against your shoulder.",
       [
         A(
           "cover",
@@ -805,7 +808,7 @@ export const wisdom = {
               to: "$return",
               stats: { danger: 2 },
             }),
-            { mods: [mod("Soaked to the bone", -1, flag("soaked"))] },
+            { skill: { kind: "brace", gusts: 3, weather: "storm" }, mods: [mod("Soaked to the bone", -1, flag("soaked"))] },
           ),
         ),
       ],
@@ -813,7 +816,7 @@ export const wisdom = {
     ),
   },
   events: [
-    E("marketWakes", scene("market"), "A seller starts a song. Another answers from across the well. Knowledge has always moved like this."),
+    E("marketWakes", scene("market"), "A seller starts a song. Another answers from across the well. The tune crosses the stones and finds three mouths before the verse ends."),
     E("clouds", { turn: 5 }, "Thunder rolls behind the hills. The next rain will reach the crossing.", { flags: { clouds: true } }),
     E("rain", all({ turn: 10 }, flag("wild")), "The storm reaches you. Everything loose begins to move.", { flags: { rain: true } }, { interrupt: "squall", priority: 10 }),
     E("riverRise", flag("rain"), "Downstream, the river swells. The center stepping stone disappears.", { stats: { danger: 1 } }, { delay: 2 }),
@@ -844,7 +847,7 @@ export const wisdom = {
     shared: {
       title: "A circle wide enough",
       kind: "Shared ending",
-      text: "The seal opens without a crack. Each person hears an answer in a voice they recognize. Anansi is still a storyteller; now he can also ask questions. You leave the empty pot in the grove, where anyone can sit beside it.",
+      text: "The seal opens without a crack. Each person hears an answer in a voice they know. Anansi tells a story, then asks the potter a question. You leave the empty pot beneath the tree, beside a worn ring of stools.",
       reflection: "Trust made sharing possible. The pot survived because someone changed how its weight was carried.",
     },
     keeper: {
