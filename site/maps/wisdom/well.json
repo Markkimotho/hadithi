@@ -1,0 +1,1306 @@
+{
+  "type": "map",
+  "version": "1.10",
+  "tiledversion": "1.10.2",
+  "orientation": "orthogonal",
+  "renderorder": "right-down",
+  "width": 32,
+  "height": 17,
+  "tilewidth": 32,
+  "tileheight": 32,
+  "infinite": false,
+  "layers": [
+    {
+      "id": 1,
+      "name": "ground",
+      "type": "tilelayer",
+      "width": 32,
+      "height": 17,
+      "opacity": 1,
+      "visible": true,
+      "data": [
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        16,
+        15,
+        15,
+        15,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        15,
+        15,
+        15,
+        15,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        2,
+        2,
+        16,
+        15,
+        15,
+        2,
+        2,
+        2,
+        4,
+        4,
+        4,
+        4,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        4,
+        4,
+        4,
+        2,
+        2,
+        15,
+        15,
+        2,
+        2,
+        4,
+        4,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        4,
+        2,
+        15,
+        15,
+        2,
+        4,
+        4,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        4,
+        15,
+        15,
+        2,
+        4,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        4,
+        15,
+        15,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        15,
+        4,
+        4,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        4,
+        15,
+        4,
+        4,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        4,
+        15,
+        15,
+        2,
+        4,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        4,
+        15,
+        15,
+        2,
+        4,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        4,
+        15,
+        15,
+        2,
+        4,
+        4,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        4,
+        15,
+        15,
+        2,
+        2,
+        4,
+        4,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        4,
+        4,
+        2,
+        15,
+        15,
+        2,
+        2,
+        2,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        2,
+        2,
+        2,
+        15,
+        15,
+        16,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        16,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15
+      ],
+      "x": 0,
+      "y": 0
+    },
+    {
+      "id": 2,
+      "name": "objects",
+      "type": "objectgroup",
+      "draworder": "topdown",
+      "opacity": 1,
+      "visible": true,
+      "objects": [
+        {
+          "id": 1,
+          "name": "start",
+          "type": "spawn",
+          "x": 112,
+          "y": 304,
+          "width": 0,
+          "height": 0,
+          "point": true
+        },
+        {
+          "id": 2,
+          "name": "courtyard",
+          "type": "spawn",
+          "x": 80,
+          "y": 304,
+          "width": 0,
+          "height": 0,
+          "point": true
+        },
+        {
+          "id": 3,
+          "name": "well",
+          "type": "spawn",
+          "x": 752,
+          "y": 208,
+          "width": 0,
+          "height": 0,
+          "point": true
+        },
+        {
+          "id": 4,
+          "name": "fill",
+          "type": "hotspot",
+          "x": 784,
+          "y": 176,
+          "width": 0,
+          "height": 0,
+          "point": true,
+          "properties": [
+            {
+              "name": "actions",
+              "type": "string",
+              "value": "[\"fill\"]"
+            }
+          ]
+        },
+        {
+          "id": 5,
+          "name": "well",
+          "type": "prop",
+          "x": 784,
+          "y": 144,
+          "width": 32,
+          "height": 32,
+          "point": true,
+          "properties": [
+            {
+              "name": "kind",
+              "type": "string",
+              "value": "\"well\""
+            },
+            {
+              "name": "block",
+              "type": "bool",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": 6,
+          "name": "stall",
+          "type": "prop",
+          "x": 176,
+          "y": 144,
+          "width": 96,
+          "height": 64,
+          "point": true,
+          "properties": [
+            {
+              "name": "kind",
+              "type": "string",
+              "value": "\"stall\""
+            },
+            {
+              "name": "w",
+              "type": "float",
+              "value": 3
+            },
+            {
+              "name": "h",
+              "type": "float",
+              "value": 2
+            },
+            {
+              "name": "block",
+              "type": "bool",
+              "value": true
+            },
+            {
+              "name": "tint",
+              "type": "string",
+              "value": "\"red\""
+            }
+          ]
+        },
+        {
+          "id": 7,
+          "name": "stall",
+          "type": "prop",
+          "x": 304,
+          "y": 400,
+          "width": 96,
+          "height": 64,
+          "point": true,
+          "properties": [
+            {
+              "name": "kind",
+              "type": "string",
+              "value": "\"stall\""
+            },
+            {
+              "name": "w",
+              "type": "float",
+              "value": 3
+            },
+            {
+              "name": "h",
+              "type": "float",
+              "value": 2
+            },
+            {
+              "name": "block",
+              "type": "bool",
+              "value": true
+            },
+            {
+              "name": "tint",
+              "type": "string",
+              "value": "\"gold\""
+            }
+          ]
+        },
+        {
+          "id": 8,
+          "name": "stall",
+          "type": "prop",
+          "x": 656,
+          "y": 400,
+          "width": 96,
+          "height": 64,
+          "point": true,
+          "properties": [
+            {
+              "name": "kind",
+              "type": "string",
+              "value": "\"stall\""
+            },
+            {
+              "name": "w",
+              "type": "float",
+              "value": 3
+            },
+            {
+              "name": "h",
+              "type": "float",
+              "value": 2
+            },
+            {
+              "name": "block",
+              "type": "bool",
+              "value": true
+            },
+            {
+              "name": "tint",
+              "type": "string",
+              "value": "\"indigo\""
+            }
+          ]
+        },
+        {
+          "id": 9,
+          "name": "stall",
+          "type": "prop",
+          "x": 880,
+          "y": 304,
+          "width": 64,
+          "height": 96,
+          "point": true,
+          "properties": [
+            {
+              "name": "kind",
+              "type": "string",
+              "value": "\"stall\""
+            },
+            {
+              "name": "w",
+              "type": "float",
+              "value": 2
+            },
+            {
+              "name": "h",
+              "type": "float",
+              "value": 3
+            },
+            {
+              "name": "block",
+              "type": "bool",
+              "value": true
+            },
+            {
+              "name": "tint",
+              "type": "string",
+              "value": "\"green\""
+            }
+          ]
+        },
+        {
+          "id": 10,
+          "name": "wheel",
+          "type": "prop",
+          "x": 496,
+          "y": 240,
+          "width": 32,
+          "height": 32,
+          "point": true,
+          "properties": [
+            {
+              "name": "kind",
+              "type": "string",
+              "value": "\"wheel\""
+            },
+            {
+              "name": "block",
+              "type": "bool",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": 11,
+          "name": "jar",
+          "type": "prop",
+          "x": 528,
+          "y": 240,
+          "width": 32,
+          "height": 32,
+          "point": true,
+          "properties": [
+            {
+              "name": "kind",
+              "type": "string",
+              "value": "\"jar\""
+            },
+            {
+              "name": "physics",
+              "type": "string",
+              "value": "\"jar\""
+            }
+          ]
+        },
+        {
+          "id": 12,
+          "name": "jar",
+          "type": "prop",
+          "x": 432,
+          "y": 240,
+          "width": 32,
+          "height": 32,
+          "point": true,
+          "properties": [
+            {
+              "name": "kind",
+              "type": "string",
+              "value": "\"jar\""
+            },
+            {
+              "name": "physics",
+              "type": "string",
+              "value": "\"jar\""
+            }
+          ]
+        },
+        {
+          "id": 13,
+          "name": "cloth",
+          "type": "prop",
+          "x": 400,
+          "y": 272,
+          "width": 32,
+          "height": 32,
+          "point": true,
+          "properties": [
+            {
+              "name": "kind",
+              "type": "string",
+              "value": "\"cloth\""
+            }
+          ]
+        },
+        {
+          "id": 14,
+          "name": "gourd",
+          "type": "prop",
+          "x": 560,
+          "y": 304,
+          "width": 32,
+          "height": 32,
+          "point": true,
+          "properties": [
+            {
+              "name": "kind",
+              "type": "string",
+              "value": "\"gourd\""
+            }
+          ]
+        },
+        {
+          "id": 15,
+          "name": "basket",
+          "type": "prop",
+          "x": 240,
+          "y": 240,
+          "width": 32,
+          "height": 32,
+          "point": true,
+          "properties": [
+            {
+              "name": "kind",
+              "type": "string",
+              "value": "\"basket\""
+            },
+            {
+              "name": "physics",
+              "type": "string",
+              "value": "\"crate\""
+            }
+          ]
+        },
+        {
+          "id": 16,
+          "name": "basket",
+          "type": "prop",
+          "x": 272,
+          "y": 240,
+          "width": 32,
+          "height": 32,
+          "point": true,
+          "properties": [
+            {
+              "name": "kind",
+              "type": "string",
+              "value": "\"basket\""
+            },
+            {
+              "name": "physics",
+              "type": "string",
+              "value": "\"crate\""
+            }
+          ]
+        },
+        {
+          "id": 17,
+          "name": "crate",
+          "type": "prop",
+          "x": 688,
+          "y": 208,
+          "width": 32,
+          "height": 32,
+          "point": true,
+          "properties": [
+            {
+              "name": "kind",
+              "type": "string",
+              "value": "\"crate\""
+            },
+            {
+              "name": "physics",
+              "type": "string",
+              "value": "\"crate\""
+            }
+          ]
+        },
+        {
+          "id": 18,
+          "name": "crate",
+          "type": "prop",
+          "x": 720,
+          "y": 208,
+          "width": 32,
+          "height": 32,
+          "point": true,
+          "properties": [
+            {
+              "name": "kind",
+              "type": "string",
+              "value": "\"crate\""
+            },
+            {
+              "name": "physics",
+              "type": "string",
+              "value": "\"crate\""
+            }
+          ]
+        },
+        {
+          "id": 19,
+          "name": "potter",
+          "type": "person",
+          "x": 464,
+          "y": 272,
+          "width": 32,
+          "height": 32,
+          "point": true,
+          "properties": [
+            {
+              "name": "id",
+              "type": "string",
+              "value": "\"potter\""
+            },
+            {
+              "name": "kind",
+              "type": "string",
+              "value": "\"potter\""
+            },
+            {
+              "name": "face",
+              "type": "string",
+              "value": "\"down\""
+            }
+          ]
+        },
+        {
+          "id": 20,
+          "name": "seller1",
+          "type": "person",
+          "x": 208,
+          "y": 208,
+          "width": 32,
+          "height": 32,
+          "point": true,
+          "properties": [
+            {
+              "name": "id",
+              "type": "string",
+              "value": "\"seller1\""
+            },
+            {
+              "name": "kind",
+              "type": "string",
+              "value": "\"villager\""
+            },
+            {
+              "name": "wander",
+              "type": "float",
+              "value": 2
+            }
+          ]
+        },
+        {
+          "id": 21,
+          "name": "seller2",
+          "type": "person",
+          "x": 688,
+          "y": 368,
+          "width": 32,
+          "height": 32,
+          "point": true,
+          "properties": [
+            {
+              "name": "id",
+              "type": "string",
+              "value": "\"seller2\""
+            },
+            {
+              "name": "kind",
+              "type": "string",
+              "value": "\"villager\""
+            },
+            {
+              "name": "wander",
+              "type": "float",
+              "value": 2
+            }
+          ]
+        },
+        {
+          "id": 22,
+          "name": "child",
+          "type": "person",
+          "x": 592,
+          "y": 144,
+          "width": 32,
+          "height": 32,
+          "point": true,
+          "properties": [
+            {
+              "name": "id",
+              "type": "string",
+              "value": "\"child\""
+            },
+            {
+              "name": "kind",
+              "type": "string",
+              "value": "\"child\""
+            },
+            {
+              "name": "wander",
+              "type": "float",
+              "value": 4
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "tilesets": [
+    {
+      "firstgid": 1,
+      "name": "WisdomTerrain",
+      "tilewidth": 32,
+      "tileheight": 32,
+      "tilecount": 18,
+      "columns": 8,
+      "image": "../../art/wisdom/tiles.svg",
+      "imagewidth": 256,
+      "imageheight": 128,
+      "tiles": [
+        {
+          "id": 0,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "."
+            }
+          ]
+        },
+        {
+          "id": 1,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": ","
+            }
+          ]
+        },
+        {
+          "id": 2,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "\""
+            }
+          ]
+        },
+        {
+          "id": 3,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": ":"
+            }
+          ]
+        },
+        {
+          "id": 4,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "_"
+            }
+          ]
+        },
+        {
+          "id": 5,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "~"
+            }
+          ]
+        },
+        {
+          "id": 6,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "w"
+            }
+          ]
+        },
+        {
+          "id": 7,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "+"
+            }
+          ]
+        },
+        {
+          "id": 8,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "s"
+            }
+          ]
+        },
+        {
+          "id": 9,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "r"
+            }
+          ]
+        },
+        {
+          "id": 10,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "m"
+            }
+          ]
+        },
+        {
+          "id": 11,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "#"
+            }
+          ]
+        },
+        {
+          "id": 12,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "="
+            }
+          ]
+        },
+        {
+          "id": 13,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "o"
+            }
+          ]
+        },
+        {
+          "id": 14,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "T"
+            }
+          ]
+        },
+        {
+          "id": 15,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "b"
+            }
+          ]
+        },
+        {
+          "id": 16,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "h"
+            }
+          ]
+        },
+        {
+          "id": 17,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": " "
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "properties": [
+    {
+      "name": "shares",
+      "type": "string",
+      "value": "\"market\""
+    },
+    {
+      "name": "menu",
+      "type": "string",
+      "value": "[\"back\"]"
+    },
+    {
+      "name": "wind",
+      "type": "string",
+      "value": "[0,0]"
+    }
+  ]
+}
