@@ -4,6 +4,8 @@ import { read, write, perTale, chronicle, MAX_CHRONICLE, storageFailed, onStorag
 import * as audio from "./ui/audio.js";
 import { mountWeather } from "./ui/atmosphere.js";
 import { escape, diceTray, oddsBadge, mapSvg } from "./ui/widgets.js";
+import { createBridge } from "./world/bridge.js";
+import { createWorld } from "./world/boot.js";
 
 const $ = (selector) => document.querySelector(selector);
 const flat = (title) => title.replace("\n", " ");
@@ -18,6 +20,7 @@ let settings = {
   size: "normal",
   assist: false,
   carryEchoes: true,
+  view: "world",
   ...read("settings", {}),
 };
 const discoveries = perTale("discoveries", episodes, (ep, id) => Object.hasOwn(ep.endings, id));
@@ -40,6 +43,14 @@ let game = null,
   toastTimer;
 const main = $("#main"),
   modal = $("#modal");
+
+let world = null;
+const worldBridge = createBridge(() => game, (command) => act(command));
+function stopWorld() {
+  world?.destroy();
+  world = null;
+}
+function inWorld() { return Boolean(world && main.contains(world.root)); }
 
 onStorageFailure(() => toast("Browser storage is unavailable. Export a save to keep this journey."));
 
@@ -135,6 +146,7 @@ function showSettings() {
     ${row("ambience", "Ambience", "Procedural rain, sea, market, and night. Generated live; no recordings.", check("ambience", settings.ambience))}
     ${row("volume", "Volume", `${settings.volume}%`, `<input id="volume" type="range" min="0" max="100" step="5" value="${settings.volume}">`)}
     <h3 class="setting-group">Comfort</h3>
+    ${row("play-view", "Play view", "Walk through mapped scenes, or use the Classic buttons and illustrations.", `<select id="play-view"><option value="world" ${settings.view === "world" ? "selected" : ""}>World view</option><option value="classic" ${settings.view === "classic" ? "selected" : ""}>Classic view</option></select>`)}
     ${row("motion", "Scene motion", "Weather, dice tumbling, and encounter feedback.", check("motion", settings.motion))}
     ${row("text-size", "Story text size", "Applies to story and journal text.", `<select id="text-size">${[["normal", "Standard"], ["large", "Large"], ["larger", "Larger"]].map(([v, l]) => `<option value="${v}" ${settings.size === v ? "selected" : ""}>${l}</option>`).join("")}</select>`)}
     ${row("assist", "Storyteller’s grace", "New journeys add +2 to every dice check. Shown in every roll.", check("assist", settings.assist))}
@@ -149,6 +161,11 @@ function showSettings() {
       if (key === "sound") audio.sfx("click");
       if (key === "motion" && game) renderGame();
     });
+  $("#play-view").addEventListener("change", (event) => {
+    settings.view = event.target.value;
+    saveSettings();
+    if (game) renderGame();
+  });
   $("#volume").addEventListener("input", (event) => {
     settings.volume = Number(event.target.value);
     event.target.closest(".setting-row").querySelector("small").textContent = `${settings.volume}%`;
@@ -170,6 +187,7 @@ $("#import-file").addEventListener("change", async (event) => {
     const save = JSON.parse(await file.text());
     const ep = episodeById(save?.episodeId);
     if (!ep) throw new Error("This story is not in the collection.");
+    stopWorld();
     game = Game.load(ep, save);
     panel = "mind";
     trayRoll = null;
@@ -238,6 +256,7 @@ function endingSlots(ep) {
     .join("");
 }
 function library() {
+  stopWorld();
   game = null;
   selectedItem = null;
   trayRoll = null;
@@ -279,6 +298,7 @@ const linkSeed = parseSeedCode(new URLSearchParams(location.search).get("seed"))
 const freshSeed = () => linkSeed ?? newSeed();
 
 function start(id, options = null) {
+  stopWorld();
   const ep = episodeById(id);
   const save = !options && read(`save.${id}`, null);
   try {
@@ -378,6 +398,7 @@ function persist() {
 
 // ── Acting ────────────────────────────────────────────────────────────────
 function act(command) {
+  const wasWorld = inWorld();
   const before = game.state.log.length;
   const attempts = Object.values(game.state.checks).reduce((n, c) => n + c.attempts, 0);
   try {
@@ -414,7 +435,7 @@ function act(command) {
   if (command.type === "DEDUCE") $("#tab-mind")?.focus({ preventScroll: true });
   else if (command.type !== "PUZZLE" && command.type !== "CLEAR_PUZZLE") {
     $("#scene-title")?.focus({ preventScroll: true });
-    if (matchMedia("(max-width: 620px)").matches) $("#scene-title")?.scrollIntoView({ block: "start", behavior: "instant" });
+    if (!wasWorld && matchMedia("(max-width: 620px)").matches) $("#scene-title")?.scrollIntoView({ block: "start", behavior: "instant" });
   } else if (game.state.puzzle.length === 0) ($("#puzzle-heading") || $("#scene-title"))?.focus({ preventScroll: true });
   else $(`[data-puzzle="${command.id}"]`)?.focus({ preventScroll: true });
 }
@@ -476,22 +497,27 @@ function renderGame() {
   const ep = game.episode,
     v = game.view(),
     atm = v.atmosphere;
+  const mapped = Boolean(worldBridge.read()?.layout);
+  const worldView = settings.view === "world" && mapped;
+  if (worldView) world?.root.remove();
+  else stopWorld();
+  const menuActions = worldView ? v.actions.filter((a) => worldBridge.read().layout.menu.includes(a.id)) : v.actions;
   document.title = `${flat(ep.title)} · Hadithi`;
-  main.className = `play-screen ${ep.id}`;
+  main.className = `play-screen ${ep.id}${worldView ? " world-view" : ""}`;
   main.dataset.theme = v.theme;
   const status = v.ending ? "The tale is told" : v.encounter ? "Interrupted" : "On the road";
   main.innerHTML = `<div class="journey-heading"><button class="back-link" id="back-library">← The collection</button><span>${escape(ep.tradition)} <span class="separator">/</span> Tale ${Number(ep.number)}</span><button class="back-link" id="story-source">Source notes ↗</button></div>
-  <div class="game-cabinet"><div class="cabinet-bar"><span class="status-light"></span><span>${status}</span><span class="bar-right"><button id="undo" ${v.canUndo ? "" : "disabled"} aria-keyshortcuts="U">↶ Undo</button><span class="seed" title="This journey’s seed. Enter it in a new telling to replay the same dice.">Seed ${seedCode(v.seed)}</span>${v.assist ? '<span class="grace" title="Storyteller’s grace: +2 to every check">Grace +2</span>' : ""}${v.echoes.length ? `<span class="echo-count" title="Echoes carried into this telling">◈ ${v.echoes.length}</span>` : ""}</span></div>
+  <div class="game-cabinet"><div class="cabinet-bar"><span class="status-light"></span><span>${status}</span>${mapped ? `<button id="toggle-view" class="view-toggle">${worldView ? "Classic view" : "World view"}</button>` : ""}<span class="bar-right"><button id="undo" ${v.canUndo ? "" : "disabled"} aria-keyshortcuts="U">↶ Undo</button><span class="seed" title="This journey’s seed. Enter it in a new telling to replay the same dice.">Seed ${seedCode(v.seed)}</span>${v.assist ? '<span class="grace" title="Storyteller’s grace: +2 to every check">Grace +2</span>' : ""}${v.echoes.length ? `<span class="echo-count" title="Echoes carried into this telling">◈ ${v.echoes.length}</span>` : ""}</span></div>
   <div class="game-layout"><section class="play-column" aria-label="Current scene">
-    <div class="scene-stage ${v.encounter ? "interrupted" : ""}" data-weather="${atm.weather}"><img class="scene-image" src="./assets/${v.sceneArt}.svg" alt="" /><div class="light-layer" data-light="${atm.light}"></div><canvas class="weather-layer" aria-hidden="true"></canvas><div class="stage-grid" aria-hidden="true"></div><div class="scene-location"><span class="eyebrow">${escape(v.kicker)}</span><span class="location-marker">⌖</span></div>${
+    ${worldView ? '<div id="world-mount"></div>' : `<div class="scene-stage ${v.encounter ? "interrupted" : ""}" data-weather="${atm.weather}"><img class="scene-image" src="./assets/${v.sceneArt}.svg" alt="" /><div class="light-layer" data-light="${atm.light}"></div><canvas class="weather-layer" aria-hidden="true"></canvas><div class="stage-grid" aria-hidden="true"></div><div class="scene-location"><span class="eyebrow">${escape(v.kicker)}</span><span class="location-marker">⌖</span></div>${
       v.ending
         ? '<div class="ending-seal" aria-hidden="true">✧</div>'
         : v.actions
             .filter((a) => a.spot && a.enabled)
             .map((a) => `<button class="hotspot" style="--x:${a.spot[0]}%;--y:${a.spot[1]}%" data-hotspot="${a.id}" aria-label="On scene: ${escape(a.label)}"><span>＋</span><small>${escape(a.label)}</small></button>`)
             .join("")
-    }<div class="stage-bottom"><span>${escape(ep.role)}</span><span class="clock">${atm.light[0].toUpperCase()}${atm.light.slice(1)}</span><span>${escape(ep.themes[v.theme].name)} ${ep.themes[v.theme].icon}</span></div></div>
-    <div class="narrative ${animateNext ? "enter" : ""}"><div class="chapter-line"><span>${v.ending ? "How it ended" : v.encounter ? "Interrupted" : escape(v.kicker)}</span><span>Turn ${v.turn}</span></div><h1 id="scene-title" tabindex="-1">${escape(v.endingData?.title || v.title)}</h1><p class="story-text">${escape(v.endingData?.text || v.description)}</p>${v.variant && !v.ending ? `<p class="scene-variant">${escape(v.variant)}</p>` : ""}${trayRoll ? diceTray(trayRoll, ep.statLabels, { fresh: trayFresh && settings.motion }) : ""}${renderConsequence(v)}${v.ending ? renderEnding(ep, v) : `${renderPuzzle(v)}<div class="action-heading"><span>What do you do?</span><span>Looking is free. Doing takes a turn.</span></div><div class="actions">${v.actions.map((a, i) => renderAction(ep, a, i)).join("")}</div>`}</div></section>
+    }<div class="stage-bottom"><span>${escape(ep.role)}</span><span class="clock">${atm.light[0].toUpperCase()}${atm.light.slice(1)}</span><span>${escape(ep.themes[v.theme].name)} ${ep.themes[v.theme].icon}</span></div></div>`}
+    <div class="narrative ${animateNext ? "enter" : ""}"><div class="chapter-line"><span>${v.ending ? "How it ended" : v.encounter ? "Interrupted" : escape(v.kicker)}</span><span>Turn ${v.turn}</span></div><h1 id="scene-title" tabindex="-1">${escape(v.endingData?.title || v.title)}</h1><p class="story-text">${escape(v.endingData?.text || v.description)}</p>${v.variant && !v.ending ? `<p class="scene-variant">${escape(v.variant)}</p>` : ""}${trayRoll ? diceTray(trayRoll, ep.statLabels, { fresh: trayFresh && settings.motion }) : ""}${renderConsequence(v)}${v.ending ? renderEnding(ep, v) : `${renderPuzzle(v)}<div class="action-heading"><span>${worldView ? "Explore the scene above" : "What do you do?"}</span><span>Looking is free. Doing takes a turn.</span></div><div class="actions">${menuActions.map((a, i) => renderAction(ep, a, i)).join("")}</div>`}</div></section>
   <aside class="field-panel" aria-label="Your field journal"><div class="field-panel-head"><span>Journal</span><span>${escape(ep.themes[v.theme].name)}</span></div><div class="objective"><span class="eyebrow">${v.ending ? "What it meant" : "What you want"}</span><p>${escape(v.endingData?.reflection || v.objective)}</p></div><div class="stats">${Object.entries(v.stats)
     .map(([key, n]) => `<div><label>${escape(ep.statLabels[key])}<b>${n}<small>/10</small></b></label><div class="stat-track"><span style="width:${n * 10}%"></span></div></div>`)
     .join("")}</div><div class="panel-tabs" role="tablist" aria-label="Field journal sections">${[
@@ -507,10 +533,32 @@ function renderGame() {
     .join("")}</div><div id="panel-content" role="tabpanel" aria-labelledby="tab-${panel}" class="panel-content">${renderPanel(ep, v)}</div><div class="theme-box"><span class="eyebrow">What kind of story</span><button id="shift-theme" ${v.flags.themeShifted || v.encounter || v.ending ? "disabled" : ""}><span>${ep.themes[v.theme].icon} ${escape(ep.themes[v.theme].name)}</span><span>${v.flags.themeShifted ? "Already turned" : "Turn the tale ↗"}</span></button><p>${v.flags.themeShifted ? "Your chosen direction is changing the events ahead." : "One turning point per journey. Choose a new genre and change what can happen."}</p></div><div class="save-tools"><span id="save-label">${storageFailed() ? "This browser will not keep your save. Export it." : "✓ Saved in this browser"}</span><button id="export-save">Export save ↓</button></div></aside></div>
   <div class="cabinet-footer"><span>${escape(flat(ep.title))}</span><span>${escape(ep.tradition)}</span><button id="restart-story">Begin again ↺</button></div></div>`;
 
+  if (worldView) {
+    if (!world) world = createWorld({
+      bridge: worldBridge,
+      paused: () => modal.open || document.hidden || !inWorld(),
+      motion: settings.motion,
+      onError: (error) => {
+        console.warn("World view could not start", error);
+        settings.view = "classic";
+        saveSettings();
+        renderGame();
+        toast("World view could not open. Your journey continues in Classic view.");
+      },
+    });
+    $("#world-mount").replaceWith(world.root);
+    world.sync(settings.motion);
+  }
+  if ($("#toggle-view")) $("#toggle-view").onclick = () => {
+    settings.view = worldView ? "classic" : "world";
+    saveSettings();
+    renderGame();
+    $("#toggle-view")?.focus({ preventScroll: true });
+  };
   // Animate a move once; tab switches and other re-renders show it settled.
   trayFresh = false;
   animateNext = false;
-  mountWeather(main.querySelector(".weather-layer"), atm.weather, settings.motion);
+  mountWeather(worldView ? world?.weatherLayer : main.querySelector(".weather-layer"), atm.weather, settings.motion);
   audio.setAmbience(atm.ambience);
   $("#back-library").onclick = library;
   $("#story-source").onclick = () => sources(ep.id);
@@ -528,7 +576,10 @@ function renderGame() {
   });
   bind("[data-travel]", (el) => {
     const a = v.actions.find((x) => x.id === el.dataset.travel);
-    if (a?.enabled) act({ type: a.type, id: a.id });
+    if (a?.enabled) {
+      if (inWorld()) world.walkTo(a.id);
+      else act({ type: a.type, id: a.id });
+    }
   });
   bind("[data-panel]", (el) => switchPanel(el.dataset.panel));
   bind("[data-item]", (el) => {
@@ -742,6 +793,7 @@ document.addEventListener("keydown", (event) => {
     showHelp();
     return;
   }
+  if (inWorld() && world.root.contains(event.target) && ["w", "a", "s", "d", "e", "q", "f", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Shift"].includes(event.key)) return;
   if (event.key.toLowerCase() === "s" && !event.shiftKey) {
     $("#sound-link").click();
     return;
@@ -761,7 +813,8 @@ document.addEventListener("keydown", (event) => {
   }
   const index = Number(event.key) - 1;
   if (index >= 0 && index < 9) {
-    const a = game.view().actions[index];
+    const actions = game.view().actions;
+    const a = (inWorld() ? actions.filter((a) => worldBridge.read().layout.menu.includes(a.id)) : actions)[index];
     if (a?.enabled) {
       event.preventDefault();
       act({ type: a.type, id: a.id });
@@ -773,5 +826,14 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http") && !/[?
   navigator.serviceWorker.register("./sw.js").catch(() => {
     /* Offline play is a bonus; the game works without it. */
   });
+
+// Browser test driver uses the same walking and interaction path as players.
+// It cannot mutate story state or teleport the hero.
+if (new URLSearchParams(location.search).has("worldtest")) {
+  window.__hadithi = {
+    walkTo: (id) => world?.walkTo(id) ?? Promise.resolve(false),
+    world: () => world?.inspect() ?? null,
+  };
+}
 
 library();
