@@ -6,6 +6,16 @@ import { defaultSeed, seedCode } from "../../site/game.js";
 const seedFor = (id) => seedCode(defaultSeed(episodeById(id)));
 const url = (id, extra = "") => `/?nosw&seed=${seedFor(id)}${extra}`;
 
+// These walkthroughs cover the retained Classic interface. World input has
+// separate tests that walk the mapped scenes through physics.
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => {
+    const key = "hadithi.v1.settings";
+    const settings = JSON.parse(localStorage.getItem(key) || "{}");
+    localStorage.setItem(key, JSON.stringify({ ...settings, view: "classic" }));
+  });
+});
+
 function watchErrors(page) {
   const errors = [];
   page.on("pageerror", (e) => errors.push(e.message));
