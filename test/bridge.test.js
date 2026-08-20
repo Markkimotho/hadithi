@@ -6,6 +6,7 @@ import { Game, SAVE_VERSION, validateEpisode } from "../site/game.js";
 import { checkOdds, checkSucceeds, diceFor } from "../site/engine/rng.js";
 import { SKILL_KINDS, skillErrors } from "../site/engine/skills.js";
 import { wisdom, olives, episodes } from "../site/stories.js";
+import { createBridge } from "../site/world/bridge.js";
 
 const act = (g, id, outcome) => {
   const a = g.availableActions().find((x) => x.id === id);
@@ -97,6 +98,20 @@ test("checkProfile matches the odds the player is shown", () => {
   assert.equal(profile.chance, leap.odds.chance);
   assert.equal(profile.assist, true);
   assert.equal(g.checkProfile({ id: "x" }), null);
+});
+
+test("world skill profiles carry only the story evidence needed by the challenge", () => {
+  const g = toFord({ seed: 1 });
+  g.state.clues.push("promiseSeal");
+  g.state.deductions.push("selfSealed");
+  g.state.flags.behind = true;
+  const bridge = createBridge(() => g, () => {});
+  const profile = bridge.profile("leap");
+  assert.equal(profile.chance, g.checkProfile(g.availableActions().find((a) => a.id === "leap")).chance);
+  assert.deepEqual(profile.clues, ["promiseSeal"]);
+  assert.deepEqual(profile.deductions, ["selfSealed"]);
+  assert.ok(profile.flags.includes("behind"));
+  assert.deepEqual(profile.stats, g.state.stats);
 });
 
 test("diceFor always finds dice that agree with the result", () => {
