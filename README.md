@@ -37,19 +37,21 @@ npm start
 
 ## What makes a telling
 
-- **Turns, not timers.** Looking, reading, and thinking are free. Other actions show their cost. Weather, tides, patrols, and moonrise arrive on schedule and interrupt when they must.
-- **Dice with honest odds.** Checks roll 2d6 plus your stats and advantages against a difficulty. Every modifier and the exact probability are shown first. One-try checks are spent; retry checks reopen when your odds improve. Failure always moves the story. Each journey has a seed, so undo cannot reroll fate and a seed code replays the same dice (`?seed=CODE`).
-- **Mind.** Choose two clues and connect them. True connections become conclusions that open conversations, strengthen arguments, and unlock endings. Wrong links cost nothing.
+- **A storyteller over a world you walk.** Each tale is a full-screen world. You walk it; a storyteller tells it. The opening line, a chapter card as each place opens, what you find, what people say (in bubbles over their heads), and what it costs all arrive a beat at a time in the parchment band at the foot of the screen.
+- **Act it out.** Glints mark what you can look at, take or talk to. Walk up and press E: Kweku kneels to look, reaches to take, turns to talk, and the story answers. Taken things leave the ground and fly into your bag. People with several things to say open a conversation with lines to choose.
+- **Turns, not timers.** Walking, lifting and throwing things, and thinking are free. Story actions take turns. Weather, tides, patrols and moonrise arrive on schedule and interrupt when they must.
+- **Trials by hand.** Leaps, climbs, arguments and storms are played by hand, tuned to the odds your stats and choices earned. Turn trials off in Settings and seeded dice decide instead. Either way, failing moves the story on, and taking a step back cannot change how it went.
+- **What you know.** In the journal, choose two things that fit together. A true connection opens conversations, arguments and endings. A wrong one costs nothing.
 - **Echoes.** Endings teach echoes. A new telling remembers them and reveals ◈ remembered actions. Secret endings need them.
-- **Direction.** Once per journey, turn the tale toward another genre (Mystery, Survival, Reconciliation). Routes, solutions, and endings change.
-- **People, map, chronicle, marks.** Characters' notes grow as you learn. The map draws discovered places and lets you travel by road. The chronicle keeps endings, echoes, marks, and recent seeds.
-- **Atmosphere.** Rain, storms, mist, bubbles, fireflies, lanterns, and stars over hand-drawn scenes, with dawn-to-moonlight grading. Optional procedural sound (ambience and effects synthesized live; no recordings) starts off.
+- **The turn of the tale.** Once per journey, turn it toward another kind of story (Mystery, Survival, Reconciliation). Routes, solutions and endings change.
+- **Atmosphere.** Dawn-to-moonlight grading, rain, storms, mist and wind fields that push you and loose things around. Optional procedural sound starts off.
 
 ## Controls and saves
 
-- Click a scene marker or a contextual action. Keyboard: Tab and Enter; 1–9 actions; U undo; B, J, P, M for Bag, Mind, People, Map; S sound; ? guide.
-- Progress saves after each action on this browser. Export a JSON save for a portable copy; import through Settings. Once loaded, the game plays offline.
-- Settings: sound effects, ambience, volume, scene motion (respects reduced-motion), three text sizes, Storyteller's grace (+2 to every check, shown in every roll), and whether new journeys carry echoes.
+- Walk with WASD, the arrows, a controller, the touch joystick, or by tapping where to go (long walks break into a run). E, Space or the A button acts and moves the story on. 1 to 9 choose a line in a conversation. Q lifts or sets down, F throws. J opens the journal (B, K, P, M for its pages). U takes back a step. ? opens the guide.
+- Progress saves after each action on this browser. Export a JSON save from the journal for a portable copy; import through Settings. Once loaded, the game plays offline.
+- Settings: sound effects, ambience, volume, scene motion (respects reduced motion), three text sizes, physical trials on or off, Storyteller's grace (+2 to every trial's odds), and whether new journeys carry echoes.
+- Only tales with a world map for every scene can be started. The others show "Being retold" on the shelf until their worlds are finished.
 
 Saves contain the episode ID, schema version, content revision, seed, echoes, assist flag, and the command sequence. Loading replays the rules to rebuild everything; nothing stored is trusted. Saves from an older revision listed in `compatibleRevisions` are replayed through the new rules and carried forward if every command is still legal; otherwise the player is told clearly to start fresh.
 

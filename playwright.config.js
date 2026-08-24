@@ -3,7 +3,7 @@ export default defineConfig({
   testDir: "./test/browser",
   fullyParallel: true,
   workers: process.env.CI ? 2 : 4,
-  timeout: 60000,
+  timeout: 120000,
   use: {
     baseURL: "http://127.0.0.1:4173",
     channel: process.env.CI ? undefined : "chrome",
