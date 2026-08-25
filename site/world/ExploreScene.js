@@ -1,13 +1,28 @@
+// The walkable scene. It owns physics, the hero, props, people and the camera.
+// It never writes story state: it reports where things are to the play shell
+// (host.events) and asks for story actions through host.bridge.
 import { createPhysics } from "./physics.js";
-import { blockedTiles, findPath, spawnFor } from "./layout.js";
+import { blockedTiles, findPath, spawnFor, walkable } from "./layout.js";
 import { createInput } from "./input.js";
 import { TILE, drawGround, drawPerson, drawProp } from "./art.js";
 import { createPuppet, preloadPuppets } from "./puppet.js";
-import { runSkillChallenge } from "./skill-challenge.js";
+
+const GESTURE = {
+  INSPECT: "kneel",
+  USE_ITEM: "kneel",
+  TAKE_ITEM: "reach",
+  TALK: "talk",
+  BARGAIN: "talk",
+  CHOOSE: "talk",
+  SOLVE: "reach",
+  WAIT: "kneel",
+};
 
 export function exploreScene(Phaser, planck, host) {
   return class ExploreScene extends Phaser.Scene {
-    constructor() { super("explore"); }
+    constructor() {
+      super("explore");
+    }
     preload() {
       this.load.spritesheet("wisdom-tiles", "./art/wisdom/tiles.svg", { frameWidth: 32, frameHeight: 32 });
       preloadPuppets(this);
@@ -18,34 +33,35 @@ export function exploreScene(Phaser, planck, host) {
       this.facing = { x: 0, y: 1 };
       this.path = [];
       this.motion = host.motion;
-      this.inputState = createInput(host.root, host.viewport, {
-        interact: () => this.interact(), lift: () => this.lift(), toss: () => this.toss(),
-        cancel: () => this.cancelRoute(), paused: host.paused,
+      this.inputState = createInput(host.controls, {
+        interact: () => this.interact(),
+        lift: () => this.lift(),
+        toss: () => this.toss(),
+        cancel: () => this.cancelRoute(),
+        paused: host.paused,
       });
       this.input.on("pointerdown", (pointer) => {
-        if (host.paused()) return;
-        host.viewport.focus({ preventScroll: true });
-        const bounds = this.game.canvas.getBoundingClientRect();
-        const px = Number.isFinite(pointer.x) ? pointer.x : (pointer.event.clientX - bounds.left) * this.scale.width / bounds.width;
-        const py = Number.isFinite(pointer.y) ? pointer.y : (pointer.event.clientY - bounds.top) * this.scale.height / bounds.height;
+        if (host.paused() || host.busy()) return;
         const camera = this.cameras.main;
-        const player = this.phys.player.getPosition();
-        const originX = Number.isFinite(camera.worldView.x) ? camera.worldView.x : player.x * TILE - this.scale.width / (2 * camera.zoom);
-        const originY = Number.isFinite(camera.worldView.y) ? camera.worldView.y : player.y * TILE - this.scale.height / (2 * camera.zoom);
-        const at = { x: originX + px / camera.zoom, y: originY + py / camera.zoom };
+        const world = camera.getWorldPoint(pointer.x, pointer.y);
         const { layout } = this.snapshot;
-        const x = Math.max(1, Math.min(layout.width - 2, Math.floor(at.x / TILE)));
-        const y = Math.max(1, Math.min(layout.height - 2, Math.floor(at.y / TILE)));
-        this.navigate([x, y], { nearest: true });
+        const x = Math.max(0, Math.min(layout.width - 1, Math.floor(world.x / TILE)));
+        const y = Math.max(0, Math.min(layout.height - 1, Math.floor(world.y / TILE)));
+        // Tapping a place walks there and acts; tapping ground just walks.
+        const place = this.places().find((p) => (p.tiles ?? [p.at]).some(([px, py]) => Math.abs(px - x) <= 0 && Math.abs(py - y) <= 0));
+        if (place) this.walkTo(place.id, true);
+        else this.navigate([x, y], { nearest: true });
       });
       this.scale.on("resize", this.resizeWorld, this);
       this.events.once("shutdown", () => {
-        this.inputState.destroy(); this.cancelRoute();
+        this.inputState.destroy();
+        this.cancelRoute();
         this.scale.off("resize", this.resizeWorld, this);
       });
       this.setSnapshot(host.snapshot);
       host.onReady(this);
     }
+
     setSnapshot(snapshot) {
       if (!this.ready) return;
       const previous = this.snapshot;
@@ -53,153 +69,258 @@ export function exploreScene(Phaser, planck, host) {
       this.dispatching = false;
       const { layout, view } = snapshot;
       if (!layout) return;
-      const newGround = !previous || previous.ground !== snapshot.ground || previous.tale !== snapshot.tale || previous.view.seed !== view.seed;
-      if (newGround) {
-        this.cancelRoute();
-        this.children.removeAll(true);
-        this.phys = createPhysics(planck, layout, spawnFor(layout, previous?.view.scene));
-        this.remainder = 0;
-        drawGround(this, layout, "wisdom-tiles");
-        this.staticProps = layout.props.filter((p) => !p.physics).map((p) => {
-          const sprite = drawProp(this, p);
-          return sprite.setPosition((p.at[0] + 0.5) * TILE, (p.at[1] + 0.5) * TILE).setDepth((p.at[1] + (p.h ?? 1)) * TILE);
-        });
-        this.propSprites = this.phys.props.map((p) => ({ prop: p, sprite: drawProp(this, p.source) }));
-        this.people = layout.people.map((p) => {
-          const sprite = p.kind === "anansi" ? createPuppet(this, "anansi") : drawPerson(this, p.kind);
-          return sprite.setPosition((p.at[0] + 0.5) * TILE, (p.at[1] + 0.5) * TILE).setDepth((p.at[1] + 0.5) * TILE);
-        });
-        this.hero = createPuppet(this, "kweku");
-        const p = this.phys.player.getPosition();
-        this.hero.setPosition(p.x * TILE, p.y * TILE);
-        const camera = this.cameras.main;
-        camera.setBounds(0, 0, layout.width * TILE, layout.height * TILE);
-        camera.startFollow(this.hero.root, true, this.motion ? 0.12 : 1, this.motion ? 0.12 : 1);
-        this.resizeWorld();
-        camera.centerOn(this.hero.root.x, this.hero.root.y);
-      } else if (previous.view.scene !== view.scene) this.cancelRoute();
+      const newGround =
+        !previous || previous.ground !== snapshot.ground || previous.tale !== snapshot.tale || previous.view.seed !== view.seed;
+      if (newGround) this.buildGround(layout, previous?.view.scene);
+      else if (previous.view.scene !== view.scene) this.cancelRoute();
       const storm = view.atmosphere.weather === "storm" ? 1.5 + (view.stats.danger ?? 0) * 0.18 : 0;
-      this.phys.setWind((layout.wind?.[0] ?? 0) + storm, layout.wind?.[1] ?? 0);
-      for (const prop of this.phys.props) {
-        if (prop.source.flag) prop.cracked = Boolean(view.flags[prop.source.flag]);
-      }
+      this.phys.setWind((layout.wind?.[0] ?? 0) - storm, layout.wind?.[1] ?? 0);
+      for (const prop of this.phys.props) if (prop.source.flag) prop.cracked = Boolean(view.flags[prop.source.flag]);
+      this.syncTaken(view);
+      this.buildGlints();
       host.root.dataset.scene = view.scene;
-      host.caption.textContent = `${view.kicker} · ${view.objective}`;
-      if (previous && previous.view.log.length !== view.log.length) {
-        const consequence = view.log.findLast((e) => e.kind !== "action" && e.kind !== "roll");
-        if (consequence) host.message.textContent = consequence.text;
-      }
-      this.renderPlaces();
+      host.events.onPlaces(this.places());
+      this.promptSignature = null;
       this.refreshPrompt();
     }
+
+    buildGround(layout, from) {
+      this.cancelRoute();
+      this.children.removeAll(true);
+      this.tweens.killAll();
+      this.phys = createPhysics(planck, layout, spawnFor(layout, from));
+      this.remainder = 0;
+      drawGround(this, layout, "wisdom-tiles");
+      this.staticProps = layout.props
+        .filter((p) => !p.physics)
+        .map((p) => ({
+          source: p,
+          sprite: drawProp(this, p)
+            .setPosition((p.at[0] + 0.5) * TILE, (p.at[1] + 0.5) * TILE)
+            .setDepth((p.at[1] + (p.h ?? 1)) * TILE),
+        }));
+      this.propSprites = this.phys.props.map((p) => ({ prop: p, sprite: drawProp(this, p.source) }));
+      this.people = layout.people.map((p) => this.addPerson(p, layout));
+      this.hero = createPuppet(this, "kweku");
+      const at = this.phys.player.getPosition();
+      this.hero.setPosition(at.x * TILE, at.y * TILE);
+      const camera = this.cameras.main;
+      camera.setBounds(0, 0, layout.width * TILE, layout.height * TILE);
+      camera.startFollow(this.hero.root, true, this.motion ? 0.1 : 1, this.motion ? 0.1 : 1);
+      this.resizeWorld();
+      camera.centerOn(this.hero.root.x, this.hero.root.y);
+      if (this.motion) camera.fadeIn(450, 20, 24, 18);
+    }
+
+    /** People stand, work, or wander; animals peck about. */
+    addPerson(p, layout) {
+      const sprite = p.kind === "anansi" ? createPuppet(this, "anansi") : drawPerson(this, p.kind);
+      const x = (p.at[0] + 0.5) * TILE,
+        y = (p.at[1] + 0.5) * TILE;
+      sprite.setPosition(x, y).setDepth(y);
+      const person = { source: p, sprite, home: [...p.at] };
+      if (this.motion) {
+        const target = sprite.root ?? sprite;
+        if (p.wander) this.time.addEvent({ delay: 1600 + Math.random() * 1800, loop: true, callback: () => this.wander(person, layout) });
+        else this.tweens.add({ targets: target, scaleY: 1.03, duration: 1300 + Math.random() * 500, yoyo: true, repeat: -1, ease: "Sine.inOut" });
+      }
+      return person;
+    }
+
+    wander(person, layout) {
+      if (!this.sys.isActive() || host.paused()) return;
+      const r = person.source.wander;
+      const [hx, hy] = person.home;
+      for (let i = 0; i < 6; i++) {
+        const tx = hx + Math.round((Math.random() * 2 - 1) * r),
+          ty = hy + Math.round((Math.random() * 2 - 1) * r);
+        if (!walkable(layout, tx, ty)) continue;
+        const target = person.sprite.root ?? person.sprite;
+        const nx = (tx + 0.5) * TILE,
+          ny = (ty + 0.5) * TILE;
+        if (target.x !== nx) target.setScale(nx < target.x ? -1 : 1, 1);
+        this.tweens.add({
+          targets: target,
+          x: nx,
+          y: ny,
+          duration: 500 + Math.hypot(nx - target.x, ny - target.y) * 9,
+          ease: "Sine.inOut",
+          onUpdate: () => target.setDepth(target.y),
+        });
+        return;
+      }
+    }
+
+    /** Things already in the bag are no longer lying in the world. */
+    syncTaken(view) {
+      const gone = (p) => (p.item ?? p.kind) && view.taken.includes(p.item ?? p.kind);
+      for (const { source, sprite } of this.staticProps) sprite.setVisible(!gone(source));
+      for (const { prop, sprite } of this.propSprites) {
+        const hidden = gone(prop.source);
+        sprite.setVisible(!hidden);
+        if (hidden && prop.body.isActive()) prop.body.setActive(false);
+      }
+    }
+
+    /** A soft glint marks everything you can look at, take, or talk to. */
+    buildGlints() {
+      for (const g of this.glints ?? []) g.destroy();
+      this.glints = [];
+      for (const place of this.places()) {
+        if (place.exit) continue;
+        const enabled = place.actions.some((a) => a.enabled);
+        const remembered = place.actions.some((a) => a.remembered);
+        const [x, y] = place.at;
+        const glint = this.add.graphics().setDepth((y + 1) * TILE + 1);
+        const color = remembered ? 0x9fc0c8 : 0xf3dc9a;
+        glint.lineStyle(2, color, enabled ? 0.9 : 0.35).strokeCircle(0, 0, 9);
+        glint.fillStyle(color, enabled ? 0.85 : 0.3).fillCircle(0, 0, 3);
+        glint.setPosition((x + 0.5) * TILE, (y + 0.5) * TILE - 18);
+        if (this.motion && enabled) this.tweens.add({ targets: glint, y: glint.y - 5, alpha: 0.45, duration: 900, yoyo: true, repeat: -1, ease: "Sine.inOut" });
+        this.glints.push(glint);
+      }
+    }
+
     resizeWorld() {
       if (!this.phys) return;
       const { layout } = this.snapshot;
       const camera = this.cameras.main;
-      // Keep a readable character on phones, with room to look ahead on desktop.
-      const zoom = Math.max(0.78, Math.min(1.1, this.scale.width / (22 * TILE)));
+      // A readable hero on phones; room to look around on a desktop.
+      const zoom = Math.max(0.85, Math.min(1.45, Math.min(this.scale.width / (18 * TILE), this.scale.height / (11 * TILE))));
       camera.setZoom(zoom);
-      camera.setDeadzone(this.scale.width * 0.16, this.scale.height * 0.12);
+      camera.setDeadzone(this.scale.width * 0.12, this.scale.height * 0.1);
       camera.setBounds(0, 0, layout.width * TILE, layout.height * TILE);
     }
+
     places() {
       const { layout, view } = this.snapshot;
+      if (!layout) return [];
       const actionMap = new Map(view.actions.map((a) => [a.id, a]));
       return [
         ...layout.spots.map((sp) => ({ ...sp, actions: sp.actions.map((id) => actionMap.get(id)).filter(Boolean) })),
-        ...Object.entries(layout.exits).map(([id, tiles]) => ({ id, at: tiles[Math.floor(tiles.length / 2)], tiles, exit: true, actions: [actionMap.get(id)].filter(Boolean) })),
+        ...Object.entries(layout.exits).map(([id, tiles]) => ({
+          id,
+          at: tiles[Math.floor(tiles.length / 2)],
+          tiles,
+          exit: true,
+          name: null,
+          actions: [actionMap.get(id)].filter(Boolean),
+        })),
       ].filter((p) => p.actions.length);
     }
-    renderPlaces() {
-      host.labels.replaceChildren();
-      host.destinations.replaceChildren();
-      this.markers = this.places().map((place) => {
-        const label = place.name ?? place.actions[0].label;
-        const el = document.createElement("button");
-        el.className = `world-marker${place.exit ? " world-exit" : ""}`;
-        el.textContent = `${place.exit ? "↗" : "◇"} ${label}`;
-        el.setAttribute("aria-label", `Walk to: ${label}`);
-        el.dataset.place = place.id;
-        el.addEventListener("click", () => this.walkTo(place.id));
-        host.labels.append(el);
-        const link = document.createElement("button");
-        link.textContent = label;
-        link.dataset.destination = place.id;
-        link.addEventListener("click", () => this.walkTo(place.id));
-        host.destinations.append(link);
-        return { place, el };
-      });
-    }
+
     nearby() {
       const pos = this.phys.player.getPosition();
-      return this.places().map((place) => ({
-        ...place, distance: Math.min(...(place.tiles ?? [place.at]).map(([x, y]) => Math.hypot(pos.x - x - 0.5, pos.y - y - 0.5))),
-      })).filter((p) => p.distance < 1.65).sort((a, b) => a.distance - b.distance);
+      return this.places()
+        .map((place) => ({
+          ...place,
+          distance: Math.min(...(place.tiles ?? [place.at]).map(([x, y]) => Math.hypot(pos.x - x - 0.5, pos.y - y - 0.5))),
+        }))
+        .filter((p) => p.distance < 1.7 && !p.exit)
+        .sort((a, b) => a.distance - b.distance);
     }
+
     refreshPrompt() {
-      const nearest = this.nearby()[0];
+      if (!this.phys) return;
+      const place = this.nearby()[0] ?? null;
       const carrying = this.phys.carrying;
       const liftable = this.phys.liftable();
-      const signature = JSON.stringify([nearest?.id, nearest?.actions.map((a) => [a.id, a.enabled, a.requires]), carrying?.id, liftable?.id]);
+      const signature = JSON.stringify([place?.id, place?.actions.map((a) => [a.id, a.enabled, a.requires]), carrying?.id, liftable?.id]);
       if (signature === this.promptSignature) return;
       this.promptSignature = signature;
-      host.prompt.replaceChildren();
-      if (nearest) {
-        for (const action of nearest.actions) {
-          const button = document.createElement("button");
-          button.className = "button world-interact";
-          button.dataset.worldAction = action.id;
-          button.disabled = !action.enabled;
-          button.textContent = `${action.label}${action.enabled ? " · E / A" : ` · ${action.requires ?? "Not yet available"}`}`;
-          button.addEventListener("click", () => this.interact(action.id));
-          host.prompt.append(button);
-        }
-      } else {
-        const p = document.createElement("span");
-        p.textContent = "Walk up to something to look, talk or act.";
-        host.prompt.append(p);
-      }
-      host.liftButton.disabled = !carrying && !liftable;
-      host.liftButton.textContent = carrying ? "Set down · Q / X" : "Lift · Q / X";
-      host.throwButton.disabled = !carrying;
+      host.events.onNear({ place, carrying: carrying?.kind ?? null, liftable: liftable?.kind ?? null });
     }
+
+    /**
+     * Act at the nearest place. A place with several things to do (a person
+     * to talk to) opens a conversation in the story band instead.
+     */
     interact(id) {
-      if (this.dispatching || host.paused()) return false;
-      const actions = this.nearby().flatMap((p) => p.actions);
-      const a = id ? actions.find((a) => a.id === id && a.enabled) : actions.find((a) => a.enabled);
+      if (this.dispatching || host.paused() || host.busy()) return false;
+      if (!id && host.events.onAdvance?.()) return true;
+      const place = id ? this.places().find((p) => p.actions.some((a) => a.id === id)) : this.nearby()[0];
+      if (!place) return false;
+      const enabled = place.actions.filter((a) => a.enabled);
+      if (!id && enabled.length > 1) {
+        host.events.onConverse(place);
+        return true;
+      }
+      const a = id ? place.actions.find((x) => x.id === id && x.enabled) : enabled[0];
       if (!a) return false;
       this.dispatching = true;
       this.cancelRoute();
-      queueMicrotask(async () => {
+      this.perform(a, place).then(() => {
         if (host.destroyed) return;
-        const outcome = a.check?.skill
-          ? await runSkillChallenge(host, a.check.skill.kind, host.bridge.profile(a.id))
-          : null;
-        if (host.destroyed) return;
-        if (!outcome && a.check?.skill) this.dispatching = false;
-        else host.bridge.action(a.id, outcome);
-        host.viewport.focus({ preventScroll: true });
+        host.bridge.request(a, place);
       });
       return true;
     }
+
+    /** Turn to the place and act it out before the story answers. */
+    perform(action, place) {
+      const gesture = GESTURE[action.type];
+      const root = this.hero.root;
+      if (place) {
+        const p = this.phys.player.getPosition();
+        const dx = place.at[0] + 0.5 - p.x;
+        if (Math.abs(dx) > 0.1) this.facing = { x: Math.sign(dx), y: 0 };
+        this.hero.setScale(this.facing.x < -0.08 ? -1 : 1, 1);
+      }
+      if (!gesture || !this.motion) return Promise.resolve();
+      const sx = root.scaleX;
+      return new Promise((resolve) => {
+        const done = () => {
+          root.setScale(sx, 1);
+          resolve();
+        };
+        if (gesture === "kneel")
+          this.tweens.add({ targets: root, scaleY: 0.82, scaleX: sx * 1.08, duration: 220, yoyo: true, hold: 260, ease: "Quad.out", onComplete: done });
+        else if (gesture === "reach")
+          this.tweens.add({ targets: root, x: root.x + this.facing.x * 6, y: root.y + this.facing.y * 6 - 3, duration: 160, yoyo: true, hold: 120, ease: "Quad.out", onComplete: done });
+        else this.tweens.add({ targets: root, y: root.y - 4, duration: 120, yoyo: true, repeat: 1, ease: "Sine.inOut", onComplete: done });
+      });
+    }
+
+    /** The thing just taken lifts off the ground and flies toward the bag. */
+    flyToBag(itemId, screenTarget) {
+      const entry = [...(this.staticProps ?? []), ...(this.propSprites ?? [])].find(({ source, prop }) => ((source ?? prop.source).item ?? (source ?? prop.source).kind) === itemId);
+      const camera = this.cameras.main;
+      const from = entry ? { x: entry.sprite.x, y: entry.sprite.y } : { x: this.hero.root.x, y: this.hero.root.y - 30 };
+      const token = this.add.graphics().setDepth(99999).setScrollFactor(0);
+      token.fillStyle(0xf3dc9a, 1).fillCircle(0, 0, 7);
+      token.lineStyle(2, 0x3a2a1c, 1).strokeCircle(0, 0, 7);
+      const start = { x: (from.x - camera.worldView.x) * camera.zoom, y: (from.y - camera.worldView.y) * camera.zoom };
+      token.setPosition(start.x, start.y);
+      entry?.sprite.setVisible(false);
+      if (!this.motion) return token.destroy();
+      this.tweens.add({
+        targets: token,
+        x: screenTarget.x,
+        y: screenTarget.y,
+        scale: 0.6,
+        duration: 650,
+        ease: "Cubic.in",
+        onComplete: () => token.destroy(),
+      });
+    }
+
     lift() {
-      if (host.paused()) return;
+      if (host.paused() || host.busy()) return;
       this.cancelRoute();
       if (this.phys.carrying) this.phys.throw(this.facing, 0);
       else this.phys.lift();
       this.refreshPrompt();
-      host.viewport.focus({ preventScroll: true });
     }
     toss() {
-      if (host.paused()) return;
+      if (host.paused() || host.busy()) return;
       this.phys.throw(this.facing);
       this.refreshPrompt();
-      host.viewport.focus({ preventScroll: true });
     }
+
     obstacles() {
       const blocked = blockedTiles(this.snapshot.layout);
       for (const p of this.phys.props) {
-        if (p.carried) continue;
+        if (p.carried || !p.body.isActive()) continue;
         const at = p.body.getPosition();
         blocked.add(`${Math.floor(at.x)},${Math.floor(at.y)}`);
       }
@@ -207,6 +328,7 @@ export function exploreScene(Phaser, planck, host) {
       blocked.delete(`${x},${y}`);
       return blocked;
     }
+
     navigate(goal, { target = null, attempt = false, resolve = null, nearest = false } = {}) {
       this.cancelRoute();
       this.routeGoal = goal;
@@ -215,33 +337,39 @@ export function exploreScene(Phaser, planck, host) {
       if (!path && nearest) {
         const candidates = [];
         for (let radius = 1; radius <= 8; radius++)
-          for (let dy = -radius; dy <= radius; dy++) for (let dx = -radius; dx <= radius; dx++)
-            if (Math.max(Math.abs(dx), Math.abs(dy)) === radius) candidates.push([goal[0] + dx, goal[1] + dy]);
-        candidates.sort((a, b) => Math.hypot(a[0] - goal[0], a[1] - goal[1]) - Math.hypot(b[0] - goal[0], b[1] - goal[1]));
+          for (let dy = -radius; dy <= radius; dy++)
+            for (let dx = -radius; dx <= radius; dx++) if (Math.max(Math.abs(dx), Math.abs(dy)) === radius) candidates.push([goal[0] + dx, goal[1] + dy]);
         for (const candidate of candidates) {
           path = findPath(this.snapshot.layout, this.phys.tile(), candidate, obstacles);
-          if (path) { this.routeGoal = candidate; break; }
+          if (path) {
+            this.routeGoal = candidate;
+            break;
+          }
         }
       }
       if (!path) {
-        host.message.textContent = "That way is blocked. Move an object or choose another path.";
-        resolve?.(false); return false;
+        host.events.onMessage("Something is in the way. Move it, or go round.");
+        resolve?.(false);
+        return false;
       }
       this.path = path.map(([x, y]) => ({ x: x + 0.5, y: y + 0.5 }));
+      // Long walks break into a run, the way anyone hurries across a yard.
+      this.routeRun = path.length > 6;
+      this.routeRetries = this.routeTarget === target && this.routeGoal ? this.routeRetries ?? 0 : 0;
       this.routeTarget = target;
       this.routeAttempt = attempt;
       this.routeResolve = resolve;
       this.stuckTime = 0;
       this.lastDistance = Infinity;
-      host.message.textContent = "Walking. Move with the keys or press Escape to stop.";
       return true;
     }
+
     walkTo(id, attempt = false) {
       const place = this.places().find((p) => p.id === id || p.actions.some((a) => a.id === id));
       if (!place || host.paused()) return Promise.resolve(false);
-      host.viewport.focus({ preventScroll: true });
       return new Promise((resolve) => this.navigate(place.at, { target: id, attempt, resolve }));
     }
+
     cancelRoute() {
       this.path = [];
       this.routeTarget = null;
@@ -249,40 +377,63 @@ export function exploreScene(Phaser, planck, host) {
       this.routeResolve = null;
       if (this.phys) this.phys.setIntent(0, 0);
     }
+
     finishRoute() {
-      const target = this.routeTarget, attempt = this.routeAttempt, resolve = this.routeResolve;
+      const target = this.routeTarget,
+        attempt = this.routeAttempt,
+        resolve = this.routeResolve;
       this.routeResolve = null;
       this.path = [];
       this.routeTarget = null;
-      host.message.textContent = "Arrived. Choose an action below, or press E / A.";
-      const actionId = this.places().find((p) => p.id === target)?.actions.find((a) => a.enabled)?.id ?? target;
-      resolve?.(attempt ? this.interact(actionId) : true);
+      if (!attempt) return resolve?.(true);
+      const place = this.places().find((p) => p.id === target || p.actions.some((a) => a.id === target));
+      if (place?.exit) return resolve?.(true); // the exit fires on its own when you step on it
+      const direct = place?.actions.find((a) => a.id === target && a.enabled);
+      resolve?.(direct ? this.interact(direct.id) : this.interact());
     }
+
     update(time, delta) {
       if (!this.phys || host.destroyed) return;
       const intent = this.inputState.read();
-      const paused = host.paused() || host.skillActive || !intent.active;
+      const paused = host.paused() || host.busy();
       const p = this.phys.player.getPosition();
       let { x, y, run } = intent;
-      if (paused || !intent.active) { x = 0; y = 0; }
-      if (!paused && intent.active && this.path.length) {
+      if (paused) {
+        x = 0;
+        y = 0;
+      }
+      if (!paused && this.path.length) {
         if (x || y) this.cancelRoute();
         else {
           const next = this.path[0];
           const distance = Math.hypot(next.x - p.x, next.y - p.y);
           if (distance < 0.14) {
-            this.path.shift(); this.lastDistance = Infinity; this.stuckTime = 0;
+            this.path.shift();
+            this.lastDistance = Infinity;
+            this.stuckTime = 0;
             if (!this.path.length) this.finishRoute();
           } else {
-            x = (next.x - p.x) / distance; y = (next.y - p.y) / distance;
-            // Slow near a waypoint to avoid overshooting at low frame rates.
-            const speed = Math.min(1, distance / 0.4); x *= speed; y *= speed;
+            x = (next.x - p.x) / distance;
+            y = (next.y - p.y) / distance;
+            const speed = Math.min(1, distance / 0.4);
+            x *= speed;
+            y *= speed;
             this.stuckTime = distance >= this.lastDistance - 0.005 ? this.stuckTime + delta : 0;
             this.lastDistance = distance;
             if (this.stuckTime > 700) {
-              const target = this.routeTarget, attempt = this.routeAttempt, resolve = this.routeResolve;
+              const target = this.routeTarget,
+                attempt = this.routeAttempt,
+                resolve = this.routeResolve;
+              const retries = (this.routeRetries ?? 0) + 1;
               this.routeResolve = null;
-              this.navigate(this.routeGoal, { target, attempt, resolve });
+              if (retries > 3) {
+                this.cancelRoute();
+                host.events.onMessage("Something is in the way. Move it, or go round.");
+                resolve?.(false);
+              } else {
+                this.navigate(this.routeGoal, { target, attempt, resolve });
+                this.routeRetries = retries;
+              }
             }
           }
         }
@@ -290,55 +441,89 @@ export function exploreScene(Phaser, planck, host) {
       if (x || y) {
         const length = Math.hypot(x, y);
         this.facing = { x: x / length, y: y / length };
+        host.events.onMove?.();
       }
-      this.phys.setIntent(x, y, run);
+      this.phys.setIntent(x, y, run || (this.path.length > 0 && this.routeRun));
       if (!paused) this.remainder = this.phys.advance(delta / 1000, this.remainder);
       const at = this.phys.player.getPosition();
       this.hero.setPosition(at.x * TILE, at.y * TILE).setDepth(at.y * TILE + 2);
-      const carrying = Boolean(this.phys.carrying);
-      this.hero.play(carrying ? "carry" : (x || y) ? "walk" : "idle", time);
-      this.hero.setScale(this.facing.x < -0.08 ? -1 : 1, 1);
+      const moving = Math.hypot(this.phys.player.getLinearVelocity().x, this.phys.player.getLinearVelocity().y) > 0.25;
+      this.hero.play(this.phys.carrying ? "carry" : moving ? "walk" : "idle", time);
+      if (Math.abs(this.facing.x) > 0.08) this.hero.setScale(this.facing.x < 0 ? -1 : 1, 1);
       for (const { prop, sprite } of this.propSprites) {
-        const p = prop.body.getPosition();
-        sprite.setPosition(p.x * TILE, p.y * TILE - prop.z * 17).setDepth(p.y * TILE + (prop.carried ? 4 : 0));
+        const pp = prop.body.getPosition();
+        sprite.setPosition(pp.x * TILE, pp.y * TILE - prop.z * 17).setDepth(pp.y * TILE + (prop.carried ? 4 : 0));
         sprite.setRotation(prop.carried ? 0 : prop.body.getAngle());
         sprite.setAlpha(prop.cracked ? 0.65 : 1);
       }
-      const camera = this.cameras.main;
-      for (const { place, el } of this.markers) {
-        const left = ((place.at[0] + 0.5) * TILE - camera.worldView.x) * camera.zoom;
-        const top = ((place.at[1] + 0.5) * TILE - camera.worldView.y) * camera.zoom - 34;
-        el.style.left = `${Math.max(el.offsetWidth / 2 + 4, Math.min(this.scale.width - el.offsetWidth / 2 - 4, left))}px`;
-        el.style.top = `${Math.max(el.offsetHeight + 6, top)}px`;
-        el.hidden = left < 0 || left > this.scale.width || top < -30 || top > this.scale.height - 30;
-      }
-      // Dispatch only after stepping physics, never from inside a contact callback.
       const events = this.phys.events.splice(0);
-      for (const e of events) if (e.type === "crack") {
-        host.message.textContent = `The ${e.prop.kind} cracked.`;
-        if (e.prop.source.flag) queueMicrotask(() => { if (!host.destroyed) host.bridge.crack(e.prop); });
+      for (const e of events) {
+        if (e.type === "crack") {
+          host.events.onMessage(`The ${e.prop.kind} cracks.`);
+          if (this.motion) this.cameras.main.shake(140, 0.004);
+          if (e.prop.source.flag) queueMicrotask(() => !host.destroyed && host.bridge.crack(e.prop));
+        }
+        if (e.type === "knock" || e.type === "land") host.events.onImpact?.(e.impulse);
       }
       this.refreshPrompt();
-      if (!paused && intent.active && !this.dispatching) {
+      host.events.onFrame?.();
+      // Walking off the edge of the map takes the road that leaves there.
+      if (!paused && !this.dispatching) {
         const tile = this.phys.tile();
-        const exit = this.places().find((p) => p.exit && (!this.routeTarget || p.id === this.routeTarget) && p.actions[0].enabled && p.tiles.some(([x, y]) => tile[0] === x && tile[1] === y));
+        const exit = this.places().find(
+          (pl) => pl.exit && (!this.routeTarget || pl.id === this.routeTarget || pl.actions.some((a) => a.id === this.routeTarget)) && pl.tiles.some(([ex, ey]) => tile[0] === ex && tile[1] === ey),
+        );
         if (exit) {
-          const resolve = this.routeResolve; this.routeResolve = null;
-          const acted = this.interact(exit.actions[0].id);
-          resolve?.(acted);
-        }
+          const action = exit.actions[0];
+          if (action.enabled) {
+            const resolve = this.routeResolve;
+            this.routeResolve = null;
+            this.dispatching = true;
+            this.cancelRoute();
+            if (this.motion) this.cameras.main.fadeOut(260, 20, 24, 18);
+            this.time.delayedCall(this.motion ? 270 : 0, () => {
+              if (host.destroyed) return;
+              host.bridge.request(action, exit);
+              resolve?.(true);
+            });
+          } else if (this.blockedExit !== exit.id) {
+            this.blockedExit = exit.id;
+            host.events.onMessage(action.requires ?? "That way is closed for now.");
+          }
+        } else this.blockedExit = null;
       }
     }
+
+    /** Screen position (CSS pixels inside the stage) of a tile centre. */
+    project([x, y], lift = 0) {
+      const camera = this.cameras.main;
+      return {
+        x: ((x + 0.5) * TILE - camera.worldView.x) * camera.zoom,
+        y: ((y + 0.5) * TILE - lift - camera.worldView.y) * camera.zoom,
+      };
+    }
+    heroScreen() {
+      const camera = this.cameras.main;
+      return { x: (this.hero.root.x - camera.worldView.x) * camera.zoom, y: (this.hero.root.y - 70 - camera.worldView.y) * camera.zoom };
+    }
+
+    /** Whether an action happens at a place in this scene (rather than in the story band). */
+    placed(id) {
+      return this.places().some((p) => p.id === id || p.actions.some((a) => a.id === id));
+    }
+
     inspect() {
       const p = this.phys.player.getPosition();
       return {
-        scene: this.snapshot.view.scene, position: { x: p.x, y: p.y },
+        scene: this.snapshot.view.scene,
+        position: { x: p.x, y: p.y },
         walking: this.path.length > 0,
-        camera: { x: this.cameras.main.worldView.x, y: this.cameras.main.worldView.y, scrollX: this.cameras.main.scrollX, scrollY: this.cameras.main.scrollY, width: this.cameras.main.width, height: this.cameras.main.height, zoom: this.cameras.main.zoom },
+        camera: { x: this.cameras.main.worldView.x, y: this.cameras.main.worldView.y, zoom: this.cameras.main.zoom },
         art: {
           tiles: this.textures.exists("wisdom-tiles") ? this.textures.get("wisdom-tiles").frameTotal : 0,
           kweku: this.textures.exists("puppet-kweku-head") ? 1 : 0,
         },
+        places: this.places().map((pl) => pl.id),
         props: this.phys.props.map((prop) => ({ id: prop.id, x: prop.body.getPosition().x, y: prop.body.getPosition().y, cracked: prop.cracked, carried: prop.carried })),
       };
     }
