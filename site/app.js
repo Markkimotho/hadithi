@@ -2,10 +2,9 @@ import { Game, newSeed, seedCode, parseSeedCode } from "./game.js";
 import { episodes, episodeById, regions } from "./stories.js";
 import { read, write, perTale, chronicle, MAX_CHRONICLE, storageFailed, onStorageFailure } from "./ui/storage.js";
 import * as audio from "./ui/audio.js";
-import { mountWeather } from "./ui/atmosphere.js";
-import { escape, diceTray, oddsBadge, mapSvg } from "./ui/widgets.js";
-import { createBridge } from "./world/bridge.js";
-import { createWorld } from "./world/boot.js";
+import { escape } from "./ui/widgets.js";
+import { createPlay } from "./ui/play.js";
+import { playable } from "./world/bridge.js";
 
 const $ = (selector) => document.querySelector(selector);
 const flat = (title) => title.replace("\n", " ");
@@ -20,9 +19,10 @@ let settings = {
   size: "normal",
   assist: false,
   carryEchoes: true,
-  view: "world",
+  trials: true,
   ...read("settings", {}),
 };
+delete settings.view; // Classic view was retired in the third edition.
 const discoveries = perTale("discoveries", episodes, (ep, id) => Object.hasOwn(ep.endings, id));
 const knownEchoes = perTale("echoes", episodes, (ep, id) => Object.hasOwn(ep.echoes ?? {}, id));
 const earnedMarks = perTale("marks", episodes, (ep, id) => (ep.marks ?? []).some((m) => m.id === id));
@@ -32,25 +32,13 @@ const recorded = read("recorded", {});
 
 // ── Session UI state ──────────────────────────────────────────────────────
 let game = null,
-  panel = "inventory",
-  selectedItem = null,
-  selectedClues = [],
+  play = null,
   filter = "All tales",
-  trayRoll = null,
-  trayFresh = false,
-  animateNext = false,
   endingNews = null,
   toastTimer;
 const main = $("#main"),
   modal = $("#modal");
-
-let world = null;
-const worldBridge = createBridge(() => game, (command) => act(command));
-function stopWorld() {
-  world?.destroy();
-  world = null;
-}
-function inWorld() { return Boolean(world && main.contains(world.root)); }
+const ready = new Set(episodes.filter(playable).map((ep) => ep.id));
 
 onStorageFailure(() => toast("Browser storage is unavailable. Export a save to keep this journey."));
 
@@ -121,15 +109,15 @@ function showHelp() {
   showDialog(
     "How a telling works",
     `<div class="help-grid">
-      <section><h3>⌕ Look, then act</h3><p>Inspecting, reading clues, and thinking are free. Every other action shows its cost in turns. The world moves when turns pass: weather, tides, patrols, and moonrise do not wait.</p></section>
-      <section><h3>⚄ Dice checks</h3><p>Some actions roll two dice plus your stats and advantages against a difficulty. The exact odds and every modifier are shown before you commit. <b>One try</b> checks cannot be repeated. <b>Retry</b> checks can be attempted again once your odds improve. Failure always moves the story; it is never a wall. Each journey has a seed, so undoing cannot reroll fate.</p></section>
-      <section><h3>⟷ Connect clues</h3><p>Open <b>Mind</b>, choose two clues, and connect them. A true connection becomes a conclusion that opens new conversations, arguments, and endings. A wrong one costs nothing.</p></section>
+      <section><h3>⌕ Walk, look, act</h3><p>Walk anywhere: it costs nothing. Glints mark what you can look at, take or talk to. Walk up and press E. Looking is free; doing takes a turn, and the world moves when turns pass. Weather, tides, patrols and moonrise do not wait.</p></section>
+      <section><h3>⚄ Trials</h3><p>Leaps, climbs and arguments are played by hand. Your stats make them easier, and the odds are shown first. Turn trials off in Settings and the dice decide instead. <b>One try</b> trials cannot be repeated. <b>Retry</b> trials open again once your odds improve. Failing always moves the story on. Taking a step back cannot change how a trial went.</p></section>
+      <section><h3>⟷ Put things together</h3><p>Open your journal (J), go to <b>What you know</b>, and choose two things that fit. A true connection opens new conversations, arguments and endings. A wrong one costs nothing.</p></section>
       <section><h3>◈ Echoes</h3><p>Every ending teaches you something. Echoes carry that knowledge into your next telling and reveal <b>remembered</b> actions that were not there before. Each tale hides one ending that only remembered knowledge can reach.</p></section>
       <section><h3>★ Marks</h3><p>Marks recognise how you played: travelling light, thinking clearly, keeping the peace. They are listed in the Chronicle.</p></section>
       <section><h3>✧ Direction</h3><p>Once per journey you can turn the tale toward a different genre. It changes scenes, solutions, and endings, not just colours.</p></section>
     </div>
     <h3>Keyboard</h3>
-    <dl class="keys"><dt>1–9</dt><dd>Take the matching action</dd><dt>U</dt><dd>Undo one step</dd><dt>B · J · P · M</dt><dd>Bag, Mind, People, Map</dd><dt>S</dt><dd>Sound on or off</dd><dt>?</dt><dd>This guide</dd></dl>`,
+    <dl class="keys"><dt>WASD · arrows</dt><dd>Walk (Shift to run)</dd><dt>E · Space</dt><dd>Act, talk, or go on with the story</dd><dt>1–9</dt><dd>Choose a line in a conversation</dd><dt>Q · F</dt><dd>Lift or set down · throw</dd><dt>J</dt><dd>Your journal (B, K, P, M for its pages)</dd><dt>U</dt><dd>Take back a step</dd><dt>?</dt><dd>This guide</dd></dl>`,
   );
 }
 $("#help-link").addEventListener("click", showHelp);
@@ -146,26 +134,21 @@ function showSettings() {
     ${row("ambience", "Ambience", "Procedural rain, sea, market, and night. Generated live; no recordings.", check("ambience", settings.ambience))}
     ${row("volume", "Volume", `${settings.volume}%`, `<input id="volume" type="range" min="0" max="100" step="5" value="${settings.volume}">`)}
     <h3 class="setting-group">Comfort</h3>
-    ${row("play-view", "Play view", "Walk through mapped scenes, or use the Classic buttons and illustrations.", `<select id="play-view"><option value="world" ${settings.view === "world" ? "selected" : ""}>World view</option><option value="classic" ${settings.view === "classic" ? "selected" : ""}>Classic view</option></select>`)}
+    ${row("trials", "Physical trials", "Leaps, climbs and arguments are played by hand. Turn off to let the dice decide instead.", check("trials", settings.trials))}
     ${row("motion", "Scene motion", "Weather, dice tumbling, and encounter feedback.", check("motion", settings.motion))}
     ${row("text-size", "Story text size", "Applies to story and journal text.", `<select id="text-size">${[["normal", "Standard"], ["large", "Large"], ["larger", "Larger"]].map(([v, l]) => `<option value="${v}" ${settings.size === v ? "selected" : ""}>${l}</option>`).join("")}</select>`)}
     ${row("assist", "Storyteller’s grace", "New journeys add +2 to every dice check. Shown in every roll.", check("assist", settings.assist))}
     ${row("carry", "Carry echoes", "New journeys remember what earlier endings taught you.", check("carry", settings.carryEchoes))}
-    <p class="fineprint">Keyboard: Tab to move, Enter to act, 1–9 for actions, U to undo, ? for the guide. Progress saves after every action on this browser.</p>
+    <p class="fineprint">Walk with WASD or the arrows, act with E or Space, J for your journal, U to take back a step, ? for the guide. Progress saves after every action on this browser.</p>
     <div class="dialog-actions"><button class="button secondary" id="import-save">Import a journey</button><button class="button secondary" id="open-help">How to play</button></div>`,
   );
-  for (const [id, key] of [["sound", "sound"], ["ambience", "ambience"], ["motion", "motion"], ["assist", "assist"], ["carry", "carryEchoes"]])
+  for (const [id, key] of [["sound", "sound"], ["ambience", "ambience"], ["motion", "motion"], ["assist", "assist"], ["carry", "carryEchoes"], ["trials", "trials"]])
     $(`#${id}`).addEventListener("change", (event) => {
       settings[key] = event.target.checked;
       saveSettings();
       if (key === "sound") audio.sfx("click");
-      if (key === "motion" && game) renderGame();
+      if (key === "motion" && game) play?.sync();
     });
-  $("#play-view").addEventListener("change", (event) => {
-    settings.view = event.target.value;
-    saveSettings();
-    if (game) renderGame();
-  });
   $("#volume").addEventListener("input", (event) => {
     settings.volume = Number(event.target.value);
     event.target.closest(".setting-row").querySelector("small").textContent = `${settings.volume}%`;
@@ -187,13 +170,9 @@ $("#import-file").addEventListener("change", async (event) => {
     const save = JSON.parse(await file.text());
     const ep = episodeById(save?.episodeId);
     if (!ep) throw new Error("This story is not in the collection.");
-    stopWorld();
-    game = Game.load(ep, save);
-    panel = "mind";
-    trayRoll = null;
+    if (!ready.has(ep.id)) throw new Error("This tale is still being retold for the world. Its journey will open when it is ready.");
     modal.close();
-    persist();
-    renderGame();
+    openTale(Game.load(ep, save));
     toast(game.migratedFrom ? "Journey imported and carried into this edition." : "Journey imported.");
   } catch (error) {
     toast(error.message || "This save could not be imported.");
@@ -256,10 +235,10 @@ function endingSlots(ep) {
     .join("");
 }
 function library() {
-  stopWorld();
+  play?.destroy();
+  play = null;
   game = null;
-  selectedItem = null;
-  trayRoll = null;
+  document.body.classList.remove("playing");
   audio.setAmbience("none");
   main.className = "collection";
   delete main.dataset.theme;
@@ -267,18 +246,25 @@ function library() {
   const total = episodes.reduce((n, ep) => n + Object.keys(ep.endings).length, 0);
   const secrets = episodes.reduce((n, ep) => n + Object.values(ep.endings).filter((e) => e.secret).length, 0);
   const found = Object.values(discoveries).reduce((n, list) => n + list.length, 0);
-  main.innerHTML = `<section class="collection-intro"><div class="intro-copy"><div class="edition"><span class="small-star">✳</span> Second edition <span class="rule"></span> ${episodes.length} tales</div><h1>Four old stories,<br>and <em>you in each one.</em></h1><p>Chase Anansi and his pot into the rain. Ride a turtle down to the sea palace. Scare robbers out of a house with a donkey, a dog, a cat and a rooster. Win back a jar of gold with a children’s game.</p><div class="intro-meta"><span>${episodes.length} tales</span><span>${total - secrets} endings, ${secrets} hidden</span><span>Saves as you go</span></div></div><div class="atlas-seal" aria-hidden="true"><span class="seal-top">Hadithi</span><div class="compass"><span class="compass-letter north">N</span><span class="compass-letter east">E</span><span class="compass-letter south">S</span><span class="compass-letter west">W</span><svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="90"/><circle cx="100" cy="100" r="74"/><path d="m100 12 12 76 76 12-76 12-12 76-12-76-76-12 76-12z"/><path class="needle" d="m100 28 12 60 60 12-72 0zM100 172l-12-60-60-12h72z"/><path d="m46 46 54 32 54-32-32 54 32 54-54-32-54 32 32-54z"/><circle cx="100" cy="100" r="8"/></svg></div><span class="seal-bottom">Ghana · Japan · Germany · Baghdad</span></div></section>
+  main.innerHTML = `<section class="collection-intro"><div class="intro-copy"><div class="edition"><span class="small-star">✳</span> Third edition <span class="rule"></span> ${episodes.length} tales</div><h1>Four old stories,<br>and <em>you in each one.</em></h1><p>Chase Anansi and his pot into the rain. Ride a turtle down to the sea palace. Scare robbers out of a house with a donkey, a dog, a cat and a rooster. Win back a jar of gold with a children’s game.</p><div class="intro-meta"><span>${episodes.length} tales</span><span>${total - secrets} endings, ${secrets} hidden</span><span>Saves as you go</span></div></div><div class="atlas-seal" aria-hidden="true"><span class="seal-top">Hadithi</span><div class="compass"><span class="compass-letter north">N</span><span class="compass-letter east">E</span><span class="compass-letter south">S</span><span class="compass-letter west">W</span><svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="90"/><circle cx="100" cy="100" r="74"/><path d="m100 12 12 76 76 12-76 12-12 76-12-76-76-12 76-12z"/><path class="needle" d="m100 28 12 60 60 12-72 0zM100 172l-12-60-60-12h72z"/><path d="m46 46 54 32 54-32-32 54 32 54-54-32-54 32 32-54z"/><circle cx="100" cy="100" r="8"/></svg></div><span class="seal-bottom">Ghana · Japan · Germany · Baghdad</span></div></section>
   <section class="shelf"><div class="shelf-header"><div><span class="eyebrow">Pick a tale</span><h2>The collection</h2></div><button class="discovery-count" id="shelf-chronicle">${found} of ${total} endings found · Chronicle ↗</button></div><div class="filters" role="group" aria-label="Filter stories">${["All tales", ...regions]
     .map((f) => `<button class="filter ${filter === f ? "active" : ""}" data-filter="${f}" aria-pressed="${filter === f}">${f}</button>`)
     .join("")}<span class="filter-note">Free. No account.</span></div><div class="story-grid">${episodes
     .filter((ep) => filter === "All tales" || ep.region === filter)
     .map((ep) => {
-      const save = read(`save.${ep.id}`, null);
+      const open = ready.has(ep.id);
+      const save = open && read(`save.${ep.id}`, null);
       const echoes = knownEchoes[ep.id].length;
       const marks = earnedMarks[ep.id].length;
-      return `<article class="story-card ${ep.id}"><div class="cover"><img src="./assets/${ep.id}.svg" alt="" /><div class="cover-top"><span>Tale ${Number(ep.number)}</span><span class="cover-region">${ep.region}</span></div><div class="cover-caption"><span>${escape(ep.genre)}</span><h3>${escape(ep.title).replace("\n", "<br>")}</h3></div><span class="cover-corner" aria-hidden="true">✧</span></div><div class="card-body"><div class="story-origin">${escape(ep.tradition)} <span>${ep.duration}</span></div><p>${escape(ep.hook)}</p><div class="card-bottom"><button class="button start-button" data-start="${ep.id}">${save ? "Resume journey" : "Enter the story"} <span>→</span></button><button class="source-button" data-source="${ep.id}" aria-label="Source notes for ${escape(flat(ep.title))}">ⓘ</button></div><div class="card-progress"><span class="slots" aria-label="${discoveries[ep.id].length} of ${Object.keys(ep.endings).length} endings found">${endingSlots(ep)}</span><span>${echoes ? `◈ ${echoes} echo${echoes === 1 ? "" : "es"}` : "No echoes yet"}</span><span>★ ${marks}/${ep.marks.length}</span></div><div class="card-foot"><span>${save ? "Saved in this browser" : "No account needed"}</span><button class="new-run" data-new="${ep.id}">${save ? "Begin again" : "Journey options"}</button></div></div></article>`;
+      return `<article class="story-card ${ep.id}${open ? "" : " retelling"}"><div class="cover"><img src="./assets/${ep.id}.svg" alt="" /><div class="cover-top"><span>Tale ${Number(ep.number)}</span><span class="cover-region">${ep.region}</span></div><div class="cover-caption"><span>${escape(ep.genre)}</span><h3>${escape(ep.title).replace("\n", "<br>")}</h3></div><span class="cover-corner" aria-hidden="true">✧</span></div><div class="card-body"><div class="story-origin">${escape(ep.tradition)} <span>${ep.duration}</span></div><p>${escape(ep.hook)}</p><div class="card-bottom">${
+        open
+          ? `<button class="button start-button" data-start="${ep.id}">${save ? "Go on with the tale" : "Enter the story"} <span>→</span></button>`
+          : `<span class="retelling-note">Being retold for the world. Soon.</span>`
+      }<button class="source-button" data-source="${ep.id}" aria-label="Source notes for ${escape(flat(ep.title))}">ⓘ</button></div><div class="card-progress"><span class="slots" aria-label="${discoveries[ep.id].length} of ${Object.keys(ep.endings).length} endings found">${endingSlots(ep)}</span><span>${echoes ? `◈ ${echoes} echo${echoes === 1 ? "" : "es"}` : "No echoes yet"}</span><span>★ ${marks}/${ep.marks.length}</span></div>${
+        open ? `<div class="card-foot"><span>${save ? "Saved in this browser" : "No account needed"}</span><button class="new-run" data-new="${ep.id}">${save ? "Begin again" : "Journey options"}</button></div>` : ""
+      }</div></article>`;
     })
-    .join("")}</div></section><section class="how-to"><span class="how-number">How to play</span><div><b>01. Look closely.</b><p>Inspect freely. Connect clues in your Mind.</p></div><div><b>02. Make your move.</b><p>Use your bag, your allies, and the dice.</p></div><div><b>03. Remember.</b><p>Each ending echoes into the next telling.</p></div><button class="how-help" id="shelf-help">The full guide ↗</button></section>`;
+    .join("")}</div></section><section class="how-to"><span class="how-number">How to play</span><div><b>01. Walk and look.</b><p>Go where the glints are. Looking costs nothing.</p></div><div><b>02. Act it out.</b><p>Leap, climb, argue. Your hands decide.</p></div><div><b>03. Remember.</b><p>Each ending echoes into the next telling.</p></div><button class="how-help" id="shelf-help">The full guide ↗</button></section>`;
   bind("[data-filter]", (el) => {
     filter = el.dataset.filter;
     library();
@@ -296,40 +282,61 @@ $("#library-link").addEventListener("click", library);
 /** A shared link can fix the dice: ?seed=CODE starts new journeys with it. */
 const linkSeed = parseSeedCode(new URLSearchParams(location.search).get("seed"));
 const freshSeed = () => linkSeed ?? newSeed();
+const freshOptions = (id) => ({ seed: freshSeed(), echoes: settings.carryEchoes ? knownEchoes[id] : [], assist: settings.assist });
 
 function start(id, options = null) {
-  stopWorld();
   const ep = episodeById(id);
+  if (!ready.has(id)) return toast("This tale is still being retold for the world.");
   const save = !options && read(`save.${id}`, null);
+  let next;
   try {
-    game = save
-      ? Game.load(ep, save)
-      : new Game(ep, options ?? { seed: freshSeed(), echoes: settings.carryEchoes ? knownEchoes[id] : [], assist: settings.assist });
+    next = save ? Game.load(ep, save) : new Game(ep, options ?? freshOptions(id));
   } catch (error) {
-    showDialog(
-      "A different edition",
-      `<p>${escape(error.message)}</p><button class="button" id="fresh-start">Start a new journey →</button>`,
-    );
+    showDialog("A different edition", `<p>${escape(error.message)}</p><button class="button" id="fresh-start">Start a new journey →</button>`);
     $("#fresh-start").onclick = () => {
       modal.close();
-      start(id, { seed: freshSeed(), echoes: settings.carryEchoes ? knownEchoes[id] : [], assist: settings.assist });
+      start(id, freshOptions(id));
     };
     return;
   }
-  panel = "inventory";
-  selectedItem = null;
-  selectedClues = [];
-  trayRoll = null;
-  endingNews = null;
-  persist();
-  animateNext = true;
-  renderGame();
+  openTale(next);
   if (game.migratedFrom) toast("Your journey was carried into this edition of the tale.");
   else if (!save && game.state.echoes.length)
     toast(`◈ ${game.state.echoes.length} echo${game.state.echoes.length === 1 ? "" : "es"} from earlier tellings will shape this one.`, 5500);
-  $("#scene-title")?.focus({ preventScroll: true });
-  window.scrollTo(0, 0);
 }
+
+/** Put a game on screen: the world, the storyteller, the journal. */
+function openTale(next) {
+  play?.destroy();
+  game = next;
+  endingNews = null;
+  persist();
+  document.title = `${flat(game.episode.title)} · Hadithi`;
+  document.body.classList.add("playing");
+  window.scrollTo(0, 0);
+  play = createPlay(main, {
+    getGame: () => game,
+    act,
+    undo,
+    rewind,
+    restart: () => newJourney(game.episode.id),
+    library,
+    sources,
+    chronicle: () => showChronicle(game.episode.id),
+    themes: showThemes,
+    exportSave,
+    settings,
+    toast,
+    audio,
+    announce: (text) => ($("#announcement").textContent = text),
+    storageFailed,
+    modalOpen: () => modal.open,
+    endingNews: () => (endingNews?.key === endingKey() ? endingNews : { echoes: [], marks: [] }),
+    found: () => discoveries[game.episode.id].length,
+  });
+  play.mount();
+}
+const endingKey = () => `${game.state.seed}:${game.state.actions.length}:${game.state.ending}`;
 
 function newJourney(id) {
   const ep = episodeById(id);
@@ -337,12 +344,12 @@ function newJourney(id) {
   const hasSave = Boolean(read(`save.${id}`, null));
   showDialog(
     "A new telling",
-    `<p>${hasSave ? `This replaces your current journey in <em>${escape(flat(ep.title))}</em>. ` : ""}Discovered endings, echoes, and marks stay in your chronicle.</p>
+    `<p>${hasSave ? `This replaces your current journey in <em>${escape(flat(ep.title))}</em>. ` : ""}Endings, echoes and marks you have found stay in your chronicle.</p>
     <div class="setting-row"><label for="carry-now">Carry echoes<small>${
       echoes.length ? echoes.map((x) => `◈ ${escape(ep.echoes[x].title)}`).join(" · ") : "None yet: reach an ending to learn one."
     }</small></label><input id="carry-now" type="checkbox" ${settings.carryEchoes && echoes.length ? "checked" : ""} ${echoes.length ? "" : "disabled"}></div>
-    <div class="setting-row"><label for="assist-now">Storyteller’s grace<small>+2 to every dice check this journey.</small></label><input id="assist-now" type="checkbox" ${settings.assist ? "checked" : ""}></div>
-    <div class="setting-row"><label for="seed-now">Seed<small>Leave blank for fresh fortune, or enter a seed from your chronicle to replay the same dice.</small></label><input id="seed-now" type="text" inputmode="text" autocomplete="off" spellcheck="false" maxlength="7" placeholder="random" class="seed-input"></div>
+    <div class="setting-row"><label for="assist-now">Storyteller’s grace<small>Every trial is easier this journey (+2 to the odds).</small></label><input id="assist-now" type="checkbox" ${settings.assist ? "checked" : ""}></div>
+    <div class="setting-row"><label for="seed-now">Seed<small>Leave blank for fresh fortune, or enter a seed from your chronicle to replay the same luck.</small></label><input id="seed-now" type="text" inputmode="text" autocomplete="off" spellcheck="false" maxlength="7" placeholder="random" class="seed-input"></div>
     <div class="dialog-actions"><button class="button" id="begin-fresh">Begin →</button><button class="button secondary" id="keep-save">${hasSave ? "Keep my journey" : "Not yet"}</button></div>`,
     "A new telling",
   );
@@ -367,7 +374,7 @@ function persist() {
   write(`save.${id}`, game.save());
   const s = game.state;
   if (!s.ending) return;
-  const key = `${s.seed}:${s.actions.length}:${s.ending}`;
+  const key = endingKey();
   if (recorded[id] === key) return;
   recorded[id] = key;
   write("recorded", recorded);
@@ -397,47 +404,33 @@ function persist() {
 }
 
 // ── Acting ────────────────────────────────────────────────────────────────
+/** Send one command to the story. The storyteller tells what happened. */
 function act(command) {
-  const wasWorld = inWorld();
-  const before = game.state.log.length;
+  const before = game.view();
   const attempts = Object.values(game.state.checks).reduce((n, c) => n + c.attempts, 0);
   try {
     game.dispatch(command);
   } catch (error) {
     toast(error.message);
-    return;
+    play?.world?.release();
+    return false;
   }
-  const fresh = game.state.log.slice(before);
+  const fresh = game.state.log.slice(before.log.length);
   const rolled = Object.values(game.state.checks).reduce((n, c) => n + c.attempts, 0) > attempts;
-  trayRoll = rolled ? game.state.lastRoll : command.type === "PUZZLE" || command.type === "CLEAR_PUZZLE" ? trayRoll : null;
-  trayFresh = rolled;
   // Sound follows what actually happened, loudest moment first.
   const kinds = new Set(fresh.map((e) => e.kind));
   if (kinds.has("ending")) audio.sfx("ending");
   else if (kinds.has("encounter")) audio.sfx("interrupt");
   if (rolled) {
-    audio.sfx("dice");
+    audio.sfx(game.state.lastRoll.mode === "skill" ? "click" : "dice");
     audio.sfx(game.state.lastRoll.success ? "success" : "failure");
   } else if (kinds.has("deduction")) audio.sfx("deduction");
   else if (kinds.has("deduction-miss")) audio.sfx("wrong");
   else if (command.type === "TAKE_ITEM" || command.type === "COMBINE") audio.sfx("take");
   else if (!kinds.has("ending") && !kinds.has("encounter")) audio.sfx("click");
-  if (command.type === "DEDUCE") selectedClues = [];
   persist();
-  selectedItem = null;
-  animateNext = true;
-  renderGame();
-  const spoken = fresh
-    .filter((e) => e.kind !== "action")
-    .map((e) => e.text)
-    .join(" ");
-  $("#announcement").textContent = `${game.view().title}. ${spoken}`;
-  if (command.type === "DEDUCE") $("#tab-mind")?.focus({ preventScroll: true });
-  else if (command.type !== "PUZZLE" && command.type !== "CLEAR_PUZZLE") {
-    $("#scene-title")?.focus({ preventScroll: true });
-    if (!wasWorld && matchMedia("(max-width: 620px)").matches) $("#scene-title")?.scrollIntoView({ block: "start", behavior: "instant" });
-  } else if (game.state.puzzle.length === 0) ($("#puzzle-heading") || $("#scene-title"))?.focus({ preventScroll: true });
-  else $(`[data-puzzle="${command.id}"]`)?.focus({ preventScroll: true });
+  play?.after(before, game.view());
+  return true;
 }
 function undo() {
   if (!game?.view().canUndo) return;
@@ -447,321 +440,26 @@ function undo() {
     toast(error.message);
     return;
   }
-  trayRoll = null;
   persist();
-  renderGame();
   audio.sfx("click");
-  toast("One step undone. The dice remember: the same choice rolls the same way.");
-  $("#scene-title")?.focus({ preventScroll: true });
+  play?.reset("You take back your last step. What is done by luck stays done.");
 }
-
-const actionIcons = {
-  TRAVEL: "↗",
-  INSPECT: "⌕",
-  TAKE_ITEM: "＋",
-  USE_ITEM: "◇",
-  TALK: "❞",
-  BARGAIN: "⇌",
-  SOLVE: "⌘",
-  WAIT: "◷",
-  CHOOSE: "✧",
-};
-const verbs = {
-  TRAVEL: "Go",
-  TAKE_ITEM: "Take",
-  USE_ITEM: "Use",
-  TALK: "Talk",
-  BARGAIN: "Bargain",
-  SOLVE: "Try",
-  WAIT: "Wait",
-  CHOOSE: "Choose",
-};
-
-function showTip(v) {
-  const offer = (id, text) => {
-    if (tips.has(id)) return false;
-    tips.add(id);
-    write("tips", [...tips]);
-    setTimeout(() => toast(text, 7000), 450);
-    return true;
-  };
-  if (v.ending) return;
-  if (v.actions.some((a) => a.odds) && offer("check", "⚄ Dice checks show your exact odds before you commit. Hover or focus one to see every modifier.")) return;
-  if (v.clues.length >= 2 && !v.deductions.length && panel !== "mind" && offer("mind", "⟷ You have two clues. Open Mind to connect them; thinking never costs a turn.")) return;
-  if (v.actions.some((a) => a.remembered) && offer("echo", "◈ A remembered action: an echo from an earlier telling has opened something new.")) return;
-}
-
-// ── Rendering the play screen ─────────────────────────────────────────────
-function renderGame() {
-  if (!game) return;
-  const ep = game.episode,
-    v = game.view(),
-    atm = v.atmosphere;
-  const mapped = Boolean(worldBridge.read()?.layout);
-  const worldView = settings.view === "world" && mapped;
-  if (worldView) world?.root.remove();
-  else stopWorld();
-  const menuActions = worldView ? v.actions.filter((a) => worldBridge.read().layout.menu.includes(a.id)) : v.actions;
-  document.title = `${flat(ep.title)} · Hadithi`;
-  main.className = `play-screen ${ep.id}${worldView ? " world-view" : ""}`;
-  main.dataset.theme = v.theme;
-  const status = v.ending ? "The tale is told" : v.encounter ? "Interrupted" : "On the road";
-  main.innerHTML = `<div class="journey-heading"><button class="back-link" id="back-library">← The collection</button><span>${escape(ep.tradition)} <span class="separator">/</span> Tale ${Number(ep.number)}</span><button class="back-link" id="story-source">Source notes ↗</button></div>
-  <div class="game-cabinet"><div class="cabinet-bar"><span class="status-light"></span><span>${status}</span>${mapped ? `<button id="toggle-view" class="view-toggle">${worldView ? "Classic view" : "World view"}</button>` : ""}<span class="bar-right"><button id="undo" ${v.canUndo ? "" : "disabled"} aria-keyshortcuts="U">↶ Undo</button><span class="seed" title="This journey’s seed. Enter it in a new telling to replay the same dice.">Seed ${seedCode(v.seed)}</span>${v.assist ? '<span class="grace" title="Storyteller’s grace: +2 to every check">Grace +2</span>' : ""}${v.echoes.length ? `<span class="echo-count" title="Echoes carried into this telling">◈ ${v.echoes.length}</span>` : ""}</span></div>
-  <div class="game-layout"><section class="play-column" aria-label="Current scene">
-    ${worldView ? '<div id="world-mount"></div>' : `<div class="scene-stage ${v.encounter ? "interrupted" : ""}" data-weather="${atm.weather}"><img class="scene-image" src="./assets/${v.sceneArt}.svg" alt="" /><div class="light-layer" data-light="${atm.light}"></div><canvas class="weather-layer" aria-hidden="true"></canvas><div class="stage-grid" aria-hidden="true"></div><div class="scene-location"><span class="eyebrow">${escape(v.kicker)}</span><span class="location-marker">⌖</span></div>${
-      v.ending
-        ? '<div class="ending-seal" aria-hidden="true">✧</div>'
-        : v.actions
-            .filter((a) => a.spot && a.enabled)
-            .map((a) => `<button class="hotspot" style="--x:${a.spot[0]}%;--y:${a.spot[1]}%" data-hotspot="${a.id}" aria-label="On scene: ${escape(a.label)}"><span>＋</span><small>${escape(a.label)}</small></button>`)
-            .join("")
-    }<div class="stage-bottom"><span>${escape(ep.role)}</span><span class="clock">${atm.light[0].toUpperCase()}${atm.light.slice(1)}</span><span>${escape(ep.themes[v.theme].name)} ${ep.themes[v.theme].icon}</span></div></div>`}
-    <div class="narrative ${animateNext ? "enter" : ""}"><div class="chapter-line"><span>${v.ending ? "How it ended" : v.encounter ? "Interrupted" : escape(v.kicker)}</span><span>Turn ${v.turn}</span></div><h1 id="scene-title" tabindex="-1">${escape(v.endingData?.title || v.title)}</h1><p class="story-text">${escape(v.endingData?.text || v.description)}</p>${v.variant && !v.ending ? `<p class="scene-variant">${escape(v.variant)}</p>` : ""}${trayRoll ? diceTray(trayRoll, ep.statLabels, { fresh: trayFresh && settings.motion }) : ""}${renderConsequence(v)}${v.ending ? renderEnding(ep, v) : `${renderPuzzle(v)}<div class="action-heading"><span>${worldView ? "Explore the scene above" : "What do you do?"}</span><span>Looking is free. Doing takes a turn.</span></div><div class="actions">${menuActions.map((a, i) => renderAction(ep, a, i)).join("")}</div>`}</div></section>
-  <aside class="field-panel" aria-label="Your field journal"><div class="field-panel-head"><span>Journal</span><span>${escape(ep.themes[v.theme].name)}</span></div><div class="objective"><span class="eyebrow">${v.ending ? "What it meant" : "What you want"}</span><p>${escape(v.endingData?.reflection || v.objective)}</p></div><div class="stats">${Object.entries(v.stats)
-    .map(([key, n]) => `<div><label>${escape(ep.statLabels[key])}<b>${n}<small>/10</small></b></label><div class="stat-track"><span style="width:${n * 10}%"></span></div></div>`)
-    .join("")}</div><div class="panel-tabs" role="tablist" aria-label="Field journal sections">${[
-    ["inventory", "Bag", v.inventory.length, "B"],
-    ["mind", "Mind", v.clues.length, "J"],
-    ["people", "People", v.people.length, "P"],
-    ["map", "Map", v.map.nodes.length, "M"],
-  ]
-    .map(
-      ([id, label, n, key]) =>
-        `<button id="tab-${id}" role="tab" aria-controls="panel-content" aria-selected="${panel === id}" aria-keyshortcuts="${key}" data-panel="${id}" ${panel === id ? 'class="selected"' : ""}>${label} <small>${n}</small></button>`,
-    )
-    .join("")}</div><div id="panel-content" role="tabpanel" aria-labelledby="tab-${panel}" class="panel-content">${renderPanel(ep, v)}</div><div class="theme-box"><span class="eyebrow">What kind of story</span><button id="shift-theme" ${v.flags.themeShifted || v.encounter || v.ending ? "disabled" : ""}><span>${ep.themes[v.theme].icon} ${escape(ep.themes[v.theme].name)}</span><span>${v.flags.themeShifted ? "Already turned" : "Turn the tale ↗"}</span></button><p>${v.flags.themeShifted ? "Your chosen direction is changing the events ahead." : "One turning point per journey. Choose a new genre and change what can happen."}</p></div><div class="save-tools"><span id="save-label">${storageFailed() ? "This browser will not keep your save. Export it." : "✓ Saved in this browser"}</span><button id="export-save">Export save ↓</button></div></aside></div>
-  <div class="cabinet-footer"><span>${escape(flat(ep.title))}</span><span>${escape(ep.tradition)}</span><button id="restart-story">Begin again ↺</button></div></div>`;
-
-  if (worldView) {
-    if (!world) world = createWorld({
-      bridge: worldBridge,
-      paused: () => modal.open || document.hidden || !inWorld(),
-      motion: settings.motion,
-      onError: (error) => {
-        console.warn("World view could not start", error);
-        settings.view = "classic";
-        saveSettings();
-        renderGame();
-        toast("World view could not open. Your journey continues in Classic view.");
-      },
-    });
-    $("#world-mount").replaceWith(world.root);
-    world.sync(settings.motion);
-  }
-  if ($("#toggle-view")) $("#toggle-view").onclick = () => {
-    settings.view = worldView ? "classic" : "world";
-    saveSettings();
-    renderGame();
-    $("#toggle-view")?.focus({ preventScroll: true });
-  };
-  // Animate a move once; tab switches and other re-renders show it settled.
-  trayFresh = false;
-  animateNext = false;
-  mountWeather(worldView ? world?.weatherLayer : main.querySelector(".weather-layer"), atm.weather, settings.motion);
-  audio.setAmbience(atm.ambience);
-  $("#back-library").onclick = library;
-  $("#story-source").onclick = () => sources(ep.id);
-  $("#restart-story").onclick = () => newJourney(ep.id);
-  $("#shift-theme").onclick = showThemes;
-  $("#export-save").onclick = exportSave;
-  $("#undo").onclick = undo;
-  bind("[data-action]", (el) => {
-    const a = v.actions.find((x) => x.id === el.dataset.action);
-    act({ type: a.type, id: a.id });
-  });
-  bind("[data-hotspot]", (el) => {
-    const a = v.actions.find((x) => x.id === el.dataset.hotspot);
-    act({ type: a.type, id: a.id });
-  });
-  bind("[data-travel]", (el) => {
-    const a = v.actions.find((x) => x.id === el.dataset.travel);
-    if (a?.enabled) {
-      if (inWorld()) world.walkTo(a.id);
-      else act({ type: a.type, id: a.id });
-    }
-  });
-  bind("[data-panel]", (el) => switchPanel(el.dataset.panel));
-  bind("[data-item]", (el) => {
-    const id = el.dataset.item;
-    selectedItem = selectedItem === id ? null : id;
-    renderGame();
-    $(`[data-item="${id}"]`).focus({ preventScroll: true });
-  });
-  bind("[data-clue]", (el) => {
-    const id = el.dataset.clue;
-    selectedClues = selectedClues.includes(id) ? selectedClues.filter((x) => x !== id) : [...selectedClues.slice(-1), id];
-    renderGame();
-    $(`[data-clue="${id}"]`).focus({ preventScroll: true });
-  });
-  if ($("#connect")) $("#connect").onclick = () => act({ type: "DEDUCE", ids: selectedClues });
-  bind("[data-recipe]", (el) => act({ type: "COMBINE", id: el.dataset.recipe }));
-  bind("[data-puzzle]", (el) => act({ type: "PUZZLE", id: el.dataset.puzzle }));
-  if ($("#clear-puzzle")) $("#clear-puzzle").onclick = () => act({ type: "CLEAR_PUZZLE" });
-  bind("#rewind, #rewind-map", () => {
+function rewind() {
+  try {
     game = game.rewind();
-    trayRoll = null;
-    persist();
-    renderGame();
-    toast("Returned to your last turning point.");
-  });
-  if ($("#another-story")) $("#another-story").onclick = library;
-  if ($("#retell")) $("#retell").onclick = () => newJourney(ep.id);
-  if ($("#open-chronicle")) $("#open-chronicle").onclick = () => showChronicle(ep.id);
-  showTip(v);
-}
-
-function switchPanel(id) {
-  panel = id;
-  selectedItem = null;
-  renderGame();
-  $(`#tab-${panel}`)?.focus({ preventScroll: true });
-}
-
-function renderAction(ep, a, i) {
-  let meta;
-  if (!a.enabled) meta = `<small class="requires">${escape(a.requires || "Complete the puzzle first")}</small>`;
-  else if (a.odds) meta = `<small>${oddsBadge(a.odds, ep.statLabels)}</small>`;
-  else meta = `<small>${a.type === "INSPECT" ? "Look · free" : `${verbs[a.type] ?? "Act"} · ${a.cost ?? 1} ${(a.cost ?? 1) === 1 ? "turn" : "turns"}`}</small>`;
-  return `<button class="action-button ${a.enabled ? "" : "unavailable"} ${a.odds ? `check ${a.odds.kind}` : ""} ${a.remembered ? "remembered" : ""}" data-action="${a.id}" ${a.enabled ? "" : "disabled"}><span class="action-icon" aria-hidden="true">${a.odds ? "⚄" : actionIcons[a.type]}</span><span>${a.remembered ? '<em class="remembered-badge">◈ Remembered</em>' : ""}<b>${escape(a.label)}</b>${meta}</span>${i < 9 ? `<span class="action-key" aria-hidden="true">${i + 1}</span>` : ""}</button>`;
-}
-
-function renderConsequence(v) {
-  if (v.ending) return "";
-  const start = v.log.findLastIndex((e) => ["action", "deduction", "deduction-miss"].includes(e.kind));
-  const recent = v.log.slice(Math.max(0, start)).filter((e) => e.kind !== "action" && e.kind !== "roll");
-  if (!recent.length) return "";
-  const label = { world: "Meanwhile", encounter: "Interrupted", consequence: "What happened", deduction: "It fits", "deduction-miss": "It does not fit" };
-  const cls = { encounter: "encounter-note", deduction: "deduction-note", "deduction-miss": "miss-note" };
-  const shown = recent.map((e) => (e.kind === "deduction" ? { ...e, title: true } : e));
-  const worlds = shown.filter((e) => e.kind === "world");
-  const keep = shown.filter((e) => e.kind !== "world" || worlds.slice(-2).includes(e));
-  return keep
-    .map(
-      (e) =>
-        `<div class="consequence ${cls[e.kind] ?? ""} ${trayFresh && settings.motion ? "after-roll" : ""} ${animateNext ? "enter" : ""}"><span>${label[e.kind] ?? "What happened"}</span><p>${e.title ? `<b>${escape(e.text)}</b>` : escape(e.text)}</p></div>`,
-    )
-    .join("");
-}
-
-function renderPuzzle(v) {
-  const p = v.puzzleData;
-  if (!p) return "";
-  const solved = v.flags[p.solvedFlag];
-  return `<section class="puzzle"><div class="puzzle-top"><h2 id="puzzle-heading" tabindex="-1">${escape(p.prompt)}</h2><span>${solved ? "✓ Solved" : "Your turn"}</span></div><p>${escape(p.clue)}</p><div class="puzzle-slots" aria-label="Your sequence">${p.solution
-    .map((_, i) => `<span class="${v.puzzle[i] ? "filled" : ""}">${escape(p.options.find((o) => o.id === v.puzzle[i])?.label || pad(i + 1))}</span>`)
-    .join("")}</div>${
-    solved
-      ? `<p class="puzzle-success">${escape(p.success)}</p>`
-      : `<div class="puzzle-options">${p.options.map((o) => `<button data-puzzle="${o.id}"><span aria-hidden="true">${o.glyph}</span>${escape(o.label)}</button>`).join("")}<button id="clear-puzzle" class="puzzle-clear">Clear ↺</button></div>`
-  }</section>`;
-}
-
-function renderPanel(ep, v) {
-  if (panel === "mind") {
-    const used = new Set(v.deductionItems.flatMap((d) => d.from));
-    const ready = selectedClues.length === 2 && selectedClues.every((id) => v.clues.includes(id));
-    return `<div class="bag-heading"><span>What you know</span><span>${v.clues.length >= 2 ? "Pick two that fit together" : "Look around to learn more"}</span></div>${
-      v.clueItems.length
-        ? `<ol class="clue-list selectable">${v.clueItems
-            .map(
-              (c, i) =>
-                `<li><button data-clue="${c.id}" aria-pressed="${selectedClues.includes(c.id)}" class="${used.has(c.id) ? "used" : ""}"><span>${pad(i + 1)}</span><p>${escape(c.text)}</p>${used.has(c.id) ? '<i aria-label="used in a conclusion">◆</i>' : ""}</button></li>`,
-            )
-            .join("")}</ol><button id="connect" class="button full connect" ${ready ? "" : "disabled"}>${ready ? "Connect these two clues ⟷" : `Select ${2 - Math.min(2, selectedClues.length)} more clue${selectedClues.length === 1 ? "" : "s"}`}</button>`
-        : '<div class="empty-bag"><span>⌕</span><p>No clues recorded yet.</p><small>Look closely. Inspecting a scene costs no turns.</small></div>'
-    }<div class="conclusions"><span class="eyebrow">Worked out: ${v.deductions.length} of ${v.deductionsTotal}</span>${
-      v.deductionItems.length
-        ? v.deductionItems.map((d) => `<article class="conclusion"><b>⟷ ${escape(d.title)}</b><p>${escape(d.text)}</p></article>`).join("")
-        : '<p class="fineprint">Conclusions you reach will appear here, and open new possibilities.</p>'
-    }${v.wrongLinks ? `<p class="fineprint">${v.wrongLinks} connection${v.wrongLinks === 1 ? "" : "s"} that did not hold.</p>` : ""}</div><details class="history"><summary>Journey log</summary>${v.log
-      .slice(-40)
-      .map((e) => `<p class="log-${e.kind}"><small>${e.turn} / ${e.kind}</small>${escape(e.text)}</p>`)
-      .join("")}</details>`;
+  } catch (error) {
+    toast(error.message);
+    return;
   }
-  if (panel === "people")
-    return v.people.length
-      ? `<ul class="people-list">${v.people
-          .map(
-            (p) =>
-              `<li><span class="person-glyph" aria-hidden="true">${p.glyph}</span><div><b>${escape(p.name)}</b><small>${escape(p.role)}</small>${
-                p.disposition
-                  ? `<div class="disposition"><span>${escape(p.disposition.label)} ${p.disposition.value}/10</span><div class="stat-track"><span style="width:${p.disposition.value * 10}%"></span></div></div>`
-                  : ""
-              }<ul>${p.notes.map((n) => `<li>${escape(n)}</li>`).join("")}</ul></div></li>`,
-          )
-          .join("")}</ul>`
-      : '<div class="empty-bag"><span>❞</span><p>Nobody met yet.</p></div>';
-  if (panel === "map") {
-    const exits = v.map.exits;
-    return `${mapSvg(v.map)}<div class="exits"><span class="eyebrow">Roads from here</span>${
-      exits.length && !v.encounter
-        ? exits
-            .map(
-              (e) =>
-                `<button data-travel="${e.action}" ${e.enabled ? "" : "disabled"}><span>${e.known ? escape(ep.scenes[e.to].kicker.split("·")[0].trim()) : "Somewhere new"}</span><small>${escape(e.label)}</small></button>`,
-            )
-            .join("")
-        : `<p class="fineprint">${v.encounter ? "Deal with the encounter first." : "No roads lead on from here; act to move the story."}</p>`
-    }</div>${v.checkpoint ? '<button id="rewind-map" class="button secondary full">Replay from last turning point ↶</button>' : ""}<p class="fineprint">◆ turning point · ○ place · ? unexplored road. Replaying replaces the current browser save.</p>`;
-  }
-  return `<div class="bag-heading"><span>Your bag</span><span>${v.inventory.length} ${v.inventory.length === 1 ? "thing" : "things"}</span></div>${
-    v.inventory.length
-      ? `<div class="inventory-grid">${v.inventoryItems
-          .map(
-            (i) =>
-              `<button class="inventory-item ${selectedItem === i.id ? "selected" : ""} ${v.actions.some((a) => a.uses === i.id && a.enabled) ? "usable" : ""}" data-item="${i.id}" aria-expanded="${selectedItem === i.id}"><span class="item-glyph" aria-hidden="true">${i.glyph}</span><span>${escape(i.name)}</span></button>`,
-          )
-          .join("")}</div>${
-          selectedItem
-            ? `<div class="item-detail"><b>${escape(ep.items[selectedItem].name)}</b><p>${escape(ep.items[selectedItem].description)}</p><small>${v.actions.some((a) => a.uses === selectedItem && a.enabled) ? "You can use this now. Look in your actions." : "Select a matching action when the situation allows."}</small></div>`
-            : ""
-        }`
-      : '<div class="empty-bag"><span>◇</span><p>A little room for possibility.</p><small>Collect objects by interacting with the scene.</small></div>'
-  }${
-    v.recipes.length
-      ? `<div class="crafting"><span class="eyebrow">Put things together</span>${v.recipes
-          .map((r) => `<button data-recipe="${r.id}">${escape(r.label)} <span>＋</span><small>${r.ingredients.map((id) => escape(ep.items[id].name)).join(" + ")} · 1 turn</small></button>`)
-          .join("")}</div>`
-      : ""
-  }`;
-}
-
-function renderEnding(ep, v) {
-  const news = endingNews?.key === `${v.seed}:${game.state.actions.length}:${v.ending}` ? endingNews : { echoes: [], marks: [] };
-  const meaningful = v.recap.length ? v.recap : v.log.filter((e) => e.kind === "action").slice(-4).map((e) => e.text);
-  const checks = Object.values(v.checks);
-  const stats = [
-    ["Turns", v.turn],
-    ["Places", v.visited.filter((id) => ep.scenes[id].map).length],
-    ["Dice", `${checks.filter((c) => c.passed).length}✓ ${checks.reduce((n, c) => n + c.failures, 0)}✗`],
-    ["Conclusions", `${v.deductions.length}/${v.deductionsTotal}`],
-    ["Objects", v.taken.length],
-    ["Seed", seedCode(v.seed)],
-  ];
-  return `<div class="ending-reflection"><span class="eyebrow">${escape(v.endingData.kind)} · ${discoveries[ep.id].length} of ${Object.keys(ep.endings).length} endings found</span><p>${escape(v.endingData.reflection)}</p>
-  <dl class="run-stats">${stats.map(([k, x]) => `<div><dt>${k}</dt><dd>${escape(x)}</dd></div>`).join("")}</dl>
-  ${
-    v.earnedEchoItems.length
-      ? `<h2>What this telling teaches</h2><div class="echo-cards">${v.earnedEchoItems
-          .map((e) => `<article class="echo-card ${news.echoes.includes(e.id) ? "new" : ""}"><span class="eyebrow">◈ Echo${news.echoes.includes(e.id) ? " · new" : ""}</span><b>${escape(e.title)}</b><p>${escape(e.text)}</p></article>`)
-          .join("")}</div><p class="fineprint">Echoes reveal remembered actions in your next telling of this tale.</p>`
-      : ""
-  }
-  ${
-    v.markItems.length
-      ? `<h2>Marks</h2><ul class="mark-chips">${v.markItems.map((m) => `<li class="${news.marks.includes(m.id) ? "new" : ""}" title="${escape(m.text)}">★ ${escape(m.title)}${news.marks.includes(m.id) ? " · new" : ""}</li>`).join("")}</ul>`
-      : ""
-  }
-  <h2>The footsteps that brought you here</h2><ul>${meaningful.map((text) => `<li>${escape(text)}</li>`).join("")}</ul>
-  <div class="ending-buttons"><button id="retell" class="button">Begin a new telling ◈</button>${v.checkpoint ? '<button id="rewind" class="button secondary">Try the last turning point ↶</button>' : ""}<button id="open-chronicle" class="button secondary">Chronicle</button><button id="another-story" class="button secondary">Choose another tale →</button></div></div>`;
+  persist();
+  play?.reset("The storyteller goes back to the last turning point.");
 }
 
 function showThemes() {
   const ep = game.episode;
   showDialog(
     "Where should the tale turn?",
-    `<p>Choose once per journey. This takes one turn and changes events, solutions, and possible endings.</p><div class="theme-choices">${Object.entries(ep.themes)
+    `<p>Once in a telling. It takes a turn and changes what can happen from here.</p><div class="theme-choices">${Object.entries(ep.themes)
       .filter(([id]) => id !== game.state.theme)
       .map(([id, t]) => `<button data-theme="${id}"><span>${t.icon}</span><b>${escape(t.name)}</b><p>${escape(t.description)}</p><small>${escape(t.effect)}</small></button>`)
       .join("")}</div>`,
@@ -793,33 +491,8 @@ document.addEventListener("keydown", (event) => {
     showHelp();
     return;
   }
-  if (inWorld() && world.root.contains(event.target) && ["w", "a", "s", "d", "e", "q", "f", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Shift"].includes(event.key)) return;
-  if (event.key.toLowerCase() === "s" && !event.shiftKey) {
-    $("#sound-link").click();
-    return;
-  }
-  if (!game) return;
-  const key = event.key.toLowerCase();
-  const panels = { b: "inventory", j: "mind", p: "people", m: "map" };
-  if (panels[key]) {
-    event.preventDefault();
-    switchPanel(panels[key]);
-    return;
-  }
-  if (key === "u") {
-    event.preventDefault();
-    undo();
-    return;
-  }
-  const index = Number(event.key) - 1;
-  if (index >= 0 && index < 9) {
-    const actions = game.view().actions;
-    const a = (inWorld() ? actions.filter((a) => worldBridge.read().layout.menu.includes(a.id)) : actions)[index];
-    if (a?.enabled) {
-      event.preventDefault();
-      act({ type: a.type, id: a.id });
-    }
-  }
+  // S walks south while a tale is open; it toggles sound only on the shelf.
+  if (!game && event.key.toLowerCase() === "s" && !event.shiftKey) $("#sound-link").click();
 });
 
 if ("serviceWorker" in navigator && location.protocol.startsWith("http") && !/[?&]nosw\b/.test(location.search))
@@ -827,12 +500,14 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http") && !/[?
     /* Offline play is a bonus; the game works without it. */
   });
 
-// Browser test driver uses the same walking and interaction path as players.
-// It cannot mutate story state or teleport the hero.
+// Browser test driver: it walks and acts through the same paths as players.
+// It cannot change story state or move the hero except by walking.
 if (new URLSearchParams(location.search).has("worldtest")) {
   window.__hadithi = {
-    walkTo: (id) => world?.walkTo(id) ?? Promise.resolve(false),
-    world: () => world?.inspect() ?? null,
+    walkTo: (id) => play?.world?.walkTo(id, true) ?? Promise.resolve(false),
+    world: () => play?.world?.inspect() ?? null,
+    story: () => play?.state() ?? null,
+    placed: (id) => play?.world?.placed(id) ?? false,
   };
 }
 
