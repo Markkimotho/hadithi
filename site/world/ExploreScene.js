@@ -6,6 +6,7 @@ import { blockedTiles, findPath, spawnFor, walkable } from "./layout.js";
 import { createInput } from "./input.js";
 import { TILE, drawGround, drawPerson, drawProp } from "./art.js";
 import { createPuppet, preloadPuppets } from "./puppet.js";
+import { playTrial } from "./trials/stage.js";
 
 const GESTURE = {
   INSPECT: "kneel",
@@ -29,6 +30,7 @@ export function exploreScene(Phaser, planck, host) {
     }
     create() {
       this.ready = true;
+      this.planck = planck;
       this.remainder = 0;
       this.facing = { x: 0, y: 1 };
       this.path = [];
@@ -76,6 +78,8 @@ export function exploreScene(Phaser, planck, host) {
       const storm = view.atmosphere.weather === "storm" ? 1.5 + (view.stats.danger ?? 0) * 0.18 : 0;
       this.phys.setWind((layout.wind?.[0] ?? 0) - storm, layout.wind?.[1] ?? 0);
       for (const prop of this.phys.props) if (prop.source.flag) prop.cracked = Boolean(view.flags[prop.source.flag]);
+      // Some people are only there once the story has brought them.
+      for (const person of this.people ?? []) if (person.source.when) (person.sprite.root ?? person.sprite).setVisible(Boolean(view.flags[person.source.when]));
       this.syncTaken(view);
       this.buildGlints();
       host.root.dataset.scene = view.scene;
@@ -114,10 +118,11 @@ export function exploreScene(Phaser, planck, host) {
 
     /** People stand, work, or wander; animals peck about. */
     addPerson(p, layout) {
-      const sprite = p.kind === "anansi" ? createPuppet(this, "anansi") : drawPerson(this, p.kind);
+      const sprite = p.kind === "anansi" ? createPuppet(this, "anansi") : drawPerson(this, p.kind, { tint: p.tint, id: p.id });
       const x = (p.at[0] + 0.5) * TILE,
-        y = (p.at[1] + 0.5) * TILE;
-      sprite.setPosition(x, y).setDepth(y);
+        // A perched person (Anansi up the trunk) is drawn above their tile.
+        y = (p.at[1] + 0.5) * TILE - (p.perch ?? 0) * TILE;
+      sprite.setPosition(x, y).setDepth(p.perch ? 9000 + y : y);
       const person = { source: p, sprite, home: [...p.at] };
       if (this.motion) {
         const target = sprite.root ?? sprite;
@@ -236,6 +241,11 @@ export function exploreScene(Phaser, planck, host) {
      * to talk to) opens a conversation in the story band instead.
      */
     interact(id) {
+      // During a trial, the act key is the trial's press.
+      if (this.trialPress && !id) {
+        this.trialPress();
+        return true;
+      }
       if (this.dispatching || host.paused() || host.busy()) return false;
       if (!id && host.events.onAdvance?.()) return true;
       const place = id ? this.places().find((p) => p.actions.some((a) => a.id === id)) : this.nearby()[0];
@@ -446,7 +456,8 @@ export function exploreScene(Phaser, planck, host) {
       this.phys.setIntent(x, y, run || (this.path.length > 0 && this.routeRun));
       if (!paused) this.remainder = this.phys.advance(delta / 1000, this.remainder);
       const at = this.phys.player.getPosition();
-      this.hero.setPosition(at.x * TILE, at.y * TILE).setDepth(at.y * TILE + 2);
+      // A trial moves the hero by hand (hops, climbs); physics takes over after.
+      if (!this.heroLocked) this.hero.setPosition(at.x * TILE, at.y * TILE).setDepth(at.y * TILE + 2);
       const moving = Math.hypot(this.phys.player.getLinearVelocity().x, this.phys.player.getLinearVelocity().y) > 0.25;
       this.hero.play(this.phys.carrying ? "carry" : moving ? "walk" : "idle", time);
       if (Math.abs(this.facing.x) > 0.08) this.hero.setScale(this.facing.x < 0 ? -1 : 1, 1);
@@ -507,6 +518,12 @@ export function exploreScene(Phaser, planck, host) {
       return { x: (this.hero.root.x - camera.worldView.x) * camera.zoom, y: (this.hero.root.y - 70 - camera.worldView.y) * camera.zoom };
     }
 
+    /** Stage a trial here; resolves to an outcome or null if the player steps back. */
+    trial(kind, profile, ui, seed) {
+      this.cancelRoute();
+      return playTrial(this, kind, profile, ui, seed);
+    }
+
     /** Whether an action happens at a place in this scene (rather than in the story band). */
     placed(id) {
       return this.places().some((p) => p.id === id || p.actions.some((a) => a.id === id));
@@ -524,6 +541,7 @@ export function exploreScene(Phaser, planck, host) {
           kweku: this.textures.exists("puppet-kweku-head") ? 1 : 0,
         },
         places: this.places().map((pl) => pl.id),
+        trial: this.trialInfo?.() ?? null,
         props: this.phys.props.map((prop) => ({ id: prop.id, x: prop.body.getPosition().x, y: prop.body.getPosition().y, cracked: prop.cracked, carried: prop.carried })),
       };
     }

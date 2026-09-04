@@ -85,6 +85,7 @@ export function createWorld({ bridge, root, paused, busy, events, motion, onErro
     flyToBag(itemId, target) { host.scene?.flyToBag(itemId, target); },
     inspect() { return host.scene?.inspect() ?? null; },
     placed(id) { return host.scene?.placed(id) ?? false; },
+    trial(kind, profile, ui, seed) { return host.scene ? host.scene.trial(kind, profile, ui, seed) : Promise.resolve(null); },
     destroy() {
       host.destroyed = true;
       observer?.disconnect();

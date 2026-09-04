@@ -125,8 +125,8 @@ export function blockedTiles(layout) {
     if (p.block)
       for (let dy = 0; dy < (p.h ?? 1); dy++)
         for (let dx = 0; dx < (p.w ?? 1); dx++) blocked.add(`${p.at[0] + dx},${p.at[1] + dy}`);
-  // People standing still block a tile; wandering animals do not.
-  for (const person of layout.people ?? []) if (!person.wander) blocked.add(`${person.at[0]},${person.at[1]}`);
+  // People standing on the ground block a tile; wanderers and the perched do not.
+  for (const person of layout.people ?? []) if (!person.wander && !person.perch) blocked.add(`${person.at[0]},${person.at[1]}`);
   return blocked;
 }
 

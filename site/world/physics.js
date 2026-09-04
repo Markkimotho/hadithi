@@ -76,7 +76,7 @@ export function createPhysics(planck, layout, start, { cracked = [] } = {}) {
 
   // People who stand still are solid; you walk round them, not through them.
   for (const person of layout.people ?? [])
-    if (!person.wander)
+    if (!person.wander && !person.perch)
       ground.createFixture(new planck.Circle({ x: person.at[0] + 0.5, y: person.at[1] + 0.5 }, 0.34), { friction: 0.2, userData: "person" });
 
   const props = [];
