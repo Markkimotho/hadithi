@@ -13,6 +13,8 @@ import { journalHtml, panelHtml, endingHtml, TABS } from "./journal.js";
 import { escape, diceTray, oddsBadge } from "./widgets.js";
 
 const flat = (t) => t.replace("\n", " ");
+/** Trials staged in the world; any other kind falls back to the card trial. */
+const STAGED = new Set(["leap", "brace", "balance", "scale"]);
 const LIGHT = { dawn: "Dawn", day: "Day", dusk: "Dusk", night: "Night", deep: "Deep water", moon: "Moonlight" };
 
 /**
@@ -340,17 +342,87 @@ export function createPlay(main, ctx) {
   async function request(action, place) {
     lastPlace = place;
     if (action.check?.skill && ctx.settings.trials !== false) {
+      const kind = action.check.skill.kind;
+      const profile = bridge.profile(action.id);
+      const g = game();
+      const seed = `${g.state.seed}:${g.state.scene}/${action.id}#${g.state.checks[`${g.state.scene}/${action.id}`]?.attempts ?? 0}`;
       trial = true;
-      const outcome = await runSkillChallenge({ root, motion: ctx.settings.motion, set skillActive(v) {} }, action.check.skill.kind, bridge.profile(action.id));
+      const outcome = STAGED.has(kind) && world
+        ? await world.trial(kind, profile, trialBand(action), seed)
+        : await runSkillChallenge({ root, motion: ctx.settings.motion, set skillActive(v) {} }, kind, profile);
       trial = false;
       if (!outcome) {
         world?.release();
+        idle();
         return;
       }
       ctx.act({ type: action.type, id: action.id, outcome });
       return;
     }
     ctx.act({ type: action.type, id: action.id });
+  }
+
+  /** The story band while a trial runs: what it is, how to play, how it went. */
+  function trialBand(action) {
+    let cancel = null;
+    stopTyping();
+    band.dataset.state = "trial";
+    band.dataset.tone = "trial";
+    nextBtn.hidden = true;
+    promptEl.hidden = true;
+    notesEl.replaceChildren();
+    rollEl.replaceChildren();
+    const hint = document.createElement("p");
+    hint.className = "trial-hint";
+    const feedback = document.createElement("p");
+    feedback.className = "trial-feedback";
+    feedback.setAttribute("role", "status");
+    rollEl.append(hint, feedback);
+    const leave = Object.assign(document.createElement("button"), { className: "choice quiet", textContent: "Step back" });
+    leave.onclick = () => cancel?.();
+    choicesEl.replaceChildren(leave);
+    $("#scene-title").textContent = action.label;
+    return {
+      bandHeight: () => band.offsetHeight + 16,
+      say(text) {
+        line.textContent = text;
+        ctx.announce(`${action.label}. ${text}`);
+      },
+      hint(text) {
+        hint.textContent = text;
+      },
+      feedback(text, good) {
+        feedback.textContent = text;
+        feedback.dataset.good = String(good);
+        ctx.audio.sfx(good ? "success" : "failure");
+      },
+      choices(list) {
+        choicesEl.replaceChildren(
+          ...list.map((c, i) => {
+            const b = document.createElement("button");
+            b.className = `choice${c.quiet ? " quiet" : ""}`;
+            b.innerHTML = `${c.quiet ? "" : `<span class="choice-key" aria-hidden="true">${i + 1}</span>`}<span class="choice-text">${escape(c.label)}</span>`;
+            b.onclick = () => {
+              c.act();
+              if (c.pressed?.()) {
+                b.disabled = true;
+                b.setAttribute("aria-pressed", "true");
+              }
+            };
+            return b;
+          }),
+          leave,
+        );
+      },
+      onCancel(fn) {
+        cancel = fn;
+      },
+      done() {
+        band.dataset.state = "idle";
+        hint.remove();
+        feedback.remove();
+      },
+    };
   }
 
   /** The engine moved: tell it, then let the world catch up. */
