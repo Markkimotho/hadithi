@@ -123,6 +123,11 @@ main.play-screen { max-width: none; margin: 0; padding: 0; }
 .story-band[data-tone="encounter"] { box-shadow: 0 18px 50px #0009, inset 0 0 0 3px #9e4429; }
 .story-band[data-tone="miss"] .story-line { color: var(--ink-soft); }
 .story-band[data-state="idle"] { padding: 14px 22px; }
+.story-band[data-tone="trial"] { box-shadow: 0 18px 50px #0009, inset 0 0 0 3px #b8892e; }
+.trial-hint { margin: 10px 0 0; font: 600 var(--fs-ui-sm)/1.35 var(--font-ui); color: var(--ink-soft); }
+.trial-feedback { margin: 6px 0 0; min-height: 1.4em; font: italic var(--fs-body)/1.35 var(--font-display); }
+.trial-feedback[data-good="true"] { color: #3d5a2a; }
+.trial-feedback[data-good="false"] { color: var(--speech); }
 .story-band[data-state="ended"] { opacity: 0; pointer-events: none; }
 .story-band[data-tone="chapter"] { opacity: 0; transform: translate(-50%, 12px); pointer-events: none; }
 .story-notes { list-style: none; margin: 12px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
