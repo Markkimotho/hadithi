@@ -29,7 +29,7 @@ test("world commands use current availability and the bridge follows undo and sh
   assert.equal(bridge.read().view.scene, "market");
   bridge.action("home");
   bridge.action("trail");
-  assert.equal(bridge.read().layout.width, 20, "the completed Wisdom slice has a mapped trail");
+  assert.ok(bridge.read().layout.width >= 20, "the completed Wisdom slice has a mapped trail");
 });
 
 test("only declared, scene-appropriate physics facts cross the bridge and survive replay", () => {

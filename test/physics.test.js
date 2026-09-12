@@ -101,10 +101,11 @@ test("wind and currents push bodies and stay bounded", () => {
 
 test("authored Wisdom map forces move the player through the ford and squall", () => {
   const maps = layoutsFor("wisdom");
-  const flowing = createPhysics(planck, maps.ford, [9, 6]);
-  const still = createPhysics(planck, { ...maps.ford, flows: [] }, [9, 6]);
+  // Standing in the shallows, the current carries you downstream (east).
+  const flowing = createPhysics(planck, maps.ford, [4, 8]);
+  const still = createPhysics(planck, { ...maps.ford, flows: [] }, [4, 8]);
   for (let i = 0; i < 90; i++) { still.setIntent(0, 0); flowing.setIntent(0, 0); still.step(); flowing.step(); }
-  assert.ok(Math.abs(still.player.getPosition().y - flowing.player.getPosition().y) > 0.2, "ford current affects the idle player");
+  assert.ok(flowing.player.getPosition().x > still.player.getPosition().x + 0.2, "ford current affects the idle player");
   const storm = createPhysics(planck, maps.squall, [9, 6]);
   const calm = createPhysics(planck, maps.squall, [9, 6]);
   calm.setWind(0, 0);
