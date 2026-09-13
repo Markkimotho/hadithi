@@ -149,8 +149,14 @@ test("a loose jar can be lifted and thrown without spending story turns", async 
   await expect(page.locator(".play-prompt")).toContainText("lift");
   await page.keyboard.press("q");
   await expect.poll(async () => (await state(page)).props.some((p) => p.carried)).toBe(true);
+  const held = (await state(page)).props.find((p) => p.carried);
   await page.keyboard.press("f");
-  await expect.poll(async () => (await state(page)).props.some((p) => p.cracked)).toBe(true);
+  // The jar flies off on its own. Whether it cracks depends on the wall it
+  // meets; test/physics.test.js checks cracking exactly.
+  await expect.poll(async () => {
+    const jar = (await state(page)).props.find((p) => p.id === held.id);
+    return !jar.carried && Math.hypot(jar.x - held.x, jar.y - held.y) > 0.8;
+  }).toBe(true);
   expect((await save(page)).actions).toEqual([]);
 });
 

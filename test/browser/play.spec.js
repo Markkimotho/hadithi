@@ -136,19 +136,40 @@ test("an ending is a closing page; its echo is remembered in the next telling", 
   await expect(page.locator(".story-card.wisdom .card-progress")).toContainText("◈ 1 echo");
 });
 
-test("a trial is played by hand and its outcome is what the story records", async ({ page }) => {
+test("a trial is played in the world, by hand, and its outcome is what the story records", async ({ page }, info) => {
+  await enter(page, "wisdom", { trials: true, motion: true });
+  for (const id of ["trail", "river", "ford"]) await perform(page, { id });
+  await settle(page);
+  page.evaluate(() => window.__hadithi.walkTo("leap"));
+  await expect.poll(async () => (await page.evaluate(() => window.__hadithi.world()))?.trial?.kind, { timeout: 20000 }).toBe("leap");
+  await expect(page.locator(".story-band")).toHaveAttribute("data-tone", "trial");
+  await expect(page.locator(".trial-hint")).toContainText("ring closes");
+  await page.screenshot({ path: `artifacts/trial-${info.project.name}.png`, animations: "disabled" });
+  // Press as each ring closes on its stone.
+  for (let i = 0; i < 600; i++) {
+    const t = (await page.evaluate(() => window.__hadithi.world()))?.trial;
+    if (!t || t.done) break;
+    if (t.next !== null && t.next < 0.03) await page.keyboard.press("Space");
+    await page.waitForTimeout(10);
+  }
+  await expect.poll(async () => (await save(page)).actions.at(-1).id, { timeout: 10000 }).toBe("leap");
+  const command = (await save(page)).actions.at(-1);
+  expect(command.outcome.mode).toBe("skill");
+  expect(command.outcome.score).toBeGreaterThan(0);
+  await expect(page.locator(".story-roll .dice-tray")).toBeVisible();
+});
+
+test("stepping back from a trial leaves the story untouched", async ({ page }) => {
   await enter(page, "wisdom", { trials: true });
   for (const id of ["trail", "river", "ford"]) await perform(page, { id });
   await settle(page);
-  await walk(page, "leap");
-  await expect(page.locator(".world-skill")).toBeVisible();
-  const jump = page.getByRole("button", { name: "Jump · Space" });
-  for (let i = 0; i < 3; i++) await jump.click();
-  await expect(page.locator(".world-skill")).toHaveCount(0);
-  const command = (await save(page)).actions.at(-1);
-  expect(command.id).toBe("leap");
-  expect(command.outcome.mode).toBe("skill");
-  await expect(page.locator(".story-roll .dice-tray")).toBeVisible();
+  const before = (await save(page)).actions.length;
+  page.evaluate(() => window.__hadithi.walkTo("leap"));
+  await expect(page.locator(".story-band")).toHaveAttribute("data-tone", "trial", { timeout: 20000 });
+  await page.getByRole("button", { name: "Step back" }).click();
+  await expect(page.locator(".story-band")).toHaveAttribute("data-state", "idle");
+  expect((await save(page)).actions.length).toBe(before);
+  expect((await page.evaluate(() => window.__hadithi.world())).trial).toBeNull();
 });
 
 test("with trials off the dice decide, and taking a step back cannot change them", async ({ page }) => {
