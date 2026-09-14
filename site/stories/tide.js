@@ -34,6 +34,7 @@ export const tide = {
   version: 2,
   revision: 2,
   compatibleRevisions: [1],
+  voice: 3,
   id: "tide",
   number: "02",
   title: "The Palace\nBeneath the Tide",
@@ -123,7 +124,7 @@ export const tide = {
       met: always,
       notes: [
         { text: "Caught in fishing line beside the tide pools." },
-        { when: flag("rescued"), text: "Freed by your hands; offered a journey in return." },
+        { when: flag("rescued"), text: "Freed by your hands. Offered a journey in return." },
         { when: clue("guide"), text: "Can guide a return to a current you recognize." },
         { when: flag("leftBehind"), text: "Hurt that you raced ahead of it." },
       ],
@@ -220,7 +221,7 @@ export const tide = {
     shore: S(
       "A life in a loop",
       "Tango coast · low tide",
-      "A sea turtle has caught its flipper in discarded fishing line. Your boat sits above the wet sand. A net knife rests beside it. The water is returning, one small pool at a time.",
+      "Low tide on the Tango coast. Your boat rests above the tide line, the net knife on its plank where you left it. Beyond the rocks a sea turtle has tangled one flipper in somebody’s old line. It does not struggle. It watches the water come back, a pool at a time. “Easy,” you tell it, though you are not sure it can hear.",
       [
         take("knife", "Take your net knife", "knife", "You slip the familiar work knife into your belt.", { spot: [25, 70] }),
         A(
@@ -243,7 +244,7 @@ export const tide = {
           "shoreMark",
           "Read the old high-water mark",
           "highWater",
-          "A line on the harbor wall shows how quickly the water can rise, and how long it stays. Waiting and traveling advance the world; looking does not.",
+          "A line on the harbor wall shows how quickly the water can rise, and how long it stays. Waiting and travel move the world on. Looking costs nothing.",
         ),
       ],
       { art: "shore", map: [12, 22], ambience: "sea" },
@@ -251,7 +252,7 @@ export const tide = {
     pools: S(
       "An invitation with no map",
       "The tide pools",
-      "The turtle turns back. “You gave me time,” it says. “Would you like to see where ours begins?” It nudges a small shell toward you. Behind it, the sea opens into a green road.",
+      "The turtle turns back to you at the edge of the pools, water running from its shell. “You gave me time,” it says. “Would you like to see where ours begins?” It noses a small shell across the wet sand until it rests against your foot, cold and ridged. Behind it the sea parts, and a green road runs down into the dark.",
       [
         take("shell", "Accept the listening shell", "shell", "In its spiral, you hear rain, insects, falling leaves, then snow.", {
           spot: [48, 65],
@@ -272,7 +273,7 @@ export const tide = {
           "Ask the turtle what the shore will remember of you",
           "TALK",
           { flags: { remembered: true }, stats: { insight: 1 }, clues: ["futureChild"] },
-          "The turtle is quiet for a long time. “Somebody small will ask what really happened,” it says. “Decide now what you want to be able to tell them.”",
+          "The turtle is quiet for so long that you think it has fallen asleep. “Somebody small will ask what really happened,” it says at last. “Decide now what you will tell them.”",
           { visible: all(echo("centuryChild"), not(flag("remembered"))) },
         ),
         go("channel", "Follow the green road underwater", "channel", "The turtle carries you beneath the surface. You can breathe, though you cannot explain how."),
@@ -282,7 +283,7 @@ export const tide = {
     channel: S(
       "The current has a direction",
       "The descent",
-      "Silver fish drift past your shoulder. The road forks around a column of bubbles. A chain of old bells marks the quiet passage; a bright open tunnel promises a faster descent.",
+      "Silver fish drift past your shoulder. Down here the road forks round a column of bubbles. To the left a chain of old bells marks a quiet passage, swaying without a sound. To the right a bright tunnel of current hums like a struck bowl. “The bells are slower,” the turtle says. “The tunnel does not wait for anyone, and it will not wait for me.”",
       [
         A(
           "quiet",
@@ -308,7 +309,7 @@ export const tide = {
               stats: { tide: 2, trust: -1 },
               flags: { leftBehind: true },
             }),
-            { mods: [mod("The shell hums the current’s turns", 1, item("shell"))] },
+            { skill: { kind: "steer" }, mods: [mod("The shell hums the current’s turns", 1, item("shell"))] },
           ),
         ),
         A(
@@ -325,7 +326,7 @@ export const tide = {
     gate: S(
       "A palace below the horizon",
       "The outer gate",
-      "A roof of deep red tiles hangs against the green water. Otohime waits at the gate. “Welcome, Urashima,” she says. “Ask for what you need. Guests who never ask sometimes forget to leave.”",
+      "A roof of deep red tiles hangs against the green water, as if someone had set a temple down on the seabed and forgotten it there. Otohime waits at the gate in a robe the colour of coral. “Welcome, Urashima,” she says. “Ask for what you need. Guests who never ask sometimes forget to leave.”",
       [
         A(
           "promise",
@@ -358,7 +359,7 @@ export const tide = {
     hall: S(
       "Four windows, one day",
       "The seasonal hall",
-      "Spring rain touches one window. Summer insects tick against another. Leaves turn at the third; snow gathers at the fourth. The feast looks freshly set, but something about the bowls is wrong.",
+      "Spring rain touches one window. Summer insects tick against another. Leaves turn at the third, and snow gathers at the fourth. The feast is laid as if the cooks had only just stepped away. Something about the bowls is wrong. “Sit where you like,” a servant says. “Nobody here is ever in a hurry, you will find.”",
       [
         inspect(
           "windows",
@@ -401,7 +402,7 @@ export const tide = {
     garden: S(
       "Turn with the year",
       "The garden dial",
-      "Four carved rings regulate the current. An inscription gives their order: spring rain feeds summer growth; autumn releases it; winter lets it rest. Set the rings in that order to still the water around the archive.",
+      "Four carved rings hold the current still, or would, if anyone set them right. Someone has cut an order into the stone rim. “Spring rain feeds summer growth. Autumn lets go of what it grew, leaf by leaf. Winter rests.” Set the rings in that order and the water round the archive will settle.",
       [
         A("stilled", "Open the still-water passage", "SOLVE", { to: "stillwater", flags: { passage: true } }, "The water settles into a transparent corridor."),
         go("back", "Return to the seasonal hall", "hall", "The rings hold their place."),
@@ -431,7 +432,7 @@ export const tide = {
     stillwater: S(
       "The year beneath the water",
       "The still-water passage",
-      "In this corridor the palace becomes transparent. Years slide past outside like schools of fish. The turtle cannot choose which one carries you home without a chart.",
+      "Here the palace turns to glass. Years slide past outside like schools of fish, silver, then gone. “I cannot choose one for you,” the turtle says, very quietly. “Not without a chart. They all look like home from here.”",
       [
         take("chart", "Copy the return current onto a chart", "chart", "You mark the narrow current that touches your own shore.", { spot: [54, 60] }),
         inspect(
@@ -462,7 +463,7 @@ export const tide = {
           "Compare the bottles to your chart",
           "USE_ITEM",
           { flags: { negotiated: true, boxKnown: true }, stats: { insight: 1 }, clues: ["negotiate"] },
-          "One bottle matches your coast. “A meeting point,” the archivist says. “Not a guarantee. Speak with her.”",
+          "One bottle matches your coast, down to the sand and the season. “A meeting point,” the archivist says. “Not a guarantee, you understand. Go and speak with her before the tea goes cold.”",
           {
             when: all(item("chart"), theme("mystery")),
             visible: not(flag("negotiated")),
@@ -486,14 +487,14 @@ export const tide = {
     feast: S(
       "A welcome that could last",
       "Otohime’s table",
-      "Otohime asks about the people on your shore. When you describe them, she listens carefully. “I can give you a place here,” she says. “I cannot promise your home will wait.”",
+      "Otohime asks about the people on your shore, and listens to the answers the way the tide listens to a beach, all the way in. “I can give you a place here,” she says. “I cannot promise your home will wait.”",
       [
         A(
           "truth",
           "Ask directly about the passing years",
           "TALK",
           { flags: { truth: true, boxKnown: true }, stats: { insight: 1 }, clues: ["boxYears"] },
-          "“Time follows different currents,” she answers. “I should have told you before the feast. I am telling you now.”",
+          "“Time follows different currents down here,” she answers, and sets her bowl down. “I should have told you before the feast. I am telling you now.”",
           { visible: not(flag("truth")) },
         ),
         A(
@@ -523,11 +524,18 @@ export const tide = {
               to: "promise",
               flags: { agreement: true },
             }),
-            outcome("She hears a demand where you meant a request. The table goes quiet; you will need to understand more before you ask again.", {
+            outcome("She hears a demand where you meant a request. The table goes quiet. You will need to understand more before you ask again.", {
               stats: { trust: -1 },
             }),
             {
               kind: "white",
+              skill: {
+                kind: "scale",
+                intro: "Otohime sets the box on one pan of a lacquer balance. “Put your reasons on the other,” she says.",
+                won: "The beam dips toward your reasons. She takes the box off the scale and does not offer it again.",
+                lost: "The box outweighs what you have. She waits, courteous and unmoved.",
+                patienceLabel: "The tea cooling",
+              },
               mods: [
                 mod("She already told you the truth", 2, flag("truth")),
                 mod("You understand the feast", 1, deduced("feastClock")),
@@ -552,7 +560,7 @@ export const tide = {
     promise: S(
       "An honest return",
       "The princess’s promise",
-      "“Your shore will have changed,” Otohime says. “With this chart, I can limit the years that pass. I will not hide the cost in a gift.” The turtle waits beside the marked current.",
+      "“Your shore will have changed,” Otohime says. “With this chart I can limit the years that pass, as far as anyone can limit them. I will not hide the cost in a gift.” The turtle waits beside the marked current.",
       [
         A("accept", "Accept a changed home and return", "CHOOSE", { ending: "home" }, "You leave with a chart, a promise, and no unopened debt."),
         go("stay", "Reconsider a life under the sea", "homeSea", "You take time to choose a life rather than simply avoid a loss."),
@@ -562,7 +570,7 @@ export const tide = {
     gift: S(
       "The box that must stay shut",
       "The departure chamber",
-      "Otohime places the box in your hands. “Keep it closed until you know what it holds.” Its cord has no knot you recognize. The shell against your chest sounds like a distant harbor bell.",
+      "Otohime places the box in your hands. It is lighter than it looks, and warmer. “Keep it closed until you know what it holds,” she says. Its cord has no knot you recognize. The shell against your chest sounds like a harbor bell, very far off.",
       [
         take("box", "Accept the sealed box", "box", "The lacquer is cool. Something inside is as warm as your own hand.", { spot: [50, 66] }),
         A(
@@ -581,7 +589,7 @@ export const tide = {
     return: S(
       "The current home",
       "The outer water",
-      "From below, your coast is a thin silver line. The turtle asks for a direction. It will follow your chart, your earlier promise, a morning you can name, or simply the strongest current. Those are different journeys.",
+      "From below, your coast is a thin silver line, and every year looks the same from here. “Which way?” the turtle asks. “I can follow your chart, or your promise, or a morning you can name. Or only the strongest current.” Those are different journeys, and it knows it.",
       [
         A(
           "charted",
@@ -622,6 +630,7 @@ export const tide = {
               to: "newShore",
             }),
             {
+              skill: { kind: "steer" },
               mods: [
                 mod("A bottled morning to aim for", 3, deduced("meetingPoint")),
                 mod("The turtle trusts you", 1, stat("trust", 4)),
@@ -654,7 +663,7 @@ export const tide = {
     newShore: S(
       "A shore both familiar and strange",
       "Above the water",
-      "The mountain is where it was. The houses are not. A child on the beach recognizes your boat only from a story. You still have to decide what to carry into this changed world.",
+      "The mountain is where it was. Its houses are not. A child on the beach walks round your boat twice and frowns at it. “My grandmother told a story about a boat like this,” she says. “The man in it never came back.” You still have to decide what you will carry up the beach.",
       [
         A("closed", "Keep the box closed and seek a new beginning", "CHOOSE", { ending: "century" }, "You walk inland, carrying your own name."),
         A(
@@ -679,7 +688,7 @@ export const tide = {
     homeSea: S(
       "A harbor beneath the sea",
       "The lower harbor",
-      "The palace is beautiful. Beyond it, people mend roofs, argue over moorings, and need hands to help. A life here would be a life of work and friendship, not a never-ending feast.",
+      "Below the palace, the lower harbor smells of tar and wet rope. People mend roofs and argue over moorings. “You there, fisher, can you hold a line?” someone calls down from a half-mended roof. “We have been two hands short since the spring tide.” A life here would be work and friendship, not a feast that never ends.",
       [
         A("stay", "Choose to make a life beneath the sea", "CHOOSE", { ending: "sea" }, "You ask where a fisher’s hands might be useful."),
         go("leave", "Return to Otohime and arrange to leave", "feast", "You thank the harbor workers and climb back to the hall."),
@@ -689,7 +698,7 @@ export const tide = {
     surge: S(
       "The passage starts to close",
       "Tide encounter",
-      "Water rushes across the corridor. A gate begins to turn. You must anchor yourself, cut a jam, swim for it, or wait for the current to spend its force.",
+      "Water rushes the wrong way down the corridor, cold and loud, dragging weed and grit and loose shells along the floor. Somewhere a gate begins to turn, slow as a millstone. “Hold on to something!” the turtle shouts. You could anchor yourself, cut the weed that jams the gate, swim for the slack water, or wait in a niche for the current to spend itself.",
       [
         A(
           "anchor",
@@ -719,7 +728,7 @@ export const tide = {
               to: "$return",
               stats: { tide: 2 },
             }),
-            { mods: [mod("You know the season’s order", 1, clue("seasons"))] },
+            { skill: { kind: "swim" }, mods: [mod("You know the season’s order", 1, clue("seasons"))] },
           ),
         ),
         A("wait", "Shelter in a wall niche", "WAIT", { to: "$return", stats: { tide: 1 } }, "You wait safely, but the return current shifts while you shelter.", {
@@ -745,7 +754,7 @@ export const tide = {
       stats: { trust: 1 },
     }),
     E("mystery", theme("mystery"), "The bottles in the archive each preserve a different morning. Compare one with the still-water chart."),
-    E("gift", item("box"), "The sealed box ticks once. You can leave it closed; the decision belongs to you."),
+    E("gift", item("box"), "The sealed box ticks once, like a cooling kettle. You can leave it closed. That is yours to decide."),
     E(
       "courses",
       all(scene("feast"), not(flag("declined"))),
