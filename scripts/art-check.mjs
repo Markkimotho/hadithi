@@ -1,11 +1,11 @@
-import { readFile, access } from "node:fs/promises";
+import { readFile, access, readdir } from "node:fs/promises";
 import { resolve, dirname, join, relative, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { TILES } from "../site/world/layout.js";
 
 const root = resolve(fileURLToPath(new URL("../", import.meta.url)));
-const art = join(root, "site/art/wisdom");
 const errors = [];
+const summary = [];
 const json = async (path) => JSON.parse(await readFile(path, "utf8"));
 const dimensions = async (path) => {
   const body = await readFile(path, "utf8");
@@ -15,6 +15,9 @@ const dimensions = async (path) => {
 };
 const unique = (values) => new Set(values).size === values.length;
 
+for (const taleDir of (await readdir(join(root, "site/art"), { withFileTypes: true })).filter((d) => d.isDirectory())) {
+const art = join(root, "site/art", taleDir.name);
+try { await access(join(art, "tiles.json")); } catch { continue; }
 const tiles = await json(join(art, "tiles.json"));
 if (tiles.version !== 1 || !Number.isInteger(tiles.tileSize) || !Number.isInteger(tiles.columns) || !Number.isInteger(tiles.rows)) errors.push("tiles.json: invalid version or atlas grid");
 if (!unique(tiles.tiles.map((tile) => tile.glyph))) errors.push("tiles.json: duplicate glyph");
@@ -27,7 +30,9 @@ try {
   if (width !== tiles.columns * tiles.tileSize || height !== tiles.rows * tiles.tileSize) errors.push("tiles SVG dimensions do not match tile grid");
 } catch (error) { errors.push(error.message); }
 
-const props = await json(join(art, "props.json"));
+let props = { version: 1, slots: [], columns: 0, rows: 0 };
+try { props = await json(join(art, "props.json")); } catch { /* the prop sheet is optional */ }
+if (props.sheet) {
 if (props.version !== 1 || props.slots.length > props.columns * props.rows) errors.push("props.json: invalid version or slots exceed atlas");
 if (!unique(props.slots.map((slot) => slot.id)) || !unique(props.slots.map((slot) => slot.frame))) errors.push("props.json: duplicate slot id or frame");
 for (const slot of props.slots) if (!Number.isInteger(slot.frame) || slot.frame < 0 || slot.frame >= props.columns * props.rows) errors.push(`${slot.id}: frame outside props atlas`);
@@ -35,8 +40,11 @@ try {
   const [width, height] = await dimensions(join(art, props.sheet));
   if (width !== props.columns * props.frameWidth || height !== props.rows * props.frameHeight) errors.push("props SVG dimensions do not match atlas grid");
 } catch (error) { errors.push(error.message); }
+}
 
-for (const name of ["kweku", "anansi"]) {
+let rigNames = [];
+try { rigNames = (await readdir(join(art, "rigs"))).filter((f) => f.endsWith(".json")).map((f) => f.slice(0, -5)); } catch { /* no rigs */ }
+for (const name of rigNames) {
   const path = join(art, "rigs", `${name}.json`);
   try {
     const rig = await json(path);
@@ -73,5 +81,7 @@ for (const name of ["kweku", "anansi"]) {
     }
   } catch (error) { errors.push(`${name}: ${error.message}`); }
 }
+summary.push(`${taleDir.name}: ${tiles.tiles.length} tiles, ${rigNames.length} rigs`);
+}
 if (errors.length) throw new Error(`Art validation failed:\n${errors.join("\n")}`);
-console.log(`Art assets valid: ${tiles.tiles.length} tiles, ${props.slots.length} prop slots, 2 puppet rigs`);
+console.log(`Art assets valid: ${summary.join("; ")}`);

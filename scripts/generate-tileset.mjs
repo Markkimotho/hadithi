@@ -20,7 +20,7 @@ const cells = config.tiles.map((tile, index) => {
   return `  <g id="tile-${tile.id}" transform="translate(${x} ${y})"><rect width="${config.tileSize}" height="${config.tileSize}" fill="${tile.base}"/>${tile.detail ?? ""}</g>`;
 });
 const width = config.columns * config.tileSize, height = config.rows * config.tileSize;
-const svg = `<?xml version="1.0" encoding="UTF-8"?>\n<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" role="img" aria-labelledby="title description"><title id="title">Wisdom world terrain</title><desc id="description">${config.tiles.length} original vector terrain tiles for the Fante Anansi tale.</desc>\n${cells.join("\n")}\n</svg>\n`;
+const svg = `<?xml version="1.0" encoding="UTF-8"?>\n<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" role="img" aria-labelledby="title description"><title id="title">${config.title ?? "World terrain"}</title><desc id="description">${config.tiles.length} original vector terrain tiles.</desc>\n${cells.join("\n")}\n</svg>\n`;
 const target = resolve(dirname(source), config.output ?? "tiles.svg");
 await mkdir(dirname(target), { recursive: true });
 await writeFile(target, svg);
