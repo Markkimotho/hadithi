@@ -713,7 +713,13 @@ export const wisdom = {
             outcome("The circle talks over him. Goodwill alone will not quiet them, so tell the circle why he hid it."),
             {
               kind: "white",
-              skill: { kind: "scale", stones: 3, patience: 4 },
+              skill: {
+                kind: "scale",
+                intro: "The elders set the circle’s doubt on one pan. Lay what you know on the other.",
+                won: "The beam tips your way. The circle makes room for him.",
+                lost: "The beam does not move. The circle is not yet persuaded.",
+                patienceLabel: "The elders’ patience",
+              },
               mods: [
                 mod("You know why he sealed it", 2, deduced("selfSealed")),
                 mod("You know he wanted to be found", 1, deduced("whyHide")),
