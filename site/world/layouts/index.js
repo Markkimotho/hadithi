@@ -1,25 +1,13 @@
 import { parseLayout, parseTiledMap } from "../layout.js";
-import courtyard from "../../maps/wisdom/courtyard.json" with { type: "json" };
-import market from "../../maps/wisdom/market.json" with { type: "json" };
-import well from "../../maps/wisdom/well.json" with { type: "json" };
-import trail from "../../maps/wisdom/trail.json" with { type: "json" };
-import ridge from "../../maps/wisdom/ridge.json" with { type: "json" };
-import river from "../../maps/wisdom/river.json" with { type: "json" };
-import ford from "../../maps/wisdom/ford.json" with { type: "json" };
-import grove from "../../maps/wisdom/grove.json" with { type: "json" };
-import tree from "../../maps/wisdom/tree.json" with { type: "json" };
-import knot from "../../maps/wisdom/knot.json" with { type: "json" };
-import ledge from "../../maps/wisdom/ledge.json" with { type: "json" };
-import pot from "../../maps/wisdom/pot.json" with { type: "json" };
-import council from "../../maps/wisdom/council.json" with { type: "json" };
-import squall from "../../maps/wisdom/squall.json" with { type: "json" };
+import wisdomMaps from "../../maps/wisdom/index.js";
+import tideMaps from "../../maps/tide/index.js";
+import orchestraMaps from "../../maps/orchestra/index.js";
+import olivesMaps from "../../maps/olives/index.js";
 
-const tiledWisdom = { courtyard, market, well, trail, ridge, river, ford, grove, tree, knot, ledge, pot, council, squall };
-const raw = {
-  wisdom: {
-    ...Object.fromEntries(Object.entries(tiledWisdom).map(([id, map]) => [id, parseTiledMap(map, `wisdom/${id}`)])),
-  },
-};
+const tiled = { wisdom: wisdomMaps, tide: tideMaps, orchestra: orchestraMaps, olives: olivesMaps };
+const raw = Object.fromEntries(
+  Object.entries(tiled).map(([tale, maps]) => [tale, Object.fromEntries(Object.entries(maps).map(([id, map]) => [id, parseTiledMap(map, `${tale}/${id}`)]))]),
+);
 
 /**
  * Parsed layouts keyed by scene id. Shared-ground scenes inherit terrain,
@@ -40,4 +28,4 @@ export function layoutsFor(taleId) {
   return out;
 }
 
-export const talesWithLayouts = () => Object.keys(raw);
+export const talesWithLayouts = () => Object.keys(raw).filter((tale) => Object.keys(raw[tale]).length);
