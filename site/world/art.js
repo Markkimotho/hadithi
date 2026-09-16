@@ -234,6 +234,178 @@ export function drawProp(scene, p) {
       g.lineStyle(2, 0x7a5a32);
       for (let y = -8; y <= 8; y += 5) g.lineBetween(-12, y, 12, y);
       break;
+    // ── The Palace Beneath the Tide ──────────────────────────────────────
+    case "boat": {
+      shadow(g, cx, 10, w, 20, 0.3);
+      if (p.upturned) {
+        g.fillStyle(0x5d4632).fillEllipse(cx, -2, w - 4, 28);
+        g.lineStyle(2, 0x3b2a1c, 0.7).lineBetween(L + 10, -2, L + w - 10, -2);
+      } else {
+        g.fillStyle(0x6a4a30).fillEllipse(cx, 0, w - 4, 30);
+        g.fillStyle(0x9a7048).fillEllipse(cx, -3, w - 16, 18);
+        g.lineStyle(3, 0x3b2a1c).lineBetween(cx - 14, -3, cx + 14, -3);
+      }
+      break;
+    }
+    case "knife":
+      g.fillStyle(0x6a4b33).fillRoundedRect(-12, -2, 10, 5, 2);
+      g.fillStyle(0xc9cdd0).fillTriangle(-2, -3, 14, 0, -2, 3);
+      break;
+    case "nets":
+      g.lineStyle(1.5, 0xc9b98a, 0.85);
+      for (let i = 0; i < 6; i++) g.lineBetween(L + 4 + i * 12, -12, L + 10 + i * 12, 12).lineBetween(L + 10 + i * 12, -12, L + 4 + i * 12, 12);
+      g.fillStyle(0xd9a03a).fillCircle(L + 8, -12, 3).fillCircle(L + w - 8, -10, 3);
+      break;
+    case "waterline":
+      g.lineStyle(3, 0x2f5f78, 0.8).lineBetween(L, -10, L + w, -10);
+      g.lineStyle(1, 0xefe6d2, 0.6).lineBetween(L, -6, L + w, -6);
+      break;
+    case "fishline":
+      g.lineStyle(2, 0xe8e2d0, 0.9).beginPath().moveTo(L + 4, 6).lineTo(L + 14, -6).lineTo(L + 24, 8).lineTo(L + w - 6, -4).strokePath();
+      g.lineStyle(2, 0xe8e2d0, 0.9).strokeCircle(L + 18, 2, 7);
+      break;
+    case "shell":
+      g.fillStyle(0xf0dcc8).fillEllipse(0, 0, 20, 16);
+      g.lineStyle(1.5, 0xc89a7a, 0.9);
+      for (let i = -2; i <= 2; i++) g.lineBetween(0, 8, i * 4, -6);
+      break;
+    case "greenroad":
+      g.fillStyle(0x6fbf9a, 0.25).fillRoundedRect(L + 6, T, w - 12, h, 18);
+      g.lineStyle(2, 0xbfe8cf, 0.5).lineBetween(cx, T + 6, cx, T + h - 6);
+      break;
+    case "bells":
+      g.lineStyle(2, 0x8a6a3a, 0.9).lineBetween(0, T - 20, 0, T + h - 10);
+      for (let i = 0; i < (p.h ?? 4); i++) g.fillStyle(0xb88a3a).fillTriangle(-7, T + i * TILE + 10, 7, T + i * TILE + 10, 0, T + i * TILE - 4);
+      break;
+    case "bubbles":
+      for (let i = 0; i < 10; i++) g.lineStyle(1.5, 0xd8f0f0, 0.7).strokeCircle(L + 10 + ((i * 13) % (w - 16)), T + h - i * (h / 10), 2 + (i % 3) * 2);
+      break;
+    case "tunnel":
+      g.fillStyle(0xbfe8f0, 0.25).fillEllipse(cx, T + h / 2, w, h);
+      g.fillStyle(0xf0fbff, 0.25).fillEllipse(cx, T + h / 2, w * 0.6, h * 0.6);
+      break;
+    case "pillar":
+      shadow(g, 0, 14, 30);
+      g.fillStyle(0xa8443a).fillRect(-10, -56, 20, 70);
+      g.fillStyle(0xd7b25a).fillRect(-12, -60, 24, 6).fillRect(-12, 10, 24, 5);
+      g.fillStyle(0xffffff, 0.15).fillRect(-6, -54, 4, 62);
+      break;
+    case "lantern":
+      g.lineStyle(2, 0x5a3e28).lineBetween(0, -40, 0, -26);
+      g.fillStyle(0xe8a04d, 0.95).fillEllipse(0, -14, 18, 24);
+      g.lineStyle(1.5, 0x8a3a2a).strokeEllipse(0, -14, 18, 24);
+      g.fillStyle(0xfff0c0, 0.25).fillCircle(0, -14, 26);
+      break;
+    case "window": {
+      const sky = { spring: 0xb9d9a8, summer: 0xf0d27a, autumn: 0xd9864a, winter: 0xdfe8ee }[p.season] ?? 0xd8e8f0;
+      g.fillStyle(0x5a1e18).fillRect(L - 6, T - 6, TILE + 12, TILE + 4);
+      g.fillStyle(sky).fillRect(L - 2, T - 2, TILE + 4, TILE - 4);
+      g.lineStyle(2, 0x5a1e18).lineBetween(L + TILE / 2, T - 2, L + TILE / 2, T + TILE - 6).lineBetween(L - 2, T + TILE / 2 - 4, L + TILE + 2, T + TILE / 2 - 4);
+      if (p.season === "winter") g.fillStyle(0xffffff).fillCircle(L + 8, T + 6, 2).fillCircle(L + 26, T + 14, 2);
+      if (p.season === "spring") g.lineStyle(1, 0x5a7a9a).lineBetween(L + 6, T + 2, L + 4, T + 10).lineBetween(L + 22, T + 4, L + 20, T + 12);
+      if (p.season === "autumn") g.fillStyle(0xb8402c).fillEllipse(L + 10, T + 22, 6, 4);
+      break;
+    }
+    case "lowtable":
+      shadow(g, cx, 14, w + 6, 16);
+      g.fillStyle(0x3e1512).fillRoundedRect(L + 2, -12, w - 4, 26, 4);
+      g.fillStyle(0x7b2e29).fillRoundedRect(L + 4, -14, w - 8, 22, 4);
+      break;
+    case "bowls":
+      for (let i = 0; i < (p.w ?? 1); i++) {
+        g.fillStyle(0x2a1a14).fillEllipse(L + 20 + i * TILE, 2, 22, 10);
+        g.fillStyle(0xf0e6d0).fillEllipse(L + 20 + i * TILE, 0, 18, 7);
+        g.lineStyle(1.2, 0xf4f2e6).lineBetween(L + 14 + i * TILE, 4, L + 10 + i * TILE, 14).lineBetween(L + 26 + i * TILE, 4, L + 30 + i * TILE, 12);
+      }
+      break;
+    case "beam":
+      g.fillStyle(0x7a5634).fillRoundedRect(L, -6, w, 12, 4);
+      break;
+    case "dial": {
+      shadow(g, cx, by - 6, w, 20);
+      for (let i = 0; i < 4; i++) {
+        g.fillStyle([0xa3a094, 0xb5b2a4, 0xc7c4b6, 0xd9d6c8][i]).fillCircle(cx, T + h / 2, 34 - i * 8);
+        g.lineStyle(1.5, 0x6a6658, 0.7).strokeCircle(cx, T + h / 2, 34 - i * 8);
+      }
+      const glyphs = [0x9ac08a, 0xe0b84a, 0xc8743a, 0xe8eef2];
+      glyphs.forEach((c, i) => g.fillStyle(c).fillCircle(cx + Math.cos(i * 1.57) * 26, T + h / 2 + Math.sin(i * 1.57) * 26, 4));
+      break;
+    }
+    case "blossom":
+      g.lineStyle(3, 0x6a4b33).lineBetween(0, 12, 0, -22);
+      for (let i = 0; i < 7; i++) g.fillStyle(i % 2 ? 0xf2b8c6 : 0xf7d6de).fillCircle(Math.cos(i) * 14, -26 + Math.sin(i * 1.7) * 8, 6);
+      break;
+    case "lectern":
+      shadow(g, 0, 14, 26);
+      g.fillStyle(0x5a1e18).fillRect(-4, -8, 8, 22);
+      g.fillStyle(0x7b2e29).fillRect(-16, -18, 32, 12);
+      g.fillStyle(0xefe6d2).fillRect(-12, -17, 24, 9);
+      g.lineStyle(1, 0x2f5f78).lineBetween(-10, -12, 10, -14);
+      break;
+    case "years":
+      for (let i = 0; i < 14; i++) {
+        const x = L + 20 + ((i * 53) % (w - 40)),
+          y = T + 10 + ((i * 29) % (h - 20));
+        g.fillStyle(0xd8e8f0, 0.5).fillEllipse(x, y, 16, 6);
+        g.fillStyle(0xd8e8f0, 0.5).fillTriangle(x + 8, y, x + 13, y - 4, x + 13, y + 4);
+      }
+      break;
+    case "bottles":
+      g.fillStyle(0x4e3020).fillRect(L, -16, w, 30);
+      for (let i = 0; i < (p.w ?? 1) * 2; i++) {
+        const x = L + 10 + i * (TILE / 2);
+        g.fillStyle([0x7fb0c4, 0x9fd0c8, 0x6a9ab0][i % 3], 0.9).fillRoundedRect(x - 5, -12, 10, 18, 3);
+        g.fillStyle(0xefe6d2).fillRect(x - 4, -4, 8, 4);
+      }
+      if (p.jammed) g.lineStyle(3, 0x9a3a2a).lineBetween(L + w - 30, -18, L + w - 10, 12);
+      break;
+    case "desk":
+      shadow(g, cx, 14, w, 14);
+      g.fillStyle(0x5a3a28).fillRect(L + 2, -14, w - 4, 26);
+      g.fillStyle(0x7fb0c4, 0.9).fillRoundedRect(cx - 6, -22, 10, 16, 3);
+      break;
+    case "screen":
+      g.fillStyle(0xefe6d2).fillRect(L, -30, w, 40);
+      g.lineStyle(2, 0x3e1512);
+      for (let i = 0; i <= (p.w ?? 1); i++) g.lineBetween(L + i * TILE, -30, L + i * TILE, 10);
+      g.lineStyle(1.5, 0x6a8a5a, 0.7).lineBetween(L + 10, 0, L + 30, -20).lineBetween(L + 50, 4, L + 80, -14);
+      break;
+    case "chartstone":
+      g.fillStyle(0xd8d4c6).fillEllipse(0, 0, 30, 18);
+      g.lineStyle(2, 0x2f5f78).beginPath().moveTo(-10, 2).lineTo(-2, -4).lineTo(6, 3).lineTo(12, -2).strokePath();
+      break;
+    case "boxstand":
+      shadow(g, 0, 14, 30);
+      g.fillStyle(0x3e1512).fillRect(-14, -4, 28, 18);
+      g.fillStyle(0x1a1412).fillRoundedRect(-11, -22, 22, 18, 3);
+      g.lineStyle(2, 0xd7b25a).strokeRoundedRect(-11, -22, 22, 18, 3);
+      g.lineStyle(2, 0xb8402c).lineBetween(-11, -13, 11, -13).lineBetween(0, -22, 0, -4);
+      break;
+    case "gaterock":
+      shadow(g, cx, 14, w, 20);
+      g.fillStyle(0x5e6a68).fillRoundedRect(L, -24, w, 40, 16);
+      g.fillStyle(0x7e8784).fillRoundedRect(L + 8, -28, w - 30, 18, 10);
+      break;
+    case "surface":
+      g.fillStyle(0xe8f4f0, 0.3).fillRect(L, T, w, 8);
+      g.lineStyle(2, 0xe8f4f0, 0.5).lineBetween(L, T + 14, L + w, T + 14);
+      break;
+    case "house":
+      shadow(g, cx, by - 6, w + 6, 22);
+      g.fillStyle(0xcfc2a2).fillRect(L + 4, T + 8, w - 8, h - 14);
+      g.fillStyle(p.roof === "slate" ? 0x4a5560 : 0x6a5a3e).fillTriangle(L - 6, T + 12, L + w + 6, T + 12, cx, T - 26);
+      g.fillStyle(0x3e2e22).fillRect(cx - 8, by - 34, 16, 28);
+      break;
+    case "turninggate":
+      g.fillStyle(0xa8443a).fillRect(-8, T - 10, 16, h + 10);
+      for (let i = 0; i < 4; i++) g.lineStyle(3, 0xd7b25a).lineBetween(-20, T + i * (h / 4), 20, T + i * (h / 4) + 10);
+      break;
+    case "weed":
+      for (let i = 0; i < 6; i++) g.lineStyle(3, 0x4a7a4a).beginPath().moveTo(L + 8 + i * 12, 14).lineTo(L + 4 + i * 12, -6).lineTo(L + 10 + i * 12, -22).strokePath();
+      break;
+    case "niche":
+      g.fillStyle(0x23241e, 0.75).fillRoundedRect(L, T, w, h, 10);
+      break;
     default: {
       shadow(g, 0, 12, 34);
       g.fillStyle(0xa17b4e).fillRect(-15, -20, 30, 30);
@@ -252,10 +424,40 @@ const LOOKS = {
   elder: { cloth: 0xe9dcc0, wrap: 0xe9dcc0, skin: 0x5a3826, carry: "staff", stripe: 0x9e4429 },
   villager: { cloth: 0xa77a66, wrap: 0x536375, skin: 0x6e4630 },
   child: { cloth: 0xc1a05a, wrap: null, skin: 0x744a32, small: true },
+  attendant: { cloth: 0x2f6a7a, wrap: 0xd7b25a, skin: 0x9ab8c0, carry: "staff" },
+  archivist: { cloth: 0x4a5a6a, wrap: 0xefe6d2, skin: 0x9ab8c0 },
+  worker: { cloth: 0x6a5a4a, wrap: 0xefe6d2, skin: 0xb88a64 },
 };
 
 export function drawPerson(scene, kind = "villager", { tint, id = "" } = {}) {
   const g = scene.add.graphics();
+  if (kind === "turtle") {
+    g.fillStyle(0x1e2618, 0.3).fillEllipse(0, 6, 40, 14);
+    g.fillStyle(0x7a9a6a).fillEllipse(-16, 2, 12, 8).fillEllipse(16, 2, 12, 8).fillEllipse(-12, -14, 10, 7).fillEllipse(12, -14, 10, 7);
+    g.fillStyle(0x6a8a5a).fillCircle(0, -20, 8);
+    g.fillStyle(0x4a6a42).fillEllipse(0, -4, 34, 28);
+    g.lineStyle(1.5, 0xb9c98a, 0.8).strokeEllipse(0, -4, 22, 16).lineBetween(0, -18, 0, 10).lineBetween(-16, -4, 16, -4);
+    g.fillStyle(0x1b1611).fillCircle(-3, -23, 1.5).fillCircle(3, -23, 1.5);
+    return g;
+  }
+  if (kind === "crab") {
+    g.fillStyle(0xc8583a).fillEllipse(0, 0, 18, 12);
+    g.lineStyle(2, 0xc8583a).lineBetween(-8, 2, -14, 8).lineBetween(8, 2, 14, 8).lineBetween(-8, -2, -14, -8).lineBetween(8, -2, 14, -8);
+    return g;
+  }
+  if (kind === "fish") {
+    g.fillStyle(0xd8e4ea, 0.85).fillEllipse(0, -20, 22, 9);
+    g.fillStyle(0xd8e4ea, 0.85).fillTriangle(10, -20, 18, -26, 18, -14);
+    g.fillStyle(0x1b1611).fillCircle(-6, -21, 1.3);
+    return g;
+  }
+  if (kind === "gull") {
+    g.fillStyle(0x233224, 0.25).fillEllipse(0, 8, 20, 6);
+    g.fillStyle(0xf0f0ea).fillEllipse(0, -2, 20, 12).fillCircle(8, -8, 5);
+    g.fillStyle(0x9aa0a6).fillEllipse(-4, -4, 14, 6);
+    g.fillStyle(0xe0a33a).fillTriangle(12, -9, 18, -8, 12, -6);
+    return g;
+  }
   if (kind === "hen" || kind === "bird") {
     g.fillStyle(0x233224, 0.3).fillEllipse(0, 8, 22, 8);
     const body = kind === "bird" ? 0x3f4c5a : 0xe1c89c;

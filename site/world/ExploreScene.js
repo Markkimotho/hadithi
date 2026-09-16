@@ -5,8 +5,10 @@ import { createPhysics } from "./physics.js";
 import { blockedTiles, findPath, spawnFor, walkable } from "./layout.js";
 import { createInput } from "./input.js";
 import { TILE, drawGround, drawPerson, drawProp } from "./art.js";
-import { createPuppet, preloadPuppets } from "./puppet.js";
+import { createPuppet, preloadPuppets, hasRig } from "./puppet.js";
+import { heroOf } from "./tales.js";
 import { playTrial } from "./trials/stage.js";
+import { routeIntent } from "./route.js";
 
 const GESTURE = {
   INSPECT: "kneel",
@@ -25,8 +27,9 @@ export function exploreScene(Phaser, planck, host) {
       super("explore");
     }
     preload() {
-      this.load.spritesheet("wisdom-tiles", "./art/wisdom/tiles.svg", { frameWidth: 32, frameHeight: 32 });
-      preloadPuppets(this);
+      this.tale = host.snapshot?.tale ?? "wisdom";
+      this.load.spritesheet(`${this.tale}-tiles`, `./art/${this.tale}/tiles.svg`, { frameWidth: 32, frameHeight: 32 });
+      preloadPuppets(this, this.tale);
     }
     create() {
       this.ready = true;
@@ -94,7 +97,7 @@ export function exploreScene(Phaser, planck, host) {
       this.tweens.killAll();
       this.phys = createPhysics(planck, layout, spawnFor(layout, from));
       this.remainder = 0;
-      drawGround(this, layout, "wisdom-tiles");
+      drawGround(this, layout, `${this.tale}-tiles`);
       this.staticProps = layout.props
         .filter((p) => !p.physics)
         .map((p) => ({
@@ -105,7 +108,7 @@ export function exploreScene(Phaser, planck, host) {
         }));
       this.propSprites = this.phys.props.map((p) => ({ prop: p, sprite: drawProp(this, p.source) }));
       this.people = layout.people.map((p) => this.addPerson(p, layout));
-      this.hero = createPuppet(this, "kweku");
+      this.hero = createPuppet(this, heroOf(this.tale), this.tale);
       const at = this.phys.player.getPosition();
       this.hero.setPosition(at.x * TILE, at.y * TILE);
       const camera = this.cameras.main;
@@ -118,7 +121,8 @@ export function exploreScene(Phaser, planck, host) {
 
     /** People stand, work, or wander; animals peck about. */
     addPerson(p, layout) {
-      const sprite = p.kind === "anansi" ? createPuppet(this, "anansi") : drawPerson(this, p.kind, { tint: p.tint, id: p.id });
+      // People with a rig in this tale are puppets; everyone else is drawn.
+      const sprite = hasRig(this.tale, p.kind) ? createPuppet(this, p.kind, this.tale) : drawPerson(this, p.kind, { tint: p.tint, id: p.id });
       const x = (p.at[0] + 0.5) * TILE,
         // A perched person (Anansi up the trunk) is drawn above their tile.
         y = (p.at[1] + 0.5) * TILE - (p.perch ?? 0) * TILE;
@@ -415,19 +419,16 @@ export function exploreScene(Phaser, planck, host) {
       if (!paused && this.path.length) {
         if (x || y) this.cancelRoute();
         else {
-          const next = this.path[0];
-          const distance = Math.hypot(next.x - p.x, next.y - p.y);
-          if (distance < 0.14) {
+          const step = routeIntent(p, this.path[0]);
+          const distance = step.distance;
+          if (step.arrived) {
             this.path.shift();
             this.lastDistance = Infinity;
             this.stuckTime = 0;
             if (!this.path.length) this.finishRoute();
           } else {
-            x = (next.x - p.x) / distance;
-            y = (next.y - p.y) / distance;
-            const speed = Math.min(1, distance / 0.4);
-            x *= speed;
-            y *= speed;
+            x = step.x;
+            y = step.y;
             this.stuckTime = distance >= this.lastDistance - 0.005 ? this.stuckTime + delta : 0;
             this.lastDistance = distance;
             if (this.stuckTime > 700) {
@@ -537,8 +538,9 @@ export function exploreScene(Phaser, planck, host) {
         walking: this.path.length > 0,
         camera: { x: this.cameras.main.worldView.x, y: this.cameras.main.worldView.y, zoom: this.cameras.main.zoom },
         art: {
-          tiles: this.textures.exists("wisdom-tiles") ? this.textures.get("wisdom-tiles").frameTotal : 0,
-          kweku: this.textures.exists("puppet-kweku-head") ? 1 : 0,
+          tiles: this.textures.exists(`${this.tale}-tiles`) ? this.textures.get(`${this.tale}-tiles`).frameTotal : 0,
+          kweku: this.textures.exists(`puppet-${heroOf(this.tale)}-head`) ? 1 : 0,
+          hero: heroOf(this.tale),
         },
         places: this.places().map((pl) => pl.id),
         trial: this.trialInfo?.() ?? null,
