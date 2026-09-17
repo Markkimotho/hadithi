@@ -27,7 +27,58 @@ const TEXT = {
     good: ["Your weight goes with it.", "Steady hands.", "The pot settles."],
     bad: ["The rope bites. You slip a hand-width.", "The pot drags you sideways.", "Bark scrapes your knee."],
   },
+  steer: {
+    intro: "The current braids round rocks and eddies. Each one shows itself a breath before you reach it.",
+    hint: "Press E or Space as the ring closes, to lean round it.",
+    good: ["You slip past.", "Clean water.", "The turtle follows your lean."],
+    bad: ["The eddy spins you round.", "Rock scrapes your shoulder.", "You lose the line of the current."],
+  },
+  swim: {
+    intro: "The water runs backwards. Behind each pillar, slack water opens for a moment.",
+    hint: "Press E or Space as the ring closes: pull then.",
+    good: ["You reach the slack water.", "A good stroke.", "The pillar shelters you."],
+    bad: ["The current takes back the stroke.", "You swallow sea.", "You are pushed back a length."],
+  },
+  sneak: {
+    intro: "Every board has its own complaint. The sleepers stir and settle, stir and settle.",
+    hint: "Press E or Space as the ring closes: that is the quiet moment to step.",
+    good: ["Not a sound.", "The board holds its tongue.", "Someone snores on."],
+    bad: ["The board groans.", "A sleeper mutters and turns.", "Something knocks a cup."],
+  },
+  carry: {
+    intro: "The crowd moves like water. Gaps open and close.",
+    hint: "Press E or Space as the ring closes on a gap.",
+    good: ["Through, and nothing knocked.", "The jar rides steady.", "A gap, and you take it."],
+    bad: ["An elbow catches the jar.", "You are jostled.", "The gap closes on you."],
+  },
+  chase: {
+    intro: "He is close behind. Ahead, the crowd opens and shuts.",
+    hint: "Press E or Space as the ring closes: duck through.",
+    good: ["Through.", "You vanish behind a cart.", "He loses you for a moment."],
+    bad: ["Blocked.", "A basket in your way.", "He gains on you."],
+  },
+  formation: {
+    intro: "Four friends, one door, lantern light. Each one drifts as you go.",
+    hint: "Press E or Space as the ring closes on whoever strays.",
+    good: ["Back in line.", "Together.", "Shoulder to shoulder."],
+    bad: ["The cat wanders off.", "The rooster flaps ahead.", "The dog stops to sniff."],
+  },
+  stack: {
+    intro: "Dog on donkey, cat on dog, rooster on top. The tower sways.",
+    hint: "Press E or Space as the ring closes: shift your weight.",
+    good: ["The tower holds.", "Steady.", "Balanced."],
+    bad: ["The tower lurches.", "Claws in your back.", "The rooster nearly falls."],
+  },
+  rhythm: {
+    intro: "Feel the beat before you call. One voice at a time, then all of them.",
+    hint: "Press E or Space as the ring closes, on the beat.",
+    good: ["On the beat.", "Loud and true.", "The room shakes."],
+    bad: ["Off the beat.", "A croak.", "The beat slips away."],
+  },
 };
+
+/** How each timed kind is staged: moving through points, or holding in place. */
+const STAGING = { leap: "stones", brace: "gusts", balance: "climb", steer: "path", swim: "path", sneak: "path", carry: "path", chase: "path", formation: "place", stack: "place", rhythm: "place" };
 
 /**
  * Run one trial. Resolves to { mode: "skill", pass, score } or null if the
@@ -42,7 +93,13 @@ export function playTrial(scene, kind, profile, ui, seed) {
   const params = paramsFor(kind, profile);
   const trial = createTiming(params, seed);
   const text = TEXT[kind] ?? TEXT.leap;
-  const view = kind === "leap" ? leapView(scene, trial) : kind === "brace" ? braceView(scene, trial) : balanceView(scene, trial, profile, ui);
+  const staging = STAGING[kind] ?? "place";
+  const view =
+    staging === "stones" ? leapView(scene, trial)
+    : staging === "gusts" ? braceView(scene, trial)
+    : staging === "climb" ? balanceView(scene, trial, profile, ui)
+    : staging === "path" ? pathView(scene, trial, kind)
+    : placeView(scene, trial, kind);
   ui.say(`${text.intro} ${params.need === params.moments ? "Every one" : `${params.need} of ${params.moments}`} must go well.`, "trial");
   ui.hint(text.hint);
   return new Promise((resolve) => {
@@ -187,6 +244,82 @@ function braceView(scene, trial) {
   };
 }
 
+// ── Path: rings on points ahead; each good answer carries you on ────────
+function pathView(scene, trial, kind) {
+  const hero = scene.hero.root;
+  const start = { x: hero.x, y: hero.y };
+  const f = scene.facing ?? { x: 1, y: 0 };
+  const dir = Math.abs(f.x) + Math.abs(f.y) > 0.1 ? f : { x: 1, y: 0 };
+  const n = trial.times.length;
+  // Points ahead of the hero, a little zig-zag so each one is its own place.
+  const points = Array.from({ length: n }, (_, i) => ({
+    x: start.x + dir.x * TILE * 1.6 * (i + 1) - dir.y * TILE * (i % 2 ? 0.6 : -0.6),
+    y: start.y + dir.y * TILE * 1.6 * (i + 1) + dir.x * TILE * (i % 2 ? 0.6 : -0.6),
+  }));
+  const g = scene.add.graphics().setDepth(99990);
+  const fx = scene.add.graphics().setDepth(99991);
+  scene.heroLocked = true;
+  const tone = { steer: 0x9fd0c8, swim: 0x9fd0c8, sneak: 0xe0c47a }[kind] ?? 0xf3dc9a;
+  return {
+    draw(t) {
+      g.clear();
+      const i = t.current();
+      points.forEach((p, k) => {
+        if (t.answers[k]) return;
+        g.fillStyle(tone, k === i ? 0.35 : 0.12).fillCircle(p.x, p.y, 10);
+        if (k === i) {
+          const r = 16 + Math.max(0, t.times[i] - t.clock) * 55;
+          g.lineStyle(3, tone, 0.9).strokeCircle(p.x, p.y, Math.min(r, 110));
+        }
+      });
+    },
+    answer(i, good) {
+      const p = points[i];
+      scene.tweens.add({ targets: hero, x: good ? p.x : p.x + dir.y * 14, y: good ? p.y : p.y - dir.x * 14, duration: 280, ease: "Quad.out" });
+      if (!good) {
+        fx.fillStyle(kind === "steer" || kind === "swim" ? 0xd8eef0 : 0xe8d9b0, 0.9);
+        for (let k = 0; k < 8; k++) fx.fillCircle(p.x + Math.cos(k * 0.8) * 16, p.y + Math.sin(k * 1.3) * 10, 3.5);
+        scene.tweens.add({ targets: fx, alpha: 0, duration: 600, onComplete: () => fx.clear().setAlpha(1) });
+        if (scene.motion) scene.cameras.main.shake(110, 0.004);
+      }
+    },
+    destroy() {
+      g.destroy();
+      fx.destroy();
+      scene.heroLocked = false;
+      hero.setPosition(start.x, start.y);
+    },
+  };
+}
+
+// ── Place: rings around the hero; the trial is how you hold, call or sway ─
+function placeView(scene, trial, kind) {
+  const hero = scene.hero.root;
+  const g = scene.add.graphics().setDepth(99990);
+  const tone = kind === "rhythm" ? 0xe8a04d : 0xf3dc9a;
+  return {
+    draw(t) {
+      g.clear();
+      const i = t.current();
+      if (i < 0) return;
+      const r = 26 + Math.max(0, t.times[i] - t.clock) * 70;
+      g.lineStyle(3, tone, 0.9).strokeCircle(hero.x, hero.y - 30, Math.min(r, 140));
+      g.lineStyle(2, tone, 0.35).strokeCircle(hero.x, hero.y - 30, 26);
+    },
+    answer(_i, good) {
+      if (good) scene.tweens.add({ targets: hero, scaleY: 1.12, duration: 110, yoyo: true });
+      else {
+        scene.tweens.add({ targets: hero, angle: 8, duration: 90, yoyo: true, repeat: 1 });
+        if (scene.motion) scene.cameras.main.shake(110, 0.004);
+      }
+    },
+    destroy() {
+      g.destroy();
+      hero.setAngle(0);
+    },
+  };
+}
+
 // ── Balance: a side view of the climb, the pot swinging on its rope ───────
 function balanceView(scene, trial, profile, ui) {
   const behind = profile.flags?.includes("behind") || profile.flags?.includes("knotTaught");
@@ -270,26 +403,23 @@ function balanceView(scene, trial, profile, ui) {
   };
 }
 
-// ── Scale: argument stones on the elders' balance ─────────────────────────
-const EVIDENCE = [
-  { id: "listen", label: "Hear him before you judge him", weight: 2, when: () => true },
-  { id: "ask", label: "Let him say what he wants", weight: 2, when: () => true },
-  { id: "selfSealed", label: "The second seal was his own promise", weight: 3, when: (p) => p.clues.includes("promiseSeal") || p.deductions.includes("selfSealed") },
-  { id: "whyHide", label: "He hoped someone would follow him", weight: 2, when: (p) => p.deductions.includes("whyHide") },
-  { id: "savedWhisper", label: "The gourd kept one voice safe", weight: 1, when: (p) => p.flags.includes("savedWhisper") },
-  { id: "knotTaught", label: "He let another carry the weight", weight: 1, when: (p) => p.flags.includes("knotTaught") },
-  { id: "gathered", label: "The neighbours came to listen", weight: 1, when: (p) => p.flags.includes("gathered") },
-];
-
-/** The weight the circle's doubt puts on the other pan, from the story's odds. */
-export function scaleNeed(chance) {
-  return Math.max(2, Math.min(7, Math.round(7 - chance * 5)));
+// ── Scale: arguments on a beam balance ────────────────────────────────────
+/**
+ * The doubt on the other pan is what an average roll (7) would need, so the
+ * scale is exactly as fair as the dice. The arguments you can lay on it are
+ * the advantages you have earned for this check, one stone each.
+ */
+export function scaleNeed(profile) {
+  return Math.max(0, (profile.dc ?? 8) - 7);
+}
+export function scaleStones(profile) {
+  return (profile.parts ?? []).filter((p) => p.value > 0).map((p, i) => ({ id: `s${i}`, label: p.label, weight: p.value }));
 }
 
 function scaleTrial(scene, profile, ui) {
   const planck = scene.planck;
-  const need = scaleNeed(profile.chance ?? 0.5);
-  const stones = EVIDENCE.filter((e) => e.when({ clues: [], deductions: [], flags: [], ...profile }));
+  const need = scaleNeed(profile);
+  const stones = scaleStones(profile);
   const w = scene.scale.width,
     h = scene.scale.height;
   const layer = scene.add.container(0, 0).setDepth(99995).setScrollFactor(0);
@@ -323,11 +453,11 @@ function scaleTrial(scene, profile, ui) {
     b.createFixture(new planck.Circle(0.18 + weight * 0.06), { density: weight * 3, friction: 0.8, restitution: 0.1 });
     bodies.push({ b, color, weight });
   };
-  drop(need, -1, 0x5a5a4e); // the circle's doubt
+  if (need > 0) drop(need, -1, 0x5a5a4e); // the doubt
   const chosen = new Map();
-  let patience = Math.max(14, 10 + (profile.chance ?? 0.5) * 12);
-  ui.say(`The elders set the circle’s doubt on one pan. Put what you know on the other. They will not wait for ever.`, "trial");
-  ui.hint("Choose the things you know. Each one drops onto the scale.");
+  let patience = 20;
+  ui.say(profile.skill?.intro ?? "Doubt sits on one pan. Lay what you have on the other. Nobody will wait for ever.", "trial");
+  ui.hint(stones.length ? "Choose what to lay on the scale. Each one drops onto the pan." : "You have nothing to lay on the scale yet. Learn more, then ask again.");
   return new Promise((resolve) => {
     let settled = false;
     const finish = (result) => {
@@ -341,7 +471,7 @@ function scaleTrial(scene, profile, ui) {
     const settle = () => {
       const total = [...chosen.values()].reduce((s, x) => s + x, 0);
       const pass = total >= need;
-      ui.feedback(pass ? "The beam tips your way. The circle makes room for him." : "The beam does not move. The circle is not yet persuaded.", pass);
+      ui.feedback(pass ? (profile.skill?.won ?? "The beam tips your way.") : (profile.skill?.lost ?? "The beam does not move. Not yet."), pass);
       setTimeout(() => finish({ mode: "skill", pass, score: Number(Math.min(1, total / need).toFixed(3)) }), 1100);
     };
     ui.onCancel(() => finish(null));
@@ -361,7 +491,7 @@ function scaleTrial(scene, profile, ui) {
       const dt = Math.min(0.05, deltaMs / 1000);
       world.step(dt);
       patience -= dt;
-      ui.hint(`The elders’ patience: ${Math.max(0, Math.ceil(patience))} heartbeats.`);
+      ui.hint(`${profile.skill?.patienceLabel ?? "Patience"}: ${Math.max(0, Math.ceil(patience))} heartbeats.`);
       if (patience <= 0 && !settled) settle();
       art.clear();
       const p = beam.getPosition(),

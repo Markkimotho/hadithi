@@ -162,6 +162,13 @@ export const SHAPES = {
   brace: { moments: 4, need: 3, period: 1.8 },
   balance: { moments: 4, need: 3, period: 1.4 },
   rhythm: { moments: 5, need: 3, period: 0.9 },
+  steer: { moments: 4, need: 3, period: 1.4 },
+  swim: { moments: 4, need: 3, period: 1.6 },
+  sneak: { moments: 4, need: 3, period: 1.7 },
+  carry: { moments: 4, need: 3, period: 1.5 },
+  chase: { moments: 4, need: 3, period: 1.2 },
+  formation: { moments: 4, need: 3, period: 1.5 },
+  stack: { moments: 4, need: 3, period: 1.6 },
 };
 
 /** Assist (Storyteller's grace) is already inside the odds, so nothing extra here. */
