@@ -1,0 +1,118 @@
+{
+  "version": 1,
+  "title": "Orchestra world terrain",
+  "tileSize": 32,
+  "columns": 8,
+  "rows": 4,
+  "output": "tiles.svg",
+  "tiles": [
+    {
+      "glyph": ".",
+      "id": "earth",
+      "base": "#7a6044",
+      "detail": "<path d=\"M3 8h8m9 9h7M5 26h6\" fill=\"none\" stroke=\"#5a4430\" stroke-opacity=\"0.7\" stroke-width=\"1.5\"/><circle cx=\"23\" cy=\"6\" r=\"1\" fill=\"#a88a5e\" fill-opacity=\"1\"/>"
+    },
+    {
+      "glyph": ",",
+      "id": "meadow",
+      "base": "#6c7a44",
+      "detail": "<path d=\"M3 24l2-5 2 5m7-12 2-5 2 5m8 18 2-5 2 5\" fill=\"none\" stroke=\"#a4a868\" stroke-opacity=\"0.7\" stroke-width=\"1.3\"/><circle cx=\"24\" cy=\"8\" r=\"1.2\" fill=\"#d9c25a\" fill-opacity=\"1\"/>"
+    },
+    {
+      "glyph": "\"",
+      "id": "fern",
+      "base": "#55683a",
+      "detail": "<path d=\"M6 30q4-12 14-18M10 22l-5-3m9-2-4-5m8 1-1-6M16 30q4-8 12-12\" fill=\"none\" stroke=\"#93a35e\" stroke-opacity=\"0.85\" stroke-width=\"1.6\"/>"
+    },
+    {
+      "glyph": ":",
+      "id": "track",
+      "base": "#9b8358",
+      "detail": "<path d=\"M8 0v32M24 0v32\" fill=\"none\" stroke=\"#6e5a3a\" stroke-opacity=\"0.55\" stroke-width=\"3\"/><circle cx=\"16\" cy=\"12\" r=\"1.5\" fill=\"#bda67a\" fill-opacity=\"1\"/>"
+    },
+    {
+      "glyph": "_",
+      "id": "straw",
+      "base": "#c9b17a",
+      "detail": "<path d=\"M2 6l12 3m4 9 11-2M3 25l13-3\" fill=\"none\" stroke=\"#e8d49c\" stroke-opacity=\"0.8\" stroke-width=\"1.4\"/>"
+    },
+    {
+      "glyph": "~",
+      "id": "stream",
+      "base": "#5f7f80",
+      "detail": "<path d=\"M1 8q5-4 10 0t10 0 10 0M-2 20q5-4 10 0t10 0 10 0\" fill=\"none\" stroke=\"#b8cfc6\" stroke-opacity=\"0.7\" stroke-width=\"1.5\"/>"
+    },
+    {
+      "glyph": "w",
+      "id": "pond",
+      "base": "#3f5f66",
+      "detail": "<path d=\"M0 9q6-5 12 0t12 0 12 0M0 25q6-5 12 0t12 0 12 0\" fill=\"none\" stroke=\"#8aa8a8\" stroke-opacity=\"0.6\" stroke-width=\"1.5\"/>"
+    },
+    {
+      "glyph": "+",
+      "id": "floorboards",
+      "base": "#8a6440",
+      "detail": "<path d=\"M0 1h32M0 10h32M0 21h32M0 31h32\" fill=\"none\" stroke=\"#4e3622\" stroke-opacity=\"0.7\" stroke-width=\"1.5\"/><path d=\"M8 1v9m17 1v10M12 22v9\" fill=\"none\" stroke=\"#b98a5a\" stroke-opacity=\"0.7\" stroke-width=\"1\"/>"
+    },
+    {
+      "glyph": "s",
+      "id": "cobbles",
+      "base": "#8d8a80",
+      "detail": "<circle cx=\"7\" cy=\"7\" r=\"5\" fill=\"#a3a094\" fill-opacity=\"1\"/><circle cx=\"20\" cy=\"9\" r=\"6\" fill=\"#9a978a\" fill-opacity=\"1\"/><circle cx=\"9\" cy=\"22\" r=\"6\" fill=\"#a19e92\" fill-opacity=\"1\"/><circle cx=\"24\" cy=\"24\" r=\"5\" fill=\"#a6a397\" fill-opacity=\"1\"/>"
+    },
+    {
+      "glyph": "r",
+      "id": "rug",
+      "base": "#8a3f2f",
+      "detail": "<path d=\"M3 3h26v26H3z\" fill=\"none\" stroke=\"#d9b07a\" stroke-opacity=\"0.8\" stroke-width=\"1.5\"/><path d=\"M8 16h16M16 8v16\" fill=\"none\" stroke=\"#d9b07a\" stroke-opacity=\"0.6\" stroke-width=\"1\"/>"
+    },
+    {
+      "glyph": "m",
+      "id": "mud",
+      "base": "#5e4a33",
+      "detail": "<path d=\"M3 10q4-3 9 0t9 0 8 0v3H3z\" fill=\"#7a6244\" fill-opacity=\"0.7\"/><circle cx=\"22\" cy=\"23\" r=\"2.5\" fill=\"#3e3022\" fill-opacity=\"0.6\"/>"
+    },
+    {
+      "glyph": "#",
+      "id": "timberwall",
+      "base": "#d6c7a8",
+      "detail": "<path d=\"M0 1h32M0 31h32M3 0v32M29 0v32M3 1l26 30\" fill=\"none\" stroke=\"#4a3524\" stroke-opacity=\"0.9\" stroke-width=\"3.5\"/>"
+    },
+    {
+      "glyph": "=",
+      "id": "fence",
+      "base": "#738053",
+      "detail": "<path d=\"M0 7h32v4H0zm0 14h32v4H0z\" fill=\"#9a7a50\" fill-opacity=\"1\"/><path d=\"M3 1v30m13-30v30m13-30v30\" fill=\"none\" stroke=\"#5a4430\" stroke-opacity=\"0.9\" stroke-width=\"3\"/>"
+    },
+    {
+      "glyph": "o",
+      "id": "rock",
+      "base": "#6c6b60",
+      "detail": "<path d=\"M4 24 7 11l8-6 10 3 5 12-7 8H9z\" fill=\"#87867a\" fill-opacity=\"1\"/><path d=\"m8 12 7-5 5 2\" fill=\"none\" stroke=\"#c4c2b0\" stroke-opacity=\"0.7\" stroke-width=\"1.5\"/>"
+    },
+    {
+      "glyph": "T",
+      "id": "oak",
+      "base": "#2f3f2a",
+      "detail": "<path d=\"M4 21 7 9l9-6 10 3 4 11-6 9H10z\" fill=\"#46582f\" fill-opacity=\"1\"/><circle cx=\"12\" cy=\"12\" r=\"3\" fill=\"#b9762e\" fill-opacity=\"0.8\"/><circle cx=\"22\" cy=\"18\" r=\"2.5\" fill=\"#c98a32\" fill-opacity=\"0.8\"/>"
+    },
+    {
+      "glyph": "b",
+      "id": "bramble",
+      "base": "#4b5a34",
+      "detail": "<path d=\"m2 25 2-8 6-5 5 2 5-6 7 2 4 8-4 8H5z\" fill=\"#3e4d2a\" fill-opacity=\"1\"/><circle cx=\"9\" cy=\"17\" r=\"2\" fill=\"#7a2a3a\" fill-opacity=\"1\"/><circle cx=\"21\" cy=\"13\" r=\"2\" fill=\"#7a2a3a\" fill-opacity=\"1\"/>"
+    },
+    {
+      "glyph": "h",
+      "id": "slate",
+      "base": "#4a3f38",
+      "detail": "<path d=\"M0 6h32M0 14h32M0 22h32M0 30h32M8 0v6m16 0v8M8 14v8m16 0v8\" fill=\"none\" stroke=\"#7a6a5e\" stroke-opacity=\"0.8\" stroke-width=\"1.5\"/>"
+    },
+    {
+      "glyph": " ",
+      "id": "void",
+      "base": "#141812",
+      "detail": ""
+    }
+  ]
+}
