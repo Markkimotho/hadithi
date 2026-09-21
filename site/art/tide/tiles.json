@@ -1,0 +1,118 @@
+{
+  "version": 1,
+  "title": "Tide world terrain",
+  "tileSize": 32,
+  "columns": 8,
+  "rows": 4,
+  "output": "tiles.svg",
+  "tiles": [
+    {
+      "glyph": ".",
+      "id": "seabed",
+      "base": "#b9a98a",
+      "detail": "<path d=\"M2 9q6-3 12 0t12 0M4 23q6-3 12 0t12 0\" fill=\"none\" stroke=\"#8f7f62\" stroke-opacity=\"0.7\" stroke-width=\"1.5\"/><circle cx=\"24\" cy=\"15\" r=\"1.3\" fill=\"#e8dcc0\" fill-opacity=\"1\"/>"
+    },
+    {
+      "glyph": ",",
+      "id": "seagrass",
+      "base": "#4f7a6a",
+      "detail": "<path d=\"M4 30q2-10 0-16m8 16q3-12 1-20m9 20q-2-9 1-14m7 14q2-8 0-12\" fill=\"none\" stroke=\"#8fb79c\" stroke-opacity=\"0.75\" stroke-width=\"1.4\"/>"
+    },
+    {
+      "glyph": "\"",
+      "id": "kelp",
+      "base": "#3e6a5b",
+      "detail": "<path d=\"M5 32q5-10 0-20t2-12M14 32q-5-12 2-22t-1-10M24 32q5-9-1-18t3-14\" fill=\"none\" stroke=\"#7fa86a\" stroke-opacity=\"0.85\" stroke-width=\"2\"/>"
+    },
+    {
+      "glyph": ":",
+      "id": "shellpath",
+      "base": "#d6cbb2",
+      "detail": "<path d=\"M2 16h28\" fill=\"none\" stroke=\"#b7aa8d\" stroke-opacity=\"0.6\" stroke-width=\"1\"/><path d=\"M6 9q3-4 6 0z\" fill=\"#efe6d2\" fill-opacity=\"1\"/><path d=\"M20 22q3-4 6 0z\" fill=\"#e9c9b6\" fill-opacity=\"1\"/><circle cx=\"15\" cy=\"26\" r=\"1.6\" fill=\"#f4efe2\" fill-opacity=\"1\"/>"
+    },
+    {
+      "glyph": "_",
+      "id": "beach",
+      "base": "#dac9a2",
+      "detail": "<path d=\"M2 8q7 2 12 0m5 12q6 2 11 0M4 28h9\" fill=\"none\" stroke=\"#efe3c4\" stroke-opacity=\"0.7\" stroke-width=\"1.5\"/><circle cx=\"24\" cy=\"7\" r=\"1.2\" fill=\"#9c8a66\" fill-opacity=\"1\"/>"
+    },
+    {
+      "glyph": "~",
+      "id": "shallows",
+      "base": "#6ea5a7",
+      "detail": "<path d=\"M1 8q5-4 10 0t10 0 10 0M-2 20q5-4 10 0t10 0 10 0M4 30q5-4 10 0\" fill=\"none\" stroke=\"#cfe7dc\" stroke-opacity=\"0.7\" stroke-width=\"1.5\"/>"
+    },
+    {
+      "glyph": "w",
+      "id": "deep",
+      "base": "#2f5f78",
+      "detail": "<path d=\"M0 9q6-5 12 0t12 0 12 0M0 25q6-5 12 0t12 0 12 0\" fill=\"none\" stroke=\"#7fb0c4\" stroke-opacity=\"0.6\" stroke-width=\"1.5\"/>"
+    },
+    {
+      "glyph": "+",
+      "id": "lacquer",
+      "base": "#7b2e29",
+      "detail": "<path d=\"M0 1h32M0 16h32M0 31h32\" fill=\"none\" stroke=\"#3e1512\" stroke-opacity=\"0.7\" stroke-width=\"1.5\"/><path d=\"M4 8h24M4 24h24\" fill=\"none\" stroke=\"#d7b25a\" stroke-opacity=\"0.55\" stroke-width=\"1\"/>"
+    },
+    {
+      "glyph": "s",
+      "id": "pearl",
+      "base": "#d8d4c6",
+      "detail": "<path d=\"M0 16h32M16 0v32\" fill=\"none\" stroke=\"#9f9a88\" stroke-opacity=\"0.7\" stroke-width=\"1.2\"/><circle cx=\"8\" cy=\"8\" r=\"2\" fill=\"#ece8dc\" fill-opacity=\"1\"/><circle cx=\"24\" cy=\"24\" r=\"2\" fill=\"#ece8dc\" fill-opacity=\"1\"/>"
+    },
+    {
+      "glyph": "r",
+      "id": "tatami",
+      "base": "#b8b17a",
+      "detail": "<path d=\"M0 2h32M0 30h32\" fill=\"none\" stroke=\"#3a4a2a\" stroke-opacity=\"0.7\" stroke-width=\"3\"/><path d=\"M0 8h32M0 13h32M0 19h32M0 24h32\" fill=\"none\" stroke=\"#8c8552\" stroke-opacity=\"0.6\" stroke-width=\"1\"/>"
+    },
+    {
+      "glyph": "m",
+      "id": "tidalflat",
+      "base": "#8b7c5e",
+      "detail": "<path d=\"M3 10q4-3 9 0t9 0 8 0v3H3z\" fill=\"#a7976f\" fill-opacity=\"0.6\"/><circle cx=\"22\" cy=\"23\" r=\"2\" fill=\"#5d5240\" fill-opacity=\"0.5\"/>"
+    },
+    {
+      "glyph": "#",
+      "id": "palacewall",
+      "base": "#a8443a",
+      "detail": "<path d=\"M0 3h32v9H0z\" fill=\"#efe6d2\" fill-opacity=\"1\"/><path d=\"M0 12h32M0 27h32\" fill=\"none\" stroke=\"#5a1e18\" stroke-opacity=\"0.8\" stroke-width=\"1.5\"/><path d=\"M8 12v15M24 12v15\" fill=\"none\" stroke=\"#5a1e18\" stroke-opacity=\"0.6\" stroke-width=\"1.2\"/>"
+    },
+    {
+      "glyph": "=",
+      "id": "bamboo",
+      "base": "#9e9a5c",
+      "detail": "<path d=\"M0 8h32v4H0zm0 14h32v4H0z\" fill=\"#c9c07a\" fill-opacity=\"1\"/><path d=\"M4 1v30m12-30v30m12-30v30\" fill=\"none\" stroke=\"#5e5a2e\" stroke-opacity=\"0.85\" stroke-width=\"3\"/>"
+    },
+    {
+      "glyph": "o",
+      "id": "rock",
+      "base": "#5e6a68",
+      "detail": "<path d=\"M4 24 7 11l8-6 10 3 5 12-7 8H9z\" fill=\"#7e8784\" fill-opacity=\"1\"/><path d=\"m8 12 7-5 5 2\" fill=\"none\" stroke=\"#c4c8c0\" stroke-opacity=\"0.7\" stroke-width=\"1.5\"/>"
+    },
+    {
+      "glyph": "T",
+      "id": "pine",
+      "base": "#28423a",
+      "detail": "<path d=\"M16 2 4 14h6L3 24h9l-1 6h10l-1-6h9l-7-10h6z\" fill=\"#30553f\" fill-opacity=\"1\"/><path d=\"M14 26h4v6h-4z\" fill=\"#5a3e2a\" fill-opacity=\"1\"/>"
+    },
+    {
+      "glyph": "b",
+      "id": "coral",
+      "base": "#2f5f6a",
+      "detail": "<path d=\"M6 30q-2-10 3-14m5 14q0-14 6-20m6 20q2-10-3-16\" fill=\"#e07a5e\" fill-opacity=\"1\"/><path d=\"M9 16l-4-6m11-0 4-7m4 13 6-5\" fill=\"none\" stroke=\"#f0a07e\" stroke-opacity=\"0.9\" stroke-width=\"3\"/>"
+    },
+    {
+      "glyph": "h",
+      "id": "kawara",
+      "base": "#3e4b5d",
+      "detail": "<path d=\"M0 6q8 4 16 0t16 0M0 16q8 4 16 0t16 0M0 26q8 4 16 0t16 0\" fill=\"none\" stroke=\"#7c8ca0\" stroke-opacity=\"0.8\" stroke-width=\"2\"/>"
+    },
+    {
+      "glyph": " ",
+      "id": "void",
+      "base": "#10202a",
+      "detail": ""
+    }
+  ]
+}

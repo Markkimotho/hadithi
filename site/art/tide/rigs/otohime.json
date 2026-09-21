@@ -1,0 +1,261 @@
+{
+  "version": 1,
+  "name": "Otohime",
+  "canvas": {
+    "width": 64,
+    "height": 72,
+    "anchor": [
+      32,
+      68
+    ]
+  },
+  "bones": [
+    {
+      "id": "root",
+      "parent": null,
+      "pivot": [
+        32,
+        68
+      ]
+    },
+    {
+      "id": "torso",
+      "parent": "root",
+      "pivot": [
+        32,
+        43
+      ]
+    },
+    {
+      "id": "head",
+      "parent": "torso",
+      "pivot": [
+        32,
+        23
+      ]
+    },
+    {
+      "id": "leftArm",
+      "parent": "torso",
+      "pivot": [
+        22,
+        39
+      ]
+    },
+    {
+      "id": "rightArm",
+      "parent": "torso",
+      "pivot": [
+        42,
+        39
+      ]
+    },
+    {
+      "id": "leftLeg",
+      "parent": "root",
+      "pivot": [
+        25,
+        58
+      ]
+    },
+    {
+      "id": "rightLeg",
+      "parent": "root",
+      "pivot": [
+        39,
+        58
+      ]
+    }
+  ],
+  "parts": [
+    {
+      "id": "shadow",
+      "file": "parts/otohime-shadow.svg",
+      "bone": "root",
+      "pivot": [
+        32,
+        66
+      ],
+      "order": 0
+    },
+    {
+      "id": "leftLeg",
+      "file": "parts/otohime-left-leg.svg",
+      "bone": "leftLeg",
+      "pivot": [
+        25,
+        58
+      ],
+      "order": 1
+    },
+    {
+      "id": "rightLeg",
+      "file": "parts/otohime-right-leg.svg",
+      "bone": "rightLeg",
+      "pivot": [
+        39,
+        58
+      ],
+      "order": 2
+    },
+    {
+      "id": "torso",
+      "file": "parts/otohime-torso.svg",
+      "bone": "torso",
+      "pivot": [
+        32,
+        43
+      ],
+      "order": 3
+    },
+    {
+      "id": "leftArm",
+      "file": "parts/otohime-left-arm.svg",
+      "bone": "leftArm",
+      "pivot": [
+        22,
+        39
+      ],
+      "order": 4
+    },
+    {
+      "id": "rightArm",
+      "file": "parts/otohime-right-arm.svg",
+      "bone": "rightArm",
+      "pivot": [
+        42,
+        39
+      ],
+      "order": 5
+    },
+    {
+      "id": "head",
+      "file": "parts/otohime-head.svg",
+      "bone": "head",
+      "pivot": [
+        32,
+        23
+      ],
+      "order": 6
+    }
+  ],
+  "clips": {
+    "idle": {
+      "duration": 1800,
+      "bones": {
+        "torso": {
+          "y": [
+            0,
+            -1,
+            0,
+            1,
+            0
+          ]
+        },
+        "head": {
+          "rotation": [
+            0,
+            -0.025,
+            0,
+            0.02,
+            0
+          ]
+        }
+      }
+    },
+    "walk": {
+      "duration": 460,
+      "bones": {
+        "leftLeg": {
+          "rotation": [
+            -0.38,
+            0.38
+          ]
+        },
+        "rightLeg": {
+          "rotation": [
+            0.38,
+            -0.38
+          ]
+        },
+        "leftArm": {
+          "rotation": [
+            0.25,
+            -0.25
+          ]
+        },
+        "rightArm": {
+          "rotation": [
+            -0.25,
+            0.25
+          ]
+        },
+        "torso": {
+          "y": [
+            0,
+            -1.5,
+            0,
+            -1.5
+          ]
+        }
+      }
+    },
+    "carry": {
+      "duration": 900,
+      "bones": {
+        "torso": {
+          "rotation": [
+            -0.06,
+            -0.08
+          ]
+        },
+        "leftArm": {
+          "rotation": [
+            -0.62,
+            -0.5
+          ]
+        },
+        "rightArm": {
+          "rotation": [
+            -0.62,
+            -0.5
+          ]
+        }
+      }
+    },
+    "push": {
+      "duration": 700,
+      "bones": {
+        "torso": {
+          "rotation": [
+            0.08,
+            0.12
+          ]
+        },
+        "leftArm": {
+          "rotation": [
+            -0.95,
+            -0.8
+          ]
+        },
+        "rightArm": {
+          "rotation": [
+            -0.95,
+            -0.8
+          ]
+        }
+      }
+    },
+    "fall": {
+      "duration": 600,
+      "bones": {
+        "torso": {
+          "rotation": [
+            0,
+            1.4
+          ]
+        }
+      }
+    }
+  }
+}
