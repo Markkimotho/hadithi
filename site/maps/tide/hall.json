@@ -1,0 +1,1109 @@
+{
+  "type": "map",
+  "version": "1.10",
+  "tiledversion": "1.10.2",
+  "orientation": "orthogonal",
+  "renderorder": "right-down",
+  "width": 26,
+  "height": 15,
+  "tilewidth": 32,
+  "tileheight": 32,
+  "infinite": false,
+  "layers": [
+    {
+      "id": 1,
+      "name": "ground",
+      "type": "tilelayer",
+      "width": 26,
+      "height": 15,
+      "opacity": 1,
+      "visible": true,
+      "data": [
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        8,
+        8,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        12,
+        12,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        12,
+        12,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        12,
+        12,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        12,
+        12,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        12,
+        12,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        12,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        12,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        12,
+        12,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        12,
+        12,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        12,
+        12,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        12,
+        12,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        8,
+        8,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12
+      ],
+      "x": 0,
+      "y": 0
+    },
+    {
+      "id": 2,
+      "name": "objects",
+      "type": "objectgroup",
+      "draworder": "topdown",
+      "opacity": 1,
+      "visible": true,
+      "objects": [
+        {
+          "id": 1,
+          "name": "start",
+          "type": "spawn",
+          "x": 400,
+          "y": 432,
+          "width": 0,
+          "height": 0,
+          "point": true
+        },
+        {
+          "id": 2,
+          "name": "gate",
+          "type": "spawn",
+          "x": 400,
+          "y": 432,
+          "width": 0,
+          "height": 0,
+          "point": true
+        },
+        {
+          "id": 3,
+          "name": "garden",
+          "type": "spawn",
+          "x": 784,
+          "y": 240,
+          "width": 0,
+          "height": 0,
+          "point": true
+        },
+        {
+          "id": 4,
+          "name": "archive",
+          "type": "spawn",
+          "x": 48,
+          "y": 240,
+          "width": 0,
+          "height": 0,
+          "point": true
+        },
+        {
+          "id": 5,
+          "name": "feast",
+          "type": "spawn",
+          "x": 400,
+          "y": 48,
+          "width": 0,
+          "height": 0,
+          "point": true
+        },
+        {
+          "id": 6,
+          "name": "homeSea",
+          "type": "spawn",
+          "x": 400,
+          "y": 432,
+          "width": 0,
+          "height": 0,
+          "point": true
+        },
+        {
+          "id": 7,
+          "name": "windows",
+          "type": "hotspot",
+          "x": 400,
+          "y": 80,
+          "width": 0,
+          "height": 0,
+          "point": true,
+          "properties": [
+            {
+              "name": "actions",
+              "type": "string",
+              "value": "[\"windows\"]"
+            }
+          ]
+        },
+        {
+          "id": 8,
+          "name": "bowls",
+          "type": "hotspot",
+          "x": 336,
+          "y": 272,
+          "width": 0,
+          "height": 0,
+          "point": true,
+          "properties": [
+            {
+              "name": "actions",
+              "type": "string",
+              "value": "[\"bowls\"]"
+            }
+          ]
+        },
+        {
+          "id": 9,
+          "name": "workers",
+          "type": "hotspot",
+          "x": 656,
+          "y": 368,
+          "width": 0,
+          "height": 0,
+          "point": true,
+          "properties": [
+            {
+              "name": "actions",
+              "type": "string",
+              "value": "[\"names\"]"
+            },
+            {
+              "name": "label",
+              "type": "string",
+              "value": "\"Two harbor workers with a beam\""
+            }
+          ]
+        },
+        {
+          "id": 10,
+          "name": "garden",
+          "type": "exit",
+          "x": 816,
+          "y": 240,
+          "width": 0,
+          "height": 0,
+          "point": true
+        },
+        {
+          "id": 11,
+          "name": "garden",
+          "type": "exit",
+          "x": 816,
+          "y": 272,
+          "width": 0,
+          "height": 0,
+          "point": true
+        },
+        {
+          "id": 12,
+          "name": "archive",
+          "type": "exit",
+          "x": 16,
+          "y": 240,
+          "width": 0,
+          "height": 0,
+          "point": true
+        },
+        {
+          "id": 13,
+          "name": "archive",
+          "type": "exit",
+          "x": 16,
+          "y": 272,
+          "width": 0,
+          "height": 0,
+          "point": true
+        },
+        {
+          "id": 14,
+          "name": "feast",
+          "type": "exit",
+          "x": 400,
+          "y": 16,
+          "width": 0,
+          "height": 0,
+          "point": true
+        },
+        {
+          "id": 15,
+          "name": "feast",
+          "type": "exit",
+          "x": 432,
+          "y": 16,
+          "width": 0,
+          "height": 0,
+          "point": true
+        },
+        {
+          "id": 16,
+          "name": "gate",
+          "type": "exit",
+          "x": 400,
+          "y": 464,
+          "width": 0,
+          "height": 0,
+          "point": true
+        },
+        {
+          "id": 17,
+          "name": "gate",
+          "type": "exit",
+          "x": 432,
+          "y": 464,
+          "width": 0,
+          "height": 0,
+          "point": true
+        },
+        {
+          "id": 18,
+          "name": "window",
+          "type": "prop",
+          "x": 112,
+          "y": 48,
+          "width": 32,
+          "height": 32,
+          "point": true,
+          "properties": [
+            {
+              "name": "kind",
+              "type": "string",
+              "value": "\"window\""
+            },
+            {
+              "name": "season",
+              "type": "string",
+              "value": "\"spring\""
+            }
+          ]
+        },
+        {
+          "id": 19,
+          "name": "window",
+          "type": "prop",
+          "x": 304,
+          "y": 48,
+          "width": 32,
+          "height": 32,
+          "point": true,
+          "properties": [
+            {
+              "name": "kind",
+              "type": "string",
+              "value": "\"window\""
+            },
+            {
+              "name": "season",
+              "type": "string",
+              "value": "\"summer\""
+            }
+          ]
+        },
+        {
+          "id": 20,
+          "name": "window",
+          "type": "prop",
+          "x": 528,
+          "y": 48,
+          "width": 32,
+          "height": 32,
+          "point": true,
+          "properties": [
+            {
+              "name": "kind",
+              "type": "string",
+              "value": "\"window\""
+            },
+            {
+              "name": "season",
+              "type": "string",
+              "value": "\"autumn\""
+            }
+          ]
+        },
+        {
+          "id": 21,
+          "name": "window",
+          "type": "prop",
+          "x": 720,
+          "y": 48,
+          "width": 32,
+          "height": 32,
+          "point": true,
+          "properties": [
+            {
+              "name": "kind",
+              "type": "string",
+              "value": "\"window\""
+            },
+            {
+              "name": "season",
+              "type": "string",
+              "value": "\"winter\""
+            }
+          ]
+        },
+        {
+          "id": 22,
+          "name": "lowtable",
+          "type": "prop",
+          "x": 368,
+          "y": 272,
+          "width": 128,
+          "height": 32,
+          "point": true,
+          "properties": [
+            {
+              "name": "kind",
+              "type": "string",
+              "value": "\"lowtable\""
+            },
+            {
+              "name": "w",
+              "type": "float",
+              "value": 4
+            },
+            {
+              "name": "block",
+              "type": "bool",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": 23,
+          "name": "bowls",
+          "type": "prop",
+          "x": 336,
+          "y": 240,
+          "width": 128,
+          "height": 32,
+          "point": true,
+          "properties": [
+            {
+              "name": "kind",
+              "type": "string",
+              "value": "\"bowls\""
+            },
+            {
+              "name": "w",
+              "type": "float",
+              "value": 4
+            }
+          ]
+        },
+        {
+          "id": 24,
+          "name": "pillar",
+          "type": "prop",
+          "x": 176,
+          "y": 176,
+          "width": 32,
+          "height": 32,
+          "point": true,
+          "properties": [
+            {
+              "name": "kind",
+              "type": "string",
+              "value": "\"pillar\""
+            },
+            {
+              "name": "block",
+              "type": "bool",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": 25,
+          "name": "pillar",
+          "type": "prop",
+          "x": 656,
+          "y": 176,
+          "width": 32,
+          "height": 32,
+          "point": true,
+          "properties": [
+            {
+              "name": "kind",
+              "type": "string",
+              "value": "\"pillar\""
+            },
+            {
+              "name": "block",
+              "type": "bool",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": 26,
+          "name": "beam",
+          "type": "prop",
+          "x": 624,
+          "y": 400,
+          "width": 96,
+          "height": 32,
+          "point": true,
+          "properties": [
+            {
+              "name": "kind",
+              "type": "string",
+              "value": "\"beam\""
+            },
+            {
+              "name": "w",
+              "type": "float",
+              "value": 3
+            }
+          ]
+        },
+        {
+          "id": 27,
+          "name": "worker1",
+          "type": "person",
+          "x": 624,
+          "y": 368,
+          "width": 32,
+          "height": 32,
+          "point": true,
+          "properties": [
+            {
+              "name": "id",
+              "type": "string",
+              "value": "\"worker1\""
+            },
+            {
+              "name": "kind",
+              "type": "string",
+              "value": "\"worker\""
+            }
+          ]
+        },
+        {
+          "id": 28,
+          "name": "worker2",
+          "type": "person",
+          "x": 720,
+          "y": 368,
+          "width": 32,
+          "height": 32,
+          "point": true,
+          "properties": [
+            {
+              "name": "id",
+              "type": "string",
+              "value": "\"worker2\""
+            },
+            {
+              "name": "kind",
+              "type": "string",
+              "value": "\"worker\""
+            },
+            {
+              "name": "tint",
+              "type": "string",
+              "value": "\"indigo\""
+            }
+          ]
+        },
+        {
+          "id": 29,
+          "name": "fish1",
+          "type": "person",
+          "x": 208,
+          "y": 336,
+          "width": 32,
+          "height": 32,
+          "point": true,
+          "properties": [
+            {
+              "name": "id",
+              "type": "string",
+              "value": "\"fish1\""
+            },
+            {
+              "name": "kind",
+              "type": "string",
+              "value": "\"fish\""
+            },
+            {
+              "name": "wander",
+              "type": "float",
+              "value": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "tilesets": [
+    {
+      "firstgid": 1,
+      "name": "TideTerrain",
+      "tilewidth": 32,
+      "tileheight": 32,
+      "tilecount": 18,
+      "columns": 8,
+      "image": "../../art/tide/tiles.svg",
+      "imagewidth": 256,
+      "imageheight": 128,
+      "tiles": [
+        {
+          "id": 0,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "."
+            }
+          ]
+        },
+        {
+          "id": 1,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": ","
+            }
+          ]
+        },
+        {
+          "id": 2,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "\""
+            }
+          ]
+        },
+        {
+          "id": 3,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": ":"
+            }
+          ]
+        },
+        {
+          "id": 4,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "_"
+            }
+          ]
+        },
+        {
+          "id": 5,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "~"
+            }
+          ]
+        },
+        {
+          "id": 6,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "w"
+            }
+          ]
+        },
+        {
+          "id": 7,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "+"
+            }
+          ]
+        },
+        {
+          "id": 8,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "s"
+            }
+          ]
+        },
+        {
+          "id": 9,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "r"
+            }
+          ]
+        },
+        {
+          "id": 10,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "m"
+            }
+          ]
+        },
+        {
+          "id": 11,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "#"
+            }
+          ]
+        },
+        {
+          "id": 12,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "="
+            }
+          ]
+        },
+        {
+          "id": 13,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "o"
+            }
+          ]
+        },
+        {
+          "id": 14,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "T"
+            }
+          ]
+        },
+        {
+          "id": 15,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "b"
+            }
+          ]
+        },
+        {
+          "id": 16,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "h"
+            }
+          ]
+        },
+        {
+          "id": 17,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": " "
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "properties": [
+    {
+      "name": "menu",
+      "type": "string",
+      "value": "[]"
+    },
+    {
+      "name": "wind",
+      "type": "string",
+      "value": "[0,0]"
+    }
+  ]
+}

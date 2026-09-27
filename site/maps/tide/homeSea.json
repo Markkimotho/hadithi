@@ -1,0 +1,885 @@
+{
+  "type": "map",
+  "version": "1.10",
+  "tiledversion": "1.10.2",
+  "orientation": "orthogonal",
+  "renderorder": "right-down",
+  "width": 26,
+  "height": 15,
+  "tilewidth": 32,
+  "tileheight": 32,
+  "infinite": false,
+  "layers": [
+    {
+      "id": 1,
+      "name": "ground",
+      "type": "tilelayer",
+      "width": 26,
+      "height": 15,
+      "opacity": 1,
+      "visible": true,
+      "data": [
+        14,
+        14,
+        14,
+        14,
+        14,
+        14,
+        14,
+        14,
+        14,
+        14,
+        14,
+        14,
+        9,
+        4,
+        14,
+        14,
+        14,
+        14,
+        14,
+        14,
+        14,
+        14,
+        14,
+        14,
+        14,
+        14,
+        14,
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        9,
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        14,
+        14,
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        9,
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        14,
+        14,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        9,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        14,
+        14,
+        1,
+        1,
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        1,
+        1,
+        1,
+        9,
+        1,
+        1,
+        1,
+        1,
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        1,
+        1,
+        14,
+        14,
+        1,
+        1,
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        1,
+        1,
+        1,
+        9,
+        1,
+        1,
+        1,
+        1,
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        1,
+        1,
+        14,
+        14,
+        1,
+        1,
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        1,
+        1,
+        1,
+        9,
+        1,
+        1,
+        1,
+        1,
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        1,
+        1,
+        14,
+        14,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        9,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        14,
+        14,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        14,
+        14,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        14,
+        14,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        14,
+        14,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        14,
+        14,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        14,
+        14,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        14,
+        14,
+        14,
+        14,
+        14,
+        14,
+        14,
+        14,
+        14,
+        14,
+        14,
+        14,
+        14,
+        14,
+        14,
+        14,
+        14,
+        14,
+        14,
+        14,
+        14,
+        14,
+        14,
+        14,
+        14,
+        14,
+        14
+      ],
+      "x": 0,
+      "y": 0
+    },
+    {
+      "id": 2,
+      "name": "objects",
+      "type": "objectgroup",
+      "draworder": "topdown",
+      "opacity": 1,
+      "visible": true,
+      "objects": [
+        {
+          "id": 1,
+          "name": "start",
+          "type": "spawn",
+          "x": 400,
+          "y": 112,
+          "width": 0,
+          "height": 0,
+          "point": true
+        },
+        {
+          "id": 2,
+          "name": "feast",
+          "type": "spawn",
+          "x": 400,
+          "y": 48,
+          "width": 0,
+          "height": 0,
+          "point": true
+        },
+        {
+          "id": 3,
+          "name": "promise",
+          "type": "spawn",
+          "x": 400,
+          "y": 48,
+          "width": 0,
+          "height": 0,
+          "point": true
+        },
+        {
+          "id": 4,
+          "name": "gift",
+          "type": "spawn",
+          "x": 400,
+          "y": 48,
+          "width": 0,
+          "height": 0,
+          "point": true
+        },
+        {
+          "id": 5,
+          "name": "workers",
+          "type": "hotspot",
+          "x": 432,
+          "y": 304,
+          "width": 0,
+          "height": 0,
+          "point": true,
+          "properties": [
+            {
+              "name": "actions",
+              "type": "string",
+              "value": "[\"stay\"]"
+            },
+            {
+              "name": "label",
+              "type": "string",
+              "value": "\"The harbor workers\""
+            }
+          ]
+        },
+        {
+          "id": 6,
+          "name": "leave",
+          "type": "exit",
+          "x": 400,
+          "y": 16,
+          "width": 0,
+          "height": 0,
+          "point": true
+        },
+        {
+          "id": 7,
+          "name": "leave",
+          "type": "exit",
+          "x": 432,
+          "y": 16,
+          "width": 0,
+          "height": 0,
+          "point": true
+        },
+        {
+          "id": 8,
+          "name": "boat",
+          "type": "prop",
+          "x": 528,
+          "y": 336,
+          "width": 96,
+          "height": 32,
+          "point": true,
+          "properties": [
+            {
+              "name": "kind",
+              "type": "string",
+              "value": "\"boat\""
+            },
+            {
+              "name": "w",
+              "type": "float",
+              "value": 3
+            }
+          ]
+        },
+        {
+          "id": 9,
+          "name": "nets",
+          "type": "prop",
+          "x": 144,
+          "y": 272,
+          "width": 64,
+          "height": 32,
+          "point": true,
+          "properties": [
+            {
+              "name": "kind",
+              "type": "string",
+              "value": "\"nets\""
+            },
+            {
+              "name": "w",
+              "type": "float",
+              "value": 2
+            }
+          ]
+        },
+        {
+          "id": 10,
+          "name": "beam",
+          "type": "prop",
+          "x": 304,
+          "y": 240,
+          "width": 96,
+          "height": 32,
+          "point": true,
+          "properties": [
+            {
+              "name": "kind",
+              "type": "string",
+              "value": "\"beam\""
+            },
+            {
+              "name": "w",
+              "type": "float",
+              "value": 3
+            }
+          ]
+        },
+        {
+          "id": 11,
+          "name": "worker1",
+          "type": "person",
+          "x": 400,
+          "y": 304,
+          "width": 32,
+          "height": 32,
+          "point": true,
+          "properties": [
+            {
+              "name": "id",
+              "type": "string",
+              "value": "\"worker1\""
+            },
+            {
+              "name": "kind",
+              "type": "string",
+              "value": "\"worker\""
+            }
+          ]
+        },
+        {
+          "id": 12,
+          "name": "worker2",
+          "type": "person",
+          "x": 464,
+          "y": 336,
+          "width": 32,
+          "height": 32,
+          "point": true,
+          "properties": [
+            {
+              "name": "id",
+              "type": "string",
+              "value": "\"worker2\""
+            },
+            {
+              "name": "kind",
+              "type": "string",
+              "value": "\"worker\""
+            },
+            {
+              "name": "tint",
+              "type": "string",
+              "value": "\"indigo\""
+            }
+          ]
+        },
+        {
+          "id": 13,
+          "name": "worker3",
+          "type": "person",
+          "x": 208,
+          "y": 240,
+          "width": 32,
+          "height": 32,
+          "point": true,
+          "properties": [
+            {
+              "name": "id",
+              "type": "string",
+              "value": "\"worker3\""
+            },
+            {
+              "name": "kind",
+              "type": "string",
+              "value": "\"worker\""
+            },
+            {
+              "name": "wander",
+              "type": "float",
+              "value": 2
+            }
+          ]
+        },
+        {
+          "id": 14,
+          "name": "fish1",
+          "type": "person",
+          "x": 656,
+          "y": 368,
+          "width": 32,
+          "height": 32,
+          "point": true,
+          "properties": [
+            {
+              "name": "id",
+              "type": "string",
+              "value": "\"fish1\""
+            },
+            {
+              "name": "kind",
+              "type": "string",
+              "value": "\"fish\""
+            },
+            {
+              "name": "wander",
+              "type": "float",
+              "value": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "tilesets": [
+    {
+      "firstgid": 1,
+      "name": "TideTerrain",
+      "tilewidth": 32,
+      "tileheight": 32,
+      "tilecount": 18,
+      "columns": 8,
+      "image": "../../art/tide/tiles.svg",
+      "imagewidth": 256,
+      "imageheight": 128,
+      "tiles": [
+        {
+          "id": 0,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "."
+            }
+          ]
+        },
+        {
+          "id": 1,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": ","
+            }
+          ]
+        },
+        {
+          "id": 2,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "\""
+            }
+          ]
+        },
+        {
+          "id": 3,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": ":"
+            }
+          ]
+        },
+        {
+          "id": 4,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "_"
+            }
+          ]
+        },
+        {
+          "id": 5,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "~"
+            }
+          ]
+        },
+        {
+          "id": 6,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "w"
+            }
+          ]
+        },
+        {
+          "id": 7,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "+"
+            }
+          ]
+        },
+        {
+          "id": 8,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "s"
+            }
+          ]
+        },
+        {
+          "id": 9,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "r"
+            }
+          ]
+        },
+        {
+          "id": 10,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "m"
+            }
+          ]
+        },
+        {
+          "id": 11,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "#"
+            }
+          ]
+        },
+        {
+          "id": 12,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "="
+            }
+          ]
+        },
+        {
+          "id": 13,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "o"
+            }
+          ]
+        },
+        {
+          "id": 14,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "T"
+            }
+          ]
+        },
+        {
+          "id": 15,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "b"
+            }
+          ]
+        },
+        {
+          "id": 16,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "h"
+            }
+          ]
+        },
+        {
+          "id": 17,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": " "
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "properties": [
+    {
+      "name": "menu",
+      "type": "string",
+      "value": "[]"
+    },
+    {
+      "name": "wind",
+      "type": "string",
+      "value": "[0,0]"
+    }
+  ]
+}

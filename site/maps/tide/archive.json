@@ -1,0 +1,902 @@
+{
+  "type": "map",
+  "version": "1.10",
+  "tiledversion": "1.10.2",
+  "orientation": "orthogonal",
+  "renderorder": "right-down",
+  "width": 24,
+  "height": 14,
+  "tilewidth": 32,
+  "tileheight": 32,
+  "infinite": false,
+  "layers": [
+    {
+      "id": 1,
+      "name": "ground",
+      "type": "tilelayer",
+      "width": 24,
+      "height": 14,
+      "opacity": 1,
+      "visible": true,
+      "data": [
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        8,
+        8,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        12,
+        12,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        12,
+        12,
+        9,
+        9,
+        13,
+        13,
+        13,
+        13,
+        13,
+        13,
+        13,
+        9,
+        9,
+        9,
+        9,
+        13,
+        13,
+        13,
+        13,
+        13,
+        13,
+        13,
+        9,
+        9,
+        12,
+        12,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        12,
+        12,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        12,
+        12,
+        9,
+        9,
+        13,
+        13,
+        13,
+        13,
+        13,
+        13,
+        13,
+        9,
+        9,
+        9,
+        9,
+        13,
+        13,
+        13,
+        13,
+        13,
+        13,
+        13,
+        9,
+        9,
+        8,
+        12,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        8,
+        12,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        12,
+        12,
+        9,
+        9,
+        13,
+        13,
+        13,
+        13,
+        13,
+        13,
+        13,
+        9,
+        9,
+        9,
+        9,
+        13,
+        13,
+        13,
+        13,
+        13,
+        13,
+        13,
+        9,
+        9,
+        12,
+        12,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        12,
+        12,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        12,
+        12,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12
+      ],
+      "x": 0,
+      "y": 0
+    },
+    {
+      "id": 2,
+      "name": "objects",
+      "type": "objectgroup",
+      "draworder": "topdown",
+      "opacity": 1,
+      "visible": true,
+      "objects": [
+        {
+          "id": 1,
+          "name": "start",
+          "type": "spawn",
+          "x": 720,
+          "y": 240,
+          "width": 0,
+          "height": 0,
+          "point": true
+        },
+        {
+          "id": 2,
+          "name": "hall",
+          "type": "spawn",
+          "x": 720,
+          "y": 240,
+          "width": 0,
+          "height": 0,
+          "point": true
+        },
+        {
+          "id": 3,
+          "name": "stillwater",
+          "type": "spawn",
+          "x": 368,
+          "y": 48,
+          "width": 0,
+          "height": 0,
+          "point": true
+        },
+        {
+          "id": 4,
+          "name": "garden",
+          "type": "spawn",
+          "x": 368,
+          "y": 48,
+          "width": 0,
+          "height": 0,
+          "point": true
+        },
+        {
+          "id": 5,
+          "name": "labels",
+          "type": "hotspot",
+          "x": 208,
+          "y": 144,
+          "width": 0,
+          "height": 0,
+          "point": true,
+          "properties": [
+            {
+              "name": "actions",
+              "type": "string",
+              "value": "[\"labels\"]"
+            }
+          ]
+        },
+        {
+          "id": 6,
+          "name": "jam",
+          "type": "hotspot",
+          "x": 560,
+          "y": 336,
+          "width": 0,
+          "height": 0,
+          "point": true,
+          "properties": [
+            {
+              "name": "actions",
+              "type": "string",
+              "value": "[\"jam\"]"
+            }
+          ]
+        },
+        {
+          "id": 7,
+          "name": "archivist",
+          "type": "hotspot",
+          "x": 400,
+          "y": 368,
+          "width": 0,
+          "height": 0,
+          "point": true,
+          "properties": [
+            {
+              "name": "actions",
+              "type": "string",
+              "value": "[\"research\"]"
+            },
+            {
+              "name": "label",
+              "type": "string",
+              "value": "\"The archivist\""
+            }
+          ]
+        },
+        {
+          "id": 8,
+          "name": "hall",
+          "type": "exit",
+          "x": 752,
+          "y": 208,
+          "width": 0,
+          "height": 0,
+          "point": true
+        },
+        {
+          "id": 9,
+          "name": "hall",
+          "type": "exit",
+          "x": 752,
+          "y": 240,
+          "width": 0,
+          "height": 0,
+          "point": true
+        },
+        {
+          "id": 10,
+          "name": "garden",
+          "type": "exit",
+          "x": 368,
+          "y": 16,
+          "width": 0,
+          "height": 0,
+          "point": true
+        },
+        {
+          "id": 11,
+          "name": "garden",
+          "type": "exit",
+          "x": 400,
+          "y": 16,
+          "width": 0,
+          "height": 0,
+          "point": true
+        },
+        {
+          "id": 12,
+          "name": "bottles",
+          "type": "prop",
+          "x": 112,
+          "y": 112,
+          "width": 224,
+          "height": 32,
+          "point": true,
+          "properties": [
+            {
+              "name": "kind",
+              "type": "string",
+              "value": "\"bottles\""
+            },
+            {
+              "name": "w",
+              "type": "float",
+              "value": 7
+            }
+          ]
+        },
+        {
+          "id": 13,
+          "name": "bottles",
+          "type": "prop",
+          "x": 112,
+          "y": 208,
+          "width": 224,
+          "height": 32,
+          "point": true,
+          "properties": [
+            {
+              "name": "kind",
+              "type": "string",
+              "value": "\"bottles\""
+            },
+            {
+              "name": "w",
+              "type": "float",
+              "value": 7
+            }
+          ]
+        },
+        {
+          "id": 14,
+          "name": "bottles",
+          "type": "prop",
+          "x": 112,
+          "y": 304,
+          "width": 224,
+          "height": 32,
+          "point": true,
+          "properties": [
+            {
+              "name": "kind",
+              "type": "string",
+              "value": "\"bottles\""
+            },
+            {
+              "name": "w",
+              "type": "float",
+              "value": 7
+            }
+          ]
+        },
+        {
+          "id": 15,
+          "name": "bottles",
+          "type": "prop",
+          "x": 464,
+          "y": 112,
+          "width": 224,
+          "height": 32,
+          "point": true,
+          "properties": [
+            {
+              "name": "kind",
+              "type": "string",
+              "value": "\"bottles\""
+            },
+            {
+              "name": "w",
+              "type": "float",
+              "value": 7
+            }
+          ]
+        },
+        {
+          "id": 16,
+          "name": "bottles",
+          "type": "prop",
+          "x": 464,
+          "y": 208,
+          "width": 224,
+          "height": 32,
+          "point": true,
+          "properties": [
+            {
+              "name": "kind",
+              "type": "string",
+              "value": "\"bottles\""
+            },
+            {
+              "name": "w",
+              "type": "float",
+              "value": 7
+            }
+          ]
+        },
+        {
+          "id": 17,
+          "name": "bottles",
+          "type": "prop",
+          "x": 464,
+          "y": 304,
+          "width": 224,
+          "height": 32,
+          "point": true,
+          "properties": [
+            {
+              "name": "kind",
+              "type": "string",
+              "value": "\"bottles\""
+            },
+            {
+              "name": "w",
+              "type": "float",
+              "value": 7
+            },
+            {
+              "name": "jammed",
+              "type": "bool",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": 18,
+          "name": "desk",
+          "type": "prop",
+          "x": 368,
+          "y": 400,
+          "width": 96,
+          "height": 32,
+          "point": true,
+          "properties": [
+            {
+              "name": "kind",
+              "type": "string",
+              "value": "\"desk\""
+            },
+            {
+              "name": "w",
+              "type": "float",
+              "value": 3
+            },
+            {
+              "name": "block",
+              "type": "bool",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": 19,
+          "name": "archivist",
+          "type": "person",
+          "x": 400,
+          "y": 368,
+          "width": 32,
+          "height": 32,
+          "point": true,
+          "properties": [
+            {
+              "name": "id",
+              "type": "string",
+              "value": "\"archivist\""
+            },
+            {
+              "name": "kind",
+              "type": "string",
+              "value": "\"archivist\""
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "tilesets": [
+    {
+      "firstgid": 1,
+      "name": "TideTerrain",
+      "tilewidth": 32,
+      "tileheight": 32,
+      "tilecount": 18,
+      "columns": 8,
+      "image": "../../art/tide/tiles.svg",
+      "imagewidth": 256,
+      "imageheight": 128,
+      "tiles": [
+        {
+          "id": 0,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "."
+            }
+          ]
+        },
+        {
+          "id": 1,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": ","
+            }
+          ]
+        },
+        {
+          "id": 2,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "\""
+            }
+          ]
+        },
+        {
+          "id": 3,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": ":"
+            }
+          ]
+        },
+        {
+          "id": 4,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "_"
+            }
+          ]
+        },
+        {
+          "id": 5,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "~"
+            }
+          ]
+        },
+        {
+          "id": 6,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "w"
+            }
+          ]
+        },
+        {
+          "id": 7,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "+"
+            }
+          ]
+        },
+        {
+          "id": 8,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "s"
+            }
+          ]
+        },
+        {
+          "id": 9,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "r"
+            }
+          ]
+        },
+        {
+          "id": 10,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "m"
+            }
+          ]
+        },
+        {
+          "id": 11,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "#"
+            }
+          ]
+        },
+        {
+          "id": 12,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "="
+            }
+          ]
+        },
+        {
+          "id": 13,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "o"
+            }
+          ]
+        },
+        {
+          "id": 14,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "T"
+            }
+          ]
+        },
+        {
+          "id": 15,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "b"
+            }
+          ]
+        },
+        {
+          "id": 16,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "h"
+            }
+          ]
+        },
+        {
+          "id": 17,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": " "
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "properties": [
+    {
+      "name": "menu",
+      "type": "string",
+      "value": "[]"
+    },
+    {
+      "name": "wind",
+      "type": "string",
+      "value": "[0,0]"
+    }
+  ]
+}
