@@ -32,6 +32,7 @@ export const orchestra = {
   version: 2,
   revision: 2,
   compatibleRevisions: [1],
+  voice: 3,
   id: "orchestra",
   number: "03",
   title: "The Midnight\nOrchestra",
@@ -79,14 +80,14 @@ export const orchestra = {
       id: "caseMade",
       from: ["sacksNames", "ledgerDates"],
       title: "The ledger matches the sacks",
-      text: "Names on the sacks, dates in the ledger, the same quantities in both. This is not a feast; it is a record of theft that a town clerk could read.",
+      text: "Names on the sacks, dates in the ledger, the same quantities in both. This is not a feast. It is a record of theft that a town clerk could read.",
       effects: { stats: { evidence: 2 } },
     },
     {
       id: "cartTrail",
       from: ["brokenWheel", "millerCart"],
       title: "Her cart is in the clearing",
-      text: "The rut from the broken wheel leads straight to the house. The miller can identify her cart on sight; that makes her a witness, not just a victim.",
+      text: "The rut from the broken wheel leads straight to the house. The miller can name her cart on sight. That makes her a witness, and not only somebody who was robbed.",
       effects: { stats: { evidence: 1 } },
     },
     {
@@ -211,7 +212,7 @@ export const orchestra = {
     road: S(
       "A road without a master",
       "The Bremen road",
-      "You are an old donkey with a strong back and a voice no one has thought to ask about. A dog lies in the shade ahead. Beside the milestone, a traveler has left bread and an old harness bell.",
+      "You are an old donkey with a strong back and a voice nobody ever thought to ask about. Ahead, a dog lies flat in the shade like a dropped coat. Beside the milestone a traveller has left bread and an old harness bell. “Bremen,” you say to nobody in particular. “They need musicians in Bremen.”",
       [
         take("bread", "Pick up the wrapped bread", "bread", "You tuck the loaf into your saddlebag.", { spot: [25, 75] }),
         take("bell", "Keep the discarded harness bell", "bell", "It has one clean note left in it.", { spot: [60, 73] }),
@@ -308,7 +309,7 @@ export const orchestra = {
     wood: S(
       "A light among the trees",
       "The wood at nightfall",
-      "Bremen is too far for tonight. From a high branch, the rooster sees a light. The dog smells food, then a guard’s boots. A house in the clearing may be shelter, but someone is already using it.",
+      "Bremen is too far for tonight, and the dark comes down between the trunks like a lid. “A light!” the rooster cries from a high branch. “Food,” says the dog, nose up, and then, more quietly, “boots.” A house in the clearing may be shelter, but someone is already using it.",
       [
         inspect(
           "tracks",
@@ -321,7 +322,7 @@ export const orchestra = {
           "rut",
           "Examine the deep rut beside the path",
           "brokenWheel",
-          "One wheel left a straight track; the other wobbled and dragged. A broken cart was hauled toward the light last night.",
+          "One wheel left a straight track. The other wobbled and dragged like a lame leg. A broken cart was hauled toward the light last night.",
         ),
         go("clearing", "Watch the house from cover", "clearing", "You settle behind a tangle of hazel."),
         go("rehearsal", "Rehearse before approaching", "rehearsal", "A fallen trunk makes an unlikely stage."),
@@ -339,7 +340,7 @@ export const orchestra = {
     clearing: S(
       "The people inside",
       "The woodland house",
-      "Through the window you see a feast and sacks marked with names from nearby farms. A thief writes in a ledger. The cat can reach the pantry. The dog can watch the gate. You can choose how this becomes your problem.",
+      "Through the window you see a feast, and beside it sacks marked with the names of nearby farms. A thief licks his thumb and writes in a ledger. “I can reach the pantry without a single board creaking,” the cat says. “I can watch the gate,” says the dog. The rooster, for once in his life, says nothing at all. How all this becomes your problem is up to you, and to the four of you.",
       [
         inspect(
           "sacks",
@@ -421,7 +422,7 @@ export const orchestra = {
               flags: { ledger: true },
               stats: { evidence: 2, alert: 2 },
             }),
-            { mods: [mod("The dog is watching for you", 1, flag("meal")), against("alert", "Patrol alert")] },
+            { skill: { kind: "sneak" }, mods: [mod("The dog is watching for you", 1, flag("meal")), against("alert", "Patrol alert")] },
           ),
           { visible: not(flag("ledger")) },
         ),
@@ -472,7 +473,7 @@ export const orchestra = {
     gate: S(
       "A gap in the rounds",
       "The front gate",
-      "The guard has just passed the gate. If you studied the tracks, you know the next stop. Otherwise you can spend a turn observing, use a remote bell, or accept the risk of an early entrance.",
+      "The guard has just passed the gate, swinging his lantern and humming badly. “He goes round again soon,” the dog whispers. “I could tell you exactly when, if I had watched.” If you read the tracks, you know already, and you could go now. If not, you can watch a full round, ring a bell from somewhere else, or simply go and be seen.",
       [
         inspect(
           "lanterns",
@@ -513,7 +514,7 @@ export const orchestra = {
             9,
             outcome("Moving as one, you cross before the lookout turns around.", { to: "window" }),
             outcome("The lookout shouts. You will have less time for your entrance.", { to: "window", stats: { alert: 2 } }),
-            { mods: [mod("You have rehearsed together", 1, flag("songSolved")), against("alert", "Patrol alert")] },
+            { skill: { kind: "formation" }, mods: [mod("You have rehearsed together", 1, flag("songSolved")), against("alert", "Patrol alert")] },
           ),
         ),
       ],
@@ -522,7 +523,7 @@ export const orchestra = {
     rehearsal: S(
       "Four voices, one entrance",
       "The fallen-trunk stage",
-      "Build the sound from the ground up. Your low bray is the foundation. The dog adds a beat, the cat a high phrase, and the rooster ends above everyone. Rehearse that order before you attempt it at the window.",
+      "“From the ground up,” you tell them, because you are the ground. Your low bray goes first. Then the dog with a beat, then the cat with a high phrase, and last of all the rooster, above everyone, as he would have insisted anyway. Rehearse that order before you try it at the window.",
       [
         A(
           "ready",
@@ -536,7 +537,7 @@ export const orchestra = {
           "Start the four voices in the order you remember",
           "TALK",
           { flags: { songSolved: true }, stats: { harmony: 1 } },
-          "You count everyone in before you know why. The dog looks at you strangely. It works the first time.",
+          "You count everyone in before you quite know why. The dog looks at you strangely, head on one side, as if you had sung this on some other night. It works the first time.",
           { visible: all(echo("hearth"), not(flag("songSolved"))) },
         ),
         go("back", "Return to watching the house", "clearing", "There is more than one way to solve this night."),
@@ -557,14 +558,14 @@ export const orchestra = {
           solution: ["donkey", "dog", "cat", "rooster"],
           solvedFlag: "songSolved",
           success: "The final note hangs between the trees. This time everyone came in together.",
-          failure: "You collide halfway through. The cat demands another rehearsal; begin with the lowest voice.",
+          failure: "You collide halfway through and the rooster falls off the trunk. “Again,” says the cat. “And this time, start with the lowest voice.”",
         },
       },
     ),
     window: S(
       "The moment before the noise",
       "At the window",
-      "The thieves are arguing about the missing lookout. You can launch a rehearsed entrance, improvise a wall of sound, or back away with what you know. The dog is ready by the door.",
+      "Inside, the thieves are arguing about their missing lookout. “Now?” whispers the cat. You can launch the entrance you rehearsed, improvise a wall of sound, or back away with what you know. The dog is already standing by the door, one paw lifted.",
       [
         A(
           "song",
@@ -596,7 +597,7 @@ export const orchestra = {
               flags: { houseWon: true },
               stats: { alert: 3 },
             }),
-            { mods: [mod("The quiet approach", 1, flag("quietApproach")), against("alert", "Patrol alert")] },
+            { skill: { kind: "stack" }, mods: [mod("The quiet approach", 1, flag("quietApproach")), against("alert", "Patrol alert")] },
           ),
         ),
         go("escape", "Withdraw toward the orchard", "escape", "A good plan can include deciding to leave."),
@@ -606,7 +607,7 @@ export const orchestra = {
     hearth: S(
       "Shelter is a beginning",
       "The house hearth",
-      "The room is yours for the moment. The sacks still belong to their owners. Outside, the thieves are beginning to wonder whether the terrible creature was only noise. You need a plan for their return.",
+      "The room is yours, for the moment, and so is the supper. The sacks still belong to their owners. Outside, the thieves are beginning to wonder whether the terrible four-headed creature was only noise. “They will come back,” the rooster says with his mouth full. “Robbers always come back.”",
       [
         A(
           "restore",
@@ -624,7 +625,7 @@ export const orchestra = {
     lastWatch: S(
       "Who holds the door?",
       "The last watch",
-      "One thief has come back to test the house. The dog needs a clear signal, the cat needs space, and the rooster needs to wait for the right moment. Harmony can hold this room. Evidence can carry you out of it.",
+      "One thief has come back to test the house, creeping, candle first. The dog needs a clear signal. The cat needs room to spring, and the rooster needs to wait for exactly the right moment, which he will not. “Your call,” the dog breathes. Harmony can hold this room, if it holds together. Evidence can carry you out of it.",
       [
         A(
           "hold",
@@ -645,8 +646,8 @@ export const orchestra = {
             "harmony",
             11,
             outcome("Four voices from one dark doorway. The thief does not wait to count them.", { ending: "home" }),
-            outcome("The thief laughs. He is not fooled. Not yet. And now he is listening for you.", { stats: { alert: 2 } }),
-            {
+            outcome("The thief laughs, a short, nervous laugh. He is not fooled. Not yet, anyway, and now he is listening for you.", { stats: { alert: 2 } }),
+            { skill: { kind: "rhythm" },
               mods: [
                 mod("The rehearsed entrance", 2, flag("rehearsed")),
                 mod("The dog guards the door", 1, flag("meal")),
@@ -671,7 +672,7 @@ export const orchestra = {
     escape: S(
       "The orchard exit",
       "Beyond the back fence",
-      "The road to town begins beyond the orchard. You can bring a witness and proof, or leave the house behind and keep the ensemble moving. The night has changed you; it does not have to finish you.",
+      "The road to town begins beyond the orchard. You can bring a witness and proof, or leave the house behind and keep the ensemble moving. The night has changed you. It does not have to finish you.",
       [
         A(
           "case",
@@ -711,7 +712,7 @@ export const orchestra = {
     patrol: S(
       "Boots where there should be silence",
       "Patrol encounter",
-      "The lookout returns early. Your companions freeze. You need to send the boots away, hold perfectly still, or move everyone to new cover.",
+      "The lookout comes back early, boots crunching. Your companions freeze, all four of them, in the middle of a step. “Do not,” the cat hisses at the rooster, “even breathe.” Send the boots away, hold so still you could be a fence, or move everyone to new cover.",
       [
         A(
           "exitLine",
@@ -776,13 +777,13 @@ export const orchestra = {
     case: {
       title: "The case of the midnight orchestra",
       kind: "Mystery ending",
-      text: "The ledger has dates. The miller has names. You have four accounts that agree where it matters and disagree everywhere else. By noon the stolen goods are being returned. The town asks whether its new investigators also take concert bookings.",
+      text: "The ledger has dates. The miller has names. You have four accounts that agree where it matters and disagree everywhere else. By noon the stolen goods are going home. Before supper the town clerk asks, very politely, whether its new investigators also take concert bookings.",
       reflection: "You turned a noisy caper into a case by gathering evidence and keeping a witness safe.",
     },
     road: {
       title: "The next song",
       kind: "Open road ending",
-      text: "You meet beyond the orchard as promised. The house remains behind you, with all its unfinished business. The cat says your entrance was terrible. The rooster says the ending needs work. The dog counts four shadows on the road. You have another day to practice.",
+      text: "You meet beyond the orchard, as promised, and leave the house behind with all its unfinished business. “Your entrance was terrible,” says the cat. “The ending needs work,” says the rooster. The dog only counts the shadows on the road, and there are four. Tomorrow you can practise.",
       reflection: "Shelter slipped away, but the ensemble survived. A failed plan did not end the journey.",
     },
     bremen: {
