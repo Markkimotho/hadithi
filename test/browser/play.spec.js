@@ -6,31 +6,34 @@ import { episodeById, episodes } from "../../site/stories.js";
 import { url, enter, save, story, settle, walk, perform, watchErrors } from "./helpers.js";
 
 const wisdom = episodeById("wisdom");
+/** Tales with a world for every scene. The shelf test checks this list against the game. */
+const PLAYABLE = ["wisdom", "tide"];
 
-test.describe("every Wisdom walkthrough is played through the world", () => {
-  for (const w of walkthroughs.filter((x) => x.episode === "wisdom")) {
-    test(w.name, async ({ page }, info) => {
-      test.skip(info.project.name === "mobile" && !w.echoes, "the phone plays the secret ending");
-      test.setTimeout(300000);
-      const errors = watchErrors(page);
-      await enter(page, "wisdom", { echoes: w.echoes ?? [] });
-      for (const command of commandsOf(w)) await perform(page, command);
-      await settle(page);
-      const ending = wisdom.endings[w.expect.ending];
-      await expect(page.locator(".ending-page h1")).toHaveText(ending.title);
-      for (const m of w.expect.marks ?? []) await expect(page.locator(".mark-chips")).toContainText(wisdom.marks.find((x) => x.id === m).title);
-      expect(errors).toEqual([]);
-    });
-  }
-});
+for (const tale of PLAYABLE)
+  test.describe(`every ${tale} walkthrough is played through the world`, () => {
+    const ep = episodeById(tale);
+    for (const w of walkthroughs.filter((x) => x.episode === tale)) {
+      test(w.name, async ({ page }, info) => {
+        test.skip(info.project.name === "mobile" && !w.echoes, "the phone plays the secret ending");
+        test.setTimeout(300000);
+        const errors = watchErrors(page);
+        await enter(page, tale, { echoes: w.echoes ?? [] });
+        for (const command of commandsOf(w)) await perform(page, command, tale);
+        await settle(page);
+        await expect(page.locator(".ending-page h1")).toHaveText(ep.endings[w.expect.ending].title);
+        for (const m of w.expect.marks ?? []) await expect(page.locator(".mark-chips")).toContainText(ep.marks.find((x) => x.id === m).title);
+        expect(errors).toEqual([]);
+      });
+    }
+  });
 
 test("the shelf offers only tales with a world, and keeps the others in view", async ({ page }, info) => {
   const errors = watchErrors(page);
   await page.goto("/?nosw");
   await expect(page.getByRole("heading", { name: /Four old stories/ })).toBeVisible();
   await expect(page.locator(".story-card")).toHaveCount(4);
-  await expect(page.locator('[data-start="wisdom"]')).toBeVisible();
-  for (const ep of episodes.filter((e) => e.id !== "wisdom")) {
+  for (const tale of PLAYABLE) await expect(page.locator(`[data-start="${tale}"]`)).toBeVisible();
+  for (const ep of episodes.filter((e) => !PLAYABLE.includes(e.id))) {
     await expect(page.locator(`.story-card.${ep.id}`)).toHaveClass(/retelling/);
     await expect(page.locator(`[data-start="${ep.id}"]`)).toHaveCount(0);
   }
