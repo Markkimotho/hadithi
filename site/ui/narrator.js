@@ -26,10 +26,15 @@ export function splitSpeech(text) {
   return parts.filter((p) => p.text.trim());
 }
 
-/** The first spoken line in a passage, without its quote marks. */
+/**
+ * Everything said aloud in a passage, as one line for a speech bubble:
+ * quote marks removed, and a comma that led into "she says" made a stop.
+ */
 export function firstSpeech(text) {
-  const s = splitSpeech(text).find((p) => p.speech);
-  return s ? s.text.slice(1, -1).trim() : null;
+  const said = splitSpeech(text)
+    .filter((p) => p.speech)
+    .map((p) => p.text.slice(1, -1).trim().replace(/,$/, "."));
+  return said.length ? said.join(" ") : null;
 }
 
 const checksAttempted = (v) => Object.values(v.checks ?? {}).reduce((n, c) => n + c.attempts, 0);

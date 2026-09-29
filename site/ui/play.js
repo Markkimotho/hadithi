@@ -14,7 +14,7 @@ import { escape, diceTray, oddsBadge } from "./widgets.js";
 
 const flat = (t) => t.replace("\n", " ");
 /** Trials staged in the world; any other kind falls back to the card trial. */
-const STAGED = new Set(["leap", "brace", "balance", "scale"]);
+const STAGED = new Set(["leap", "brace", "balance", "scale", "steer", "swim", "sneak", "carry", "chase", "formation", "stack", "rhythm"]);
 const LIGHT = { dawn: "Dawn", day: "Day", dusk: "Dusk", night: "Night", deep: "Deep water", moon: "Moonlight" };
 
 /**
@@ -433,6 +433,11 @@ export function createPlay(main, ctx) {
     for (const b of list) if (b.kind === "narrate" && b.tone === "consequence" && speaker && firstSpeech(b.text)) b.speaker = speaker;
     lastPlace = null;
     conversation = null;
+    // Words hang in the air only where they were said.
+    if (now.scene !== before.scene) {
+      bubble = null;
+      bubbleEl.hidden = true;
+    }
     // Whatever you did, you should see the story answer it.
     if (journalOpen) closeJournal();
     sync();
