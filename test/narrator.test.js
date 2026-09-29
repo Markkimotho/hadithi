@@ -19,6 +19,7 @@ test("speech is split from telling, quote marks kept with the speaker", () => {
   assert.equal(parts[1].text, "“Your father asked,”");
   assert.equal(firstSpeech("No one speaks."), null);
   assert.equal(firstSpeech("She says, “Bring it back.”"), "Bring it back.");
+  assert.equal(firstSpeech("“A meeting point,” the archivist says. “Not a guarantee.”"), "A meeting point. Not a guarantee.");
   assert.deepEqual(splitSpeech(""), []);
 });
 

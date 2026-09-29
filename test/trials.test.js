@@ -66,3 +66,27 @@ test("an average player passes about as often as the dice would", () => {
       assert.ok(Math.abs(passes / n - chance) < 0.1, `${kind} at ${chance}: ${passes / n}`);
     }
 });
+
+import { scaleNeed, scaleStones } from "../site/world/trials/stage.js";
+import { SKILL_KINDS } from "../site/engine/skills.js";
+
+test("every skill kind has a calibrated shape or is the scale", () => {
+  for (const kind of SKILL_KINDS) assert.ok(kind === "scale" || SHAPES[kind], kind);
+});
+
+test("the scale is as fair as an average roll, and its stones are the advantages earned", () => {
+  assert.equal(scaleNeed({ dc: 9 }), 2);
+  assert.equal(scaleNeed({ dc: 6 }), 0, "an easy check needs no argument at all");
+  const parts = [
+    { label: "Trust", value: 3 },
+    { label: "Storm pressure", value: -2 },
+    { label: "You know why he sealed it", value: 2 },
+  ];
+  assert.deepEqual(scaleStones({ parts }).map((s) => [s.label, s.weight]), [["Trust", 3], ["You know why he sealed it", 2]]);
+  // Laying every earned stone passes exactly when the dice's average roll (7) would.
+  for (let dc = 2; dc <= 16; dc++)
+    for (const bonus of [0, 1, 2, 5, 9]) {
+      const total = scaleStones({ parts: [{ label: "x", value: bonus }] }).reduce((n, s) => n + s.weight, 0);
+      assert.equal(total >= scaleNeed({ dc }), 7 + bonus >= dc, `dc ${dc}, bonus ${bonus}`);
+    }
+});

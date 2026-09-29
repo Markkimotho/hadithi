@@ -112,3 +112,32 @@ test("authored Wisdom map forces move the player through the ford and squall", (
   for (let i = 0; i < 90; i++) { storm.setIntent(0, 0); calm.setIntent(0, 0); storm.step(); calm.step(); }
   assert.ok(storm.player.getPosition().x < calm.player.getPosition().x - 0.2, "squall's westward wind is physical");
 });
+
+import { routeIntent, MIN_PUSH } from "../site/world/route.js";
+import { findPath } from "../site/world/layout.js";
+
+/** Follow a walked route through real physics; true if every waypoint is reached. */
+function follow(phys, layout, from, to, seconds = 12) {
+  const path = findPath(layout, from, to).map(([x, y]) => ({ x: x + 0.5, y: y + 0.5 }));
+  for (let i = 0; i < seconds * 60 && path.length; i++) {
+    const step = routeIntent(phys.player.getPosition(), path[0]);
+    if (step.arrived) {
+      path.shift();
+      continue;
+    }
+    phys.setIntent(step.x, step.y);
+    phys.step();
+  }
+  return path.length === 0;
+}
+
+test("regression: a walked route reaches its end against a strong current", () => {
+  // The surge's current once held the hero just short of a waypoint for ever:
+  // easing in to half speed on slow water could not beat the drift.
+  const surge = layoutsFor("tide").surge;
+  assert.ok(follow(createPhysics(planck, surge, [2, 6]), surge, [2, 6], [2, 2]), "north, across the current");
+  assert.ok(follow(createPhysics(planck, surge, [3, 6]), surge, [3, 6], [20, 6], 30), "east, straight into it (slow going, but it goes)");
+  const ford = layoutsFor("wisdom").ford;
+  assert.ok(follow(createPhysics(planck, ford, [4, 6]), ford, [4, 6], [4, 13]), "wading across the ford");
+  assert.ok(MIN_PUSH >= 0.7);
+});
