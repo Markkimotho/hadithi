@@ -6,7 +6,7 @@ import { blockedTiles, findPath, spawnFor, walkable } from "./layout.js";
 import { createInput } from "./input.js";
 import { TILE, drawGround, drawPerson, drawProp } from "./art.js";
 import { createPuppet, preloadPuppets, hasRig } from "./puppet.js";
-import { heroOf } from "./tales.js";
+import { heroOf, followersOf } from "./tales.js";
 import { playTrial } from "./trials/stage.js";
 import { routeIntent } from "./route.js";
 
@@ -81,8 +81,14 @@ export function exploreScene(Phaser, planck, host) {
       const storm = view.atmosphere.weather === "storm" ? 1.5 + (view.stats.danger ?? 0) * 0.18 : 0;
       this.phys.setWind((layout.wind?.[0] ?? 0) - storm, layout.wind?.[1] ?? 0);
       for (const prop of this.phys.props) if (prop.source.flag) prop.cracked = Boolean(view.flags[prop.source.flag]);
-      // Some people are only there once the story has brought them.
-      for (const person of this.people ?? []) if (person.source.when) (person.sprite.root ?? person.sprite).setVisible(Boolean(view.flags[person.source.when]));
+      // Some people are only there once the story has brought them; companions
+      // who have joined walk with you instead of standing where you met them.
+      const joined = new Set(followersOf(this.tale, view.flags).map((f) => f.kind));
+      for (const person of this.people ?? []) {
+        const present = (!person.source.when || view.flags[person.source.when]) && !joined.has(person.source.kind);
+        (person.sprite.root ?? person.sprite).setVisible(Boolean(present));
+      }
+      this.syncFollowers(view);
       this.syncTaken(view);
       this.buildGlints();
       host.root.dataset.scene = view.scene;
@@ -109,6 +115,8 @@ export function exploreScene(Phaser, planck, host) {
       this.propSprites = this.phys.props.map((p) => ({ prop: p, sprite: drawProp(this, p.source) }));
       this.people = layout.people.map((p) => this.addPerson(p, layout));
       this.hero = createPuppet(this, heroOf(this.tale), this.tale);
+      this.followers = [];
+      this.trail = [];
       const at = this.phys.player.getPosition();
       this.hero.setPosition(at.x * TILE, at.y * TILE);
       const camera = this.cameras.main;
@@ -158,6 +166,47 @@ export function exploreScene(Phaser, planck, host) {
         });
         return;
       }
+    }
+
+    /** Companions trail the hero along the path he actually walked. */
+    syncFollowers(view) {
+      const want = followersOf(this.tale, view.flags).map((f) => f.kind);
+      this.followers = (this.followers ?? []).filter((f) => {
+        if (want.includes(f.kind)) return true;
+        f.puppet.destroy();
+        return false;
+      });
+      for (const kind of want) {
+        if (this.followers.some((f) => f.kind === kind) || !hasRig(this.tale, kind)) continue;
+        const puppet = createPuppet(this, kind, this.tale);
+        puppet.setPosition(this.hero.root.x, this.hero.root.y);
+        this.followers.push({ kind, puppet, x: this.hero.root.x, y: this.hero.root.y });
+      }
+      if (!this.trail) this.trail = [];
+    }
+
+    followTrail(time) {
+      if (!this.followers?.length) return;
+      const head = { x: this.hero.root.x, y: this.hero.root.y };
+      const last = this.trail[0];
+      if (!last || Math.hypot(head.x - last.x, head.y - last.y) > 4) this.trail.unshift(head);
+      this.trail.length = Math.min(this.trail.length, 200);
+      // Where each companion stands when the hero stops: in a line behind him.
+      const back = { x: -(this.facing.x || 1), y: -this.facing.y };
+      const n = Math.hypot(back.x, back.y) || 1;
+      this.followers.forEach((f, i) => {
+        let target = this.trail[Math.min(this.trail.length - 1, (i + 1) * 9)] ?? head;
+        if (Math.hypot(target.x - head.x, target.y - head.y) < 30 * (i + 1))
+          target = { x: head.x + (back.x / n) * 34 * (i + 1) + (i % 2 ? 10 : -10), y: head.y + (back.y / n) * 34 * (i + 1) + (i % 2 ? 6 : -6) };
+        const dx = target.x - f.x,
+          dy = target.y - f.y;
+        const moving = Math.hypot(dx, dy) > 1.5;
+        f.x += dx * 0.18;
+        f.y += dy * 0.18;
+        f.puppet.setPosition(f.x, f.y).setDepth(f.y + 1);
+        if (Math.abs(dx) > 0.5) f.puppet.setScale(dx < 0 ? -1 : 1, 1);
+        f.puppet.play(moving ? "walk" : "idle", time + i * 137);
+      });
     }
 
     /** Things already in the bag are no longer lying in the world. */
@@ -462,6 +511,7 @@ export function exploreScene(Phaser, planck, host) {
       const moving = Math.hypot(this.phys.player.getLinearVelocity().x, this.phys.player.getLinearVelocity().y) > 0.25;
       this.hero.play(this.phys.carrying ? "carry" : moving ? "walk" : "idle", time);
       if (Math.abs(this.facing.x) > 0.08) this.hero.setScale(this.facing.x < 0 ? -1 : 1, 1);
+      this.followTrail(time);
       for (const { prop, sprite } of this.propSprites) {
         const pp = prop.body.getPosition();
         sprite.setPosition(pp.x * TILE, pp.y * TILE - prop.z * 17).setDepth(pp.y * TILE + (prop.carried ? 4 : 0));

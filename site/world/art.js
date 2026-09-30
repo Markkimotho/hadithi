@@ -406,6 +406,162 @@ export function drawProp(scene, p) {
     case "niche":
       g.fillStyle(0x23241e, 0.75).fillRoundedRect(L, T, w, h, 10);
       break;
+    // ── The Midnight Orchestra ─────────────────────────────────────────────
+    case "milestone":
+      shadow(g, 0, 14, 26);
+      g.fillStyle(0x8d8a80).fillRoundedRect(-11, -30, 22, 44, { tl: 10, tr: 10, bl: 2, br: 2 });
+      g.lineStyle(1.5, 0x5a5850).lineBetween(-5, -14, 5, -14).lineBetween(-5, -8, 3, -8);
+      break;
+    case "bread":
+      g.fillStyle(0xd9c8a0).fillRoundedRect(-14, -6, 28, 14, 4);
+      g.fillStyle(0xb57a3a).fillEllipse(0, -2, 20, 10);
+      g.lineStyle(1.5, 0x8a5a2a).lineBetween(-4, -5, -2, 1).lineBetween(3, -5, 5, 1);
+      break;
+    case "harnessbell":
+      g.lineStyle(2, 0x6a4b33).lineBetween(-10, -10, 10, -10);
+      g.fillStyle(0xc9a14a).fillTriangle(-8, 4, 8, 4, 0, -10);
+      g.fillStyle(0x8a6a2a).fillCircle(0, 5, 2.5);
+      break;
+    case "farmgate":
+      g.lineStyle(4, 0x6a4b33).lineBetween(-14, T, -14, T + h).lineBetween(14, T, 14, T + h);
+      for (let i = 0; i < 4; i++) g.lineBetween(-14, T + 8 + i * (h / 4), 14, T + 8 + i * (h / 4));
+      break;
+    case "oak":
+    case "appletree": {
+      shadow(g, cx, by - 6, w + 20, 30, 0.3);
+      g.fillStyle(0x5a4632).fillRect(cx - 9, T + 10, 18, h - 10);
+      canopy(g, cx, T - 10, w * 0.62, h * 0.55, p.at[0] * 3 + p.at[1]);
+      const fruit = p.kind === "appletree" ? 0xb8402c : 0xc98a32;
+      for (let i = 0; i < 9; i++) g.fillStyle(fruit, 0.9).fillCircle(cx - w * 0.4 + ((i * 37) % (w * 0.8)), T - 30 + ((i * 23) % 50), 3);
+      break;
+    }
+    case "fieldfence":
+      g.lineStyle(3, 0x8a6a46);
+      for (let i = 0; i <= (p.w ?? 1); i++) g.lineBetween(L + i * TILE, -16, L + i * TILE, 10);
+      g.lineBetween(L, -10, L + w, -10).lineBetween(L, 2, L + w, 2);
+      break;
+    case "cord":
+      g.lineStyle(3, 0xc9b27a).strokeEllipse(0, 0, 26, 12).strokeEllipse(2, -3, 18, 8);
+      break;
+    case "apples":
+      for (let i = 0; i < 6; i++) g.fillStyle(i % 2 ? 0xb8402c : 0xc9603a).fillCircle(-12 + (i % 3) * 10, -2 + Math.floor(i / 3) * 8, 4.5);
+      break;
+    case "kitchenwindow":
+      g.fillStyle(0x3a2a1c).fillRect(-18, -24, 36, 30);
+      g.fillStyle(0xf0c070, 0.85).fillRect(-14, -20, 28, 22);
+      g.lineStyle(2, 0x3a2a1c).lineBetween(0, -20, 0, 2).lineBetween(-14, -9, 14, -9);
+      break;
+    case "gatepost":
+      shadow(g, 0, 14, 22);
+      g.fillStyle(0x6a4b33).fillRect(-7, -34, 14, 48);
+      g.fillStyle(0x8a6a46).fillRect(-8, -36, 16, 5);
+      break;
+    case "cart":
+      shadow(g, cx, 14, w, 18);
+      g.fillStyle(0x7a5634).fillRect(L + 4, -16, w - 8, 18);
+      g.lineStyle(2, 0x4a3524).strokeCircle(L + 12, 6, 9).strokeCircle(L + w - 12, 6, 9);
+      g.lineStyle(3, 0x6a4b33).lineBetween(L + w - 4, -6, L + w + 18, -2);
+      break;
+    case "bootprints":
+      for (let i = 0; i < (p.w ?? 1) * 2; i++) g.fillStyle(0x3e3022, 0.55).fillEllipse(L + 10 + i * 18, i % 2 ? -4 : 6, 7, 12);
+      break;
+    case "rutmark":
+      g.lineStyle(5, 0x3e3022, 0.6).lineBetween(L, -6, L + w, -4).lineBetween(L, 8, L + w, 10);
+      break;
+    case "distantlight":
+      g.fillStyle(0xf0c070, 0.9).fillRect(-4, -4, 8, 8);
+      g.fillStyle(0xf0c070, 0.18).fillCircle(0, 0, 26);
+      break;
+    case "robberhouse": {
+      shadow(g, cx, by - 4, w + 20, 34, 0.35);
+      g.fillStyle(0xd6c7a8).fillRect(L + 6, T + h * 0.3, w - 12, h * 0.68);
+      g.lineStyle(4, 0x4a3524);
+      for (let x = L + 6; x <= L + w - 6; x += 40) g.lineBetween(x, T + h * 0.3, x, by - 4);
+      g.lineBetween(L + 6, T + h * 0.55, L + w - 6, T + h * 0.55);
+      g.fillStyle(0x4a3f38).fillTriangle(L - 10, T + h * 0.32, L + w + 10, T + h * 0.32, cx, T - 40);
+      g.fillStyle(0xf0c070, 0.95).fillRect(cx - 50, T + h * 0.38, 34, 26).fillRect(cx + 16, T + h * 0.38, 34, 26);
+      g.fillStyle(0x3a2a1c).fillRect(cx - 14, by - 54, 28, 50);
+      g.fillStyle(0xf0c070, 0.12).fillCircle(cx - 33, T + h * 0.45, 50);
+      break;
+    }
+    case "sacks":
+      for (let i = 0; i < (p.w ?? 1) * 2; i++) {
+        g.fillStyle(0xc8b48a).fillRoundedRect(L + 6 + i * 18, -18 + (i % 2) * 6, 18, 26, 6);
+        g.lineStyle(1.5, 0x6a5a3a).lineBetween(L + 9 + i * 18, -6 + (i % 2) * 6, L + 21 + i * 18, -6 + (i % 2) * 6);
+      }
+      break;
+    case "pantrywindow":
+      g.fillStyle(0x3a2a1c).fillRect(-16, -20, 32, 24);
+      g.fillStyle(0x8a6a3a, 0.8).fillRect(-12, -16, 24, 16);
+      break;
+    case "floorboards":
+      g.lineStyle(1.5, 0x4e3622, 0.5);
+      for (let y = T + 8; y < T + h; y += 10) g.lineBetween(L, y, L + w, y);
+      g.lineStyle(2, 0xb8402c, 0.45).lineBetween(L + 30, T + 22, L + 40, T + 30).lineBetween(L + 80, T + 52, L + 92, T + 58);
+      break;
+    case "fargate":
+    case "frontgate":
+      g.lineStyle(4, 0x6a4b33);
+      for (let i = 0; i < (p.w ?? 1) * 2 + 1; i++) g.lineBetween(L + i * (TILE / 2), -22, L + i * (TILE / 2), 12);
+      g.lineBetween(L, -16, L + w, -16).lineBetween(L, 4, L + w, 4);
+      break;
+    case "stump":
+      shadow(g, 0, 10, 30);
+      g.fillStyle(0x6a4b33).fillEllipse(0, 0, 30, 18);
+      g.fillStyle(0xb98a5a).fillEllipse(0, -4, 26, 12);
+      g.lineStyle(1, 0x6a4b33).strokeEllipse(0, -4, 14, 6);
+      break;
+    case "woodpile":
+      for (let r = 0; r < 3; r++) for (let i = 0; i < (p.w ?? 1) * 2 - r; i++) {
+        g.fillStyle(0x7a5634).fillCircle(L + 14 + i * 18 + r * 9, -r * 14, 9);
+        g.fillStyle(0xc49a6a).fillCircle(L + 14 + i * 18 + r * 9, -r * 14, 5);
+      }
+      break;
+    case "fireflies":
+      for (let i = 0; i < 8; i++) g.fillStyle(0xe8e08c, 0.85).fillCircle((i * 23) % 60 - 30, ((i * 17) % 40) - 30, 2);
+      break;
+    case "mushrooms":
+      for (let i = 0; i < 4; i++) {
+        g.fillStyle(0xe9dcc0).fillRect(-12 + i * 8, -4, 3, 8);
+        g.fillStyle(0xb8402c).fillEllipse(-11 + i * 8, -5, 10, 6);
+      }
+      break;
+    case "litwindow":
+      g.fillStyle(0x3a2a1c).fillRect(L - 4, -30, w + 8, 34);
+      g.fillStyle(0xf0c070, 0.95).fillRect(L, -26, w, 26);
+      g.lineStyle(2, 0x3a2a1c).lineBetween(L + w / 3, -26, L + w / 3, 0).lineBetween(L + (2 * w) / 3, -26, L + (2 * w) / 3, 0);
+      // Two thieves arguing behind the glass.
+      g.fillStyle(0x2a1e14, 0.85).fillCircle(L + w * 0.3, -16, 6).fillRect(L + w * 0.3 - 7, -10, 14, 12);
+      g.fillStyle(0x2a1e14, 0.85).fillCircle(L + w * 0.68, -14, 6).fillRect(L + w * 0.68 - 7, -8, 14, 10);
+      g.fillStyle(0xf0c070, 0.15).fillCircle(cx, 10, 60);
+      break;
+    case "barrel":
+      shadow(g, 0, 14, 28);
+      g.fillStyle(0x7a5634).fillRoundedRect(-12, -22, 24, 34, 8);
+      g.lineStyle(2, 0x3e3022).lineBetween(-12, -14, 12, -14).lineBetween(-12, 4, 12, 4);
+      break;
+    case "hearthfire":
+      g.fillStyle(0x6c6b60).fillRect(L - 4, T - 8, w + 8, 34);
+      g.fillStyle(0x2a1e14).fillRect(L + 6, T + 2, w - 12, 22);
+      g.fillStyle(0xe2762f, 0.95).fillTriangle(cx - 12, T + 22, cx, T, cx + 12, T + 22);
+      g.fillStyle(0xf3c14d, 0.95).fillTriangle(cx - 6, T + 22, cx + 2, T + 8, cx + 8, T + 22);
+      g.fillStyle(0xf8e7a0, 0.12).fillCircle(cx, T + 30, 80);
+      break;
+    case "feasttable":
+      shadow(g, cx, by - 4, w, 18);
+      g.fillStyle(0x7a5634).fillRect(L + 2, T + 4, w - 4, h - 12);
+      for (let i = 0; i < 5; i++) g.fillStyle([0xd9c8a0, 0xb8402c, 0xc9a14a][i % 3]).fillCircle(L + 18 + i * ((w - 30) / 4), T + h / 2 - 2, 7);
+      g.fillStyle(0xd7d0c0).fillEllipse(cx, T + h / 2 + 8, 30, 10);
+      break;
+    case "door":
+      g.fillStyle(0x5a3e28).fillRect(-10, T - 4, 20, h + 4);
+      g.fillStyle(0xc9a14a).fillCircle(6, T + h / 2, 2.5);
+      break;
+    case "signpost":
+      shadow(g, 0, 14, 16);
+      g.fillStyle(0x6a4b33).fillRect(-3, -40, 6, 54);
+      g.fillStyle(0x9a7a50).fillRect(-4, -38, 34, 10).fillRect(-28, -24, 30, 9);
+      break;
     default: {
       shadow(g, 0, 12, 34);
       g.fillStyle(0xa17b4e).fillRect(-15, -20, 30, 30);
@@ -427,6 +583,8 @@ const LOOKS = {
   attendant: { cloth: 0x2f6a7a, wrap: 0xd7b25a, skin: 0x9ab8c0, carry: "staff" },
   archivist: { cloth: 0x4a5a6a, wrap: 0xefe6d2, skin: 0x9ab8c0 },
   worker: { cloth: 0x6a5a4a, wrap: 0xefe6d2, skin: 0xb88a64 },
+  thief: { cloth: 0x3a3a3a, wrap: null, cap: 0x2a2420, skin: 0xd0a07a, carry: "staff" },
+  miller: { cloth: 0xd9d2c0, wrap: 0xefe6d2, skin: 0xd8a882, stripe: 0x8a6a3a },
 };
 
 export function drawPerson(scene, kind = "villager", { tint, id = "" } = {}) {
