@@ -7,7 +7,7 @@ import { url, enter, save, story, settle, walk, perform, watchErrors } from "./h
 
 const wisdom = episodeById("wisdom");
 /** Tales with a world for every scene. The shelf test checks this list against the game. */
-const PLAYABLE = ["wisdom", "tide"];
+const PLAYABLE = ["wisdom", "tide", "orchestra"];
 
 for (const tale of PLAYABLE)
   test.describe(`every ${tale} walkthrough is played through the world`, () => {
