@@ -35,6 +35,13 @@ npm start
 
 57 scenes and encounters, 49 world events, 18 dice checks, 16 deductions, 16 endings (4 secret), 12 echoes, and 20 marks.
 
+Each tale is a world you walk:
+
+- **Wisdom:** Kweku crosses a Fante forest after his father.
+- **Tide:** Urashima swims down to a lacquered palace.
+- **Orchestra:** A donkey gathers a dog, a cat and a rooster who walk behind him.
+- **Olive Jar:** A Baghdad child holds court by moonlight.
+
 ## What makes a telling
 
 - **A storyteller over a world you walk.** Each tale is a full-screen world. You walk it; a storyteller tells it. The opening line, a chapter card as each place opens, what you find, what people say (in bubbles over their heads), and what it costs all arrive a beat at a time in the parchment band at the foot of the screen.
@@ -51,7 +58,7 @@ npm start
 - Walk with WASD, the arrows, a controller, the touch joystick, or by tapping where to go (long walks break into a run). E, Space or the A button acts and moves the story on. 1 to 9 choose a line in a conversation. Q lifts or sets down, F throws. J opens the journal (B, K, P, M for its pages). U takes back a step. ? opens the guide.
 - Progress saves after each action on this browser. Export a JSON save from the journal for a portable copy; import through Settings. Once loaded, the game plays offline.
 - Settings: sound effects, ambience, volume, scene motion (respects reduced motion), three text sizes, physical trials on or off, Storyteller's grace (+2 to every trial's odds), and whether new journeys carry echoes.
-- Only tales with a world map for every scene can be started. The others show "Being retold" on the shelf until their worlds are finished.
+- All four tales are playable in the world. The shelf would mark any tale without a map for every scene as "Being retold" and keep it from starting.
 
 Saves contain the episode ID, schema version, content revision, seed, echoes, assist flag, and the command sequence. Loading replays the rules to rebuild everything; nothing stored is trusted. Saves from an older revision listed in `compatibleRevisions` are replayed through the new rules and carried forward if every command is still legal; otherwise the player is told clearly to start fresh.
 

@@ -4,6 +4,9 @@ export default defineConfig({
   fullyParallel: true,
   workers: process.env.CI ? 2 : 4,
   timeout: 120000,
+  // The world loads Phaser and builds a scene; under parallel load that can
+  // take longer than the default 5 s on a cold reload.
+  expect: { timeout: 10000 },
   use: {
     baseURL: "http://127.0.0.1:4173",
     channel: process.env.CI ? undefined : "chrome",
