@@ -22,6 +22,30 @@ const MAXIM = /^(some (things|people|stories|doors|debts|answers)|every (story|a
 
 const WORD_RE = new RegExp(`\\b(${BANNED_WORDS.join("|")})(s|es|d|ed|ing|ly)?\\b`, "i");
 
+/** Sentences with their quote marks kept, to tell speech from telling. */
+const splitSentences = (text) =>
+  text
+    .split(/(?<=[.!?][”"]?)\s+(?=[A-Z‘'(“"])/)
+    .map((s) => s.trim())
+    .filter(Boolean);
+/**
+ * The storyteller's own sentences: any sentence that opens inside a quote,
+ * or contains one, is speech (or a speech tag) and is left out.
+ */
+function toldSentences(text) {
+  let open = false;
+  const told = [];
+  for (const sentence of splitSentences(text)) {
+    const hasQuote = /[“”"]/.test(sentence);
+    if (!open && !hasQuote) told.push(sentence);
+    for (const ch of sentence) {
+      if (ch === "“") open = true;
+      else if (ch === "”") open = false;
+      else if (ch === '"') open = !open;
+    }
+  }
+  return told;
+}
 const sentences = (text) =>
   text
     .replace(/[“”"]/g, "")
@@ -48,7 +72,11 @@ export function lintText(text) {
 export function lintNarration(text) {
   const issues = [];
   const list = sentences(text);
-  const lengths = list.map(words);
+  // Rhythm is about the storyteller's own sentences. Lines of dialogue are
+  // allowed to be quick and even ("Three years," says one. "Never more,"
+  // says the other.), so sentences that open with speech are left out.
+  const told = toldSentences(text);
+  const lengths = told.map(words);
   for (let i = 0; i + 2 < lengths.length; i++) {
     const run = lengths.slice(i, i + 3);
     if (Math.max(...run) - Math.min(...run) <= 3) {
@@ -108,7 +136,8 @@ export function lintEpisode(episode) {
   const issues = [];
   for (const p of proseOf(episode)) {
     for (const issue of lintText(p.text)) issues.push({ path: p.path, issue, text: p.text });
-    if (strict && p.narration) for (const issue of lintNarration(p.text)) issues.push({ path: p.path, issue, text: p.text });
+    // Journal notes about people are fragments by design, not narration.
+    if (strict && p.narration && !p.path.startsWith("characters.")) for (const issue of lintNarration(p.text)) issues.push({ path: p.path, issue, text: p.text });
   }
   if (strict) issues.push(...sceneVoices(episode));
   return issues;
