@@ -7,10 +7,26 @@ export const DEFAULT_MODEL = process.env.HADITHI_LLM_MODEL || "opus";
 const BIN = () => process.env.HADITHI_CLAUDE_BIN || "claude";
 
 /**
+ * Ask the model once, retrying a failed call (rate limits and other transient
+ * errors show up as a non-zero exit with no tokens spent) with a growing pause.
  * @param {{system: string, prompt: string, schema: object, model?: string, timeoutMs?: number}} req
  * @returns {Promise<{output: any, costUsd: number, models: string[]}>}
  */
-export function runClaude({ system, prompt, schema, model = DEFAULT_MODEL, timeoutMs = 180000 }) {
+export async function runClaude(req, { attempts = 4, pauseMs = 4000 } = {}) {
+  let last;
+  for (let i = 0; i < attempts; i++) {
+    try {
+      return await runOnce(req);
+    } catch (error) {
+      last = error;
+      if (!error.transient || i === attempts - 1) break;
+      await new Promise((r) => setTimeout(r, pauseMs * (i + 1)));
+    }
+  }
+  throw last;
+}
+
+function runOnce({ system, prompt, schema, model = DEFAULT_MODEL, timeoutMs = 180000 }) {
   const args = [
     "-p",
     "--model", model,
@@ -40,7 +56,19 @@ export function runClaude({ system, prompt, schema, model = DEFAULT_MODEL, timeo
     });
     child.on("close", (code) => {
       clearTimeout(timer);
-      if (code !== 0) return reject(new Error(`claude exited ${code}: ${(err || out).slice(0, 300)}`));
+      if (code !== 0) {
+        // A JSON reply on a failed exit carries the reason; nothing was spent, so it is worth retrying.
+        let reason = (err || out).slice(0, 300);
+        let transient = false;
+        try {
+          const data = JSON.parse(out);
+          reason = String(data.result ?? data.error ?? reason).slice(0, 300);
+          transient = !data.usage?.output_tokens;
+        } catch {
+          /* not JSON: a crash */
+        }
+        return reject(Object.assign(new Error(`claude exited ${code}: ${reason}`), { transient }));
+      }
       let data;
       try {
         data = JSON.parse(out);

@@ -4,6 +4,12 @@ import { runClaude } from "./claude.mjs";
 
 export const SCHEMA = JSON.parse(readFileSync(new URL("../../contracts/llm-judge.schema.json", import.meta.url), "utf8"));
 
+/**
+ * The schema as the CLI takes it: the body only. The CLI's validator does not
+ * load the draft 2020-12 meta-schema, so `$schema` and `$id` are left out.
+ */
+export const CLI_SCHEMA = (({ $schema, $id, title, description, ...body }) => body)(SCHEMA);
+
 const SYSTEM = `You are an editor of interactive fiction adapted from traditional tales. You compare two versions of the same passage, shown blind as A and B, and score each from 1 to 5:
 - specific: concrete nouns, actions and details a listener can picture, not abstractions or summaries of feeling.
 - voice: sounds like a storyteller from the stated tradition, with character and humour where the source has it; characters talk.
@@ -35,7 +41,7 @@ export function checkJudgement(j) {
  */
 export async function judgePair({ tradition, context, a, b, model }) {
   const prompt = `Tradition: ${tradition}\nWhere this appears: ${context}\n\nA:\n${a}\n\nB:\n${b}`;
-  const { output, costUsd, models } = await runClaude({ system: SYSTEM, prompt, schema: SCHEMA, model });
+  const { output, costUsd, models } = await runClaude({ system: SYSTEM, prompt, schema: CLI_SCHEMA, model });
   const errors = checkJudgement(output);
   if (errors.length) throw new Error(`judge broke the contract: ${errors.join("; ")}`);
   return { ...output, costUsd, models };

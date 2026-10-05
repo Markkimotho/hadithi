@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { chmodSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { runClaude } from "../claude.mjs";
-import { judgePair, checkJudgement, SCHEMA } from "../judge.mjs";
+import { judgePair, checkJudgement, SCHEMA, CLI_SCHEMA } from "../judge.mjs";
 
 const fake = fileURLToPath(new URL("./fake-claude.mjs", import.meta.url));
 chmodSync(fake, 0o755);
@@ -54,4 +54,28 @@ test("a missing binary rejects with a clear message", async () => {
 test("the contract schema and validator agree on the score keys", () => {
   assert.deepEqual(SCHEMA.required, ["winner", "a", "b", "reason"]);
   assert.match(checkJudgement({ winner: "a", a: {}, b: {}, reason: "" }).join(), /a.specific/);
+});
+
+test("regression: the CLI gets the schema body without $schema or $id", () => {
+  // The real CLI rejected the whole run: "no schema with key or ref
+  // https://json-schema.org/draft/2020-12/schema".
+  assert.equal(CLI_SCHEMA.$schema, undefined);
+  assert.equal(CLI_SCHEMA.$id, undefined);
+  assert.deepEqual(CLI_SCHEMA.required, SCHEMA.required);
+  assert.ok(CLI_SCHEMA.$defs.scores);
+});
+
+test("a transient failure (rate limit, nothing spent) is retried; a crash is not", async () => {
+  const { mkdtempSync, writeFileSync, readFileSync } = await import("node:fs");
+  const { tmpdir } = await import("node:os");
+  const { join } = await import("node:path");
+  const counter = join(mkdtempSync(join(tmpdir(), "judge-")), "n");
+  writeFileSync(counter, "0");
+  process.env.FAKE_CLAUDE = "flaky";
+  process.env.FAKE_CLAUDE_COUNTER = counter;
+  const { output } = await runClaude({ system: "S", prompt: "P", schema: {} }, { pauseMs: 1 });
+  assert.equal(output.winner, "b");
+  assert.equal(readFileSync(counter, "utf8"), "3", "two failures, then success");
+  process.env.FAKE_CLAUDE = "crash";
+  await assert.rejects(runClaude({ system: "S", prompt: "P", schema: {} }, { pauseMs: 1 }), /exited 2/);
 });
