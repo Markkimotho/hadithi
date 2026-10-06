@@ -570,7 +570,7 @@ export const tide = {
     gift: S(
       "The box that must stay shut",
       "The departure chamber",
-      "Otohime places the box in your hands. It is lighter than it looks, and warmer. “Keep it closed until you know what it holds,” she says. Its cord has no knot you recognize. The shell against your chest sounds like a harbor bell, very far off.",
+      "Otohime places the box in your hands. It is lighter than it looks, and warmer, the way a sleeping cat is warmer than a stone. “Keep it closed until you know what it holds,” she says. Its cord has no knot you recognize. The shell against your chest sounds like a harbor bell, very far off.",
       [
         take("box", "Accept the sealed box", "box", "The lacquer is cool. Something inside is as warm as your own hand.", { spot: [50, 66] }),
         A(
