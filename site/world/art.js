@@ -562,6 +562,106 @@ export function drawProp(scene, p) {
       g.fillStyle(0x6a4b33).fillRect(-3, -40, 6, 54);
       g.fillStyle(0x9a7a50).fillRect(-4, -38, 34, 10).fillRect(-28, -24, 30, 9);
       break;
+    // ── The Olive Jar ──────────────────────────────────────────────────────
+    case "lowtray":
+      shadow(g, cx, 12, w, 14);
+      g.fillStyle(0x8a5a3a).fillEllipse(cx, 0, w - 6, 26);
+      g.fillStyle(0xc49a5a).fillEllipse(cx, -2, w - 16, 18);
+      break;
+    case "olivebowls":
+      for (let i = 0; i < (p.w ?? 1); i++) {
+        const x = L + 20 + i * TILE;
+        g.fillStyle(0x3f6aa0).fillEllipse(x, 2, 22, 10);
+        g.fillStyle(0xe2d8c2).fillEllipse(x, 0, 18, 7);
+        if (i === 1) for (let k = 0; k < 4; k++) g.fillStyle(0x5a6a2a).fillCircle(x - 5 + k * 3.5, -1, 2.2);
+      }
+      break;
+    case "cushion":
+      shadow(g, 0, 8, 30, 10);
+      g.fillStyle(0x8a2f2a).fillRoundedRect(-14, -8, 28, 16, 6);
+      g.lineStyle(2, 0xe2c26a).strokeRoundedRect(-11, -5, 22, 10, 4);
+      break;
+    case "boatoar":
+      g.lineStyle(4, 0x8a5a3a).lineBetween(L, 6, L + w, -6);
+      g.fillStyle(0x8a5a3a).fillEllipse(L + w - 4, -6, 16, 8);
+      break;
+    case "scales":
+      shadow(g, 0, 12, 24);
+      g.lineStyle(3, 0x8a6a2a).lineBetween(0, 10, 0, -26).lineBetween(-18, -22, 18, -22);
+      g.lineStyle(1.5, 0xc9a14a).lineBetween(-18, -22, -22, -8).lineBetween(-18, -22, -14, -8).lineBetween(18, -22, 22, -10).lineBetween(18, -22, 14, -10);
+      g.fillStyle(0xc9a14a).fillEllipse(-18, -8, 14, 4).fillEllipse(18, -10, 14, 4);
+      break;
+    case "shelf":
+      g.fillStyle(0x6a4428).fillRect(L, -18, w, 8);
+      for (let i = 0; i < (p.w ?? 1); i += 2) g.fillStyle([0xb8402c, 0xc9a14a, 0x3f6aa0][i % 3]).fillRect(L + 8 + i * TILE, -34, 16, 16);
+      break;
+    case "dustring":
+      g.lineStyle(3, 0xd9c9a3, 0.9).strokeEllipse(0, -12, 26, 9);
+      break;
+    case "counter":
+      shadow(g, cx, 12, w, 12);
+      g.fillStyle(0x6a4428).fillRect(L, -14, w, 24);
+      g.fillStyle(0x8a5a3a).fillRect(L, -18, w, 6);
+      g.fillStyle(0xe2c26a).fillRect(L + 20, -24, 14, 6);
+      break;
+    case "curtain":
+      for (let i = 0; i < 6; i++) g.fillStyle(i % 2 ? 0x2f4f7a : 0x3f6aa0).fillRect(L + i * (w / 6), -34, w / 6, 42);
+      break;
+    case "lamp":
+      g.fillStyle(0xc9a14a).fillEllipse(0, -4, 18, 8);
+      g.fillStyle(0xf3c14d, 0.95).fillTriangle(6, -6, 12, -18, 14, -6);
+      g.fillStyle(0xf8e7a0, 0.18).fillCircle(10, -10, 30);
+      break;
+    case "rugline":
+      g.lineStyle(2, 0x6a4b33).lineBetween(L, -40, L + w, -40);
+      g.fillStyle(0x8a2f2a).fillRect(L + 10, -40, w - 20, 44);
+      g.lineStyle(3, 0xe2c26a).strokeRect(L + 16, -34, w - 32, 32);
+      g.fillStyle(0x2f4f7a).fillTriangle(cx - 10, -18, cx + 10, -18, cx, -30);
+      break;
+    case "palmtree": {
+      shadow(g, 0, 12, 40, 14);
+      g.lineStyle(7, 0x7a5a3a).beginPath().moveTo(0, 12).lineTo(4, -30).lineTo(2, -70).strokePath();
+      for (let i = 0; i < 7; i++) {
+        const a = -Math.PI / 2 + (i - 3) * 0.45;
+        g.lineStyle(6, i % 2 ? 0x4f6a3a : 0x6a8a4a).lineBetween(2, -70, 2 + Math.cos(a) * 46, -70 + Math.sin(a) * 30 + 22);
+      }
+      g.fillStyle(0x8a4a2a).fillCircle(-4, -64, 4).fillCircle(6, -62, 4);
+      break;
+    }
+    case "barrels":
+      for (let i = 0; i < (p.w ?? 1); i++) {
+        g.fillStyle(0x7a5634).fillRoundedRect(L + 4 + i * TILE, -24, TILE - 8, 34, 8);
+        g.fillStyle(i % 2 ? 0x2f3a1a : 0x6a7a2a).fillEllipse(L + i * TILE + TILE / 2, -22, TILE - 12, 10);
+        g.lineStyle(2, 0x3e3022).lineBetween(L + 4 + i * TILE, -12, L + i * TILE + TILE - 4, -12);
+      }
+      break;
+    case "crocks":
+      for (let i = 0; i < (p.w ?? 1); i++) {
+        g.fillStyle(0xc4a46a).fillEllipse(L + 20 + i * TILE, -4, 26, 30);
+        g.fillStyle(0x8a6a3a).fillEllipse(L + 20 + i * TILE, -18, 14, 5);
+      }
+      break;
+    case "awning":
+      for (let i = 0; i < (p.w ?? 1) * 2; i++) g.fillStyle(i % 2 ? 0xe9dcc0 : 0xb8402c).fillRect(L + i * (TILE / 2), -40, TILE / 2, 22);
+      g.fillStyle(0x0, 0.15).fillRect(L, -18, w, 6);
+      break;
+    case "dais":
+      shadow(g, cx, by - 4, w, 16);
+      g.fillStyle(0xe2d8c2).fillRect(L, T + 6, w, h - 8);
+      g.lineStyle(2, 0x9a8a72).strokeRect(L, T + 6, w, h - 8);
+      g.fillStyle(0x8a2f2a).fillRect(cx - 30, T + 10, 60, 24);
+      break;
+    case "scroll":
+      g.fillStyle(0xefe6d2).fillRect(-12, -6, 24, 12);
+      g.fillStyle(0xc9b98a).fillCircle(-12, 0, 5).fillCircle(12, 0, 5);
+      g.lineStyle(1, 0x3a2a1c, 0.6).lineBetween(-7, -2, 7, -2).lineBetween(-7, 2, 4, 2);
+      break;
+    case "basin":
+      g.fillStyle(0xd9c9a3).fillEllipse(cx, T + h / 2, w + 10, h + 6);
+      g.fillStyle(0x4f8a96).fillEllipse(cx, T + h / 2, w - 12, h - 14);
+      g.fillStyle(0xe2d8c2).fillCircle(cx, T + h / 2, 16);
+      g.fillStyle(0xb8e0e0, 0.8).fillCircle(cx, T + h / 2 - 22, 5).fillCircle(cx - 6, T + h / 2 - 14, 3).fillCircle(cx + 6, T + h / 2 - 14, 3);
+      break;
     default: {
       shadow(g, 0, 12, 34);
       g.fillStyle(0xa17b4e).fillRect(-15, -20, 30, 30);
@@ -585,6 +685,14 @@ const LOOKS = {
   worker: { cloth: 0x6a5a4a, wrap: 0xefe6d2, skin: 0xb88a64 },
   thief: { cloth: 0x3a3a3a, wrap: null, cap: 0x2a2420, skin: 0xd0a07a, carry: "staff" },
   miller: { cloth: 0xd9d2c0, wrap: 0xefe6d2, skin: 0xd8a882, stripe: 0x8a6a3a },
+  townsman: { cloth: 0xc9a14a, wrap: 0xe9dcc0, skin: 0xa8774f },
+  townswoman: { cloth: 0x2f5f73, wrap: 0x2a2420, skin: 0xb8835a },
+  merchant: { cloth: 0x7a2f2a, wrap: 0xe9dcc0, skin: 0xb88a64, stripe: 0xc9a14a },
+  wife: { cloth: 0x3f6aa0, wrap: 0x2a2420, skin: 0xb07a52 },
+  dealer: { cloth: 0x5a6a2a, wrap: 0xe9dcc0, skin: 0x9a6a46, carry: "staff" },
+  judge: { cloth: 0x2a2420, wrap: 0xffffff, skin: 0xa8774f, stripe: 0xc9a14a },
+  clerk: { cloth: 0xa88a62, wrap: 0x7a2f2a, skin: 0xb88a64 },
+  stranger: { cloth: 0x3a3a46, wrap: 0x3a3a46, skin: 0xa8774f },
 };
 
 export function drawPerson(scene, kind = "villager", { tint, id = "" } = {}) {
@@ -614,6 +722,19 @@ export function drawPerson(scene, kind = "villager", { tint, id = "" } = {}) {
     g.fillStyle(0xf0f0ea).fillEllipse(0, -2, 20, 12).fillCircle(8, -8, 5);
     g.fillStyle(0x9aa0a6).fillEllipse(-4, -4, 14, 6);
     g.fillStyle(0xe0a33a).fillTriangle(12, -9, 18, -8, 12, -6);
+    return g;
+  }
+  if (kind === "goat") {
+    g.fillStyle(0x233224, 0.25).fillEllipse(0, 8, 30, 8);
+    g.fillStyle(0xe8e0d0).fillEllipse(0, -10, 30, 16);
+    g.fillStyle(0xe8e0d0).fillCircle(14, -18, 7);
+    g.lineStyle(2, 0x8a7a62).lineBetween(16, -24, 12, -32).lineBetween(12, -24, 8, -31);
+    g.lineStyle(3, 0x6a5a4a).lineBetween(-8, -4, -9, 8).lineBetween(8, -4, 9, 8);
+    return g;
+  }
+  if (kind === "streetcat") {
+    g.fillStyle(0xc49a5a).fillEllipse(0, -4, 22, 10).fillCircle(10, -10, 5);
+    g.lineStyle(3, 0xc49a5a).lineBetween(-10, -6, -16, -16);
     return g;
   }
   if (kind === "hen" || kind === "bird") {
