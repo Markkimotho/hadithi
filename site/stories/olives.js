@@ -31,6 +31,7 @@ const moon = { light: "moon", ambience: "night", weather: "stars" };
 export const olives = {
   version: 2,
   revision: 1,
+  voice: 3,
   id: "olives",
   number: "04",
   title: "The Olive\nJar",
@@ -267,7 +268,7 @@ export const olives = {
           "“Baghdad mint, the year I left. A little crescent by the date. I would know one across a room.”",
           { visible: all(flag("heard"), not(flag("mint"))) },
         ),
-        take("takeOlive", "Pocket one of the olives", "olive", "Firm and green. Ali does not notice; he has stopped looking at them.", {
+        take("takeOlive", "Pocket one of the olives", "olive", "Firm and green. Ali does not notice. He stopped looking at olives some time ago, and may never look at one again.", {
           spot: [40, 72],
         }),
         C(
@@ -283,6 +284,7 @@ export const olives = {
             outcome("“It is not a toy,” he says, and pulls it closer. Maybe once you have shown him you are serious."),
             {
               kind: "white",
+              skill: { kind: "scale", intro: "Ali sets the jar on a merchant’s scale, half joking. “Put your reasons on the other side,” he says.", won: "The scale tips your way. Ali laughs for the first time in a month and hands you the jar.", lost: "The jar outweighs your reasons. Ali shakes his head, kindly.", patienceLabel: "Ali’s patience" },
               mods: [
                 mod("You listened to the whole story", 1, flag("heard")),
                 mod("You know the caliph will hear it", 1, flag("knowsAudience")),
@@ -298,7 +300,7 @@ export const olives = {
     street: S(
       "Everyone has a version",
       "The merchants’ street",
-      "Awnings, scales, and arguments. Everyone has heard about Ali Cogia and the cadi’s verdict. Half the street thinks Ali is a liar; the other half thinks his friend is. Nobody has thought to check.",
+      "Awnings, scales and arguments, and every one of them is about the same jar. Everyone has heard of Ali Cogia and the cadi’s verdict. Half the street will tell you, at length, that Ali Cogia is a liar. The other half, lowering its voice, will tell you it is his friend. “But has anyone looked?” you ask a water seller, who has to think about it.",
       [
         A(
           "gossip",
@@ -358,7 +360,8 @@ export const olives = {
               flags: { caught: true },
               stats: { suspicion: 2, standing: -1 },
             }),
-            { mods: [mod("He is busy with a customer", 1, { turn: 4 })] },
+            { skill: { kind: "sneak" },
+              mods: [mod("He is busy with a customer", 1, { turn: 4 })] },
           ),
           { visible: all(theme("mystery"), not(flag("tagFound"))) },
         ),
@@ -451,6 +454,7 @@ export const olives = {
             outcome("They laugh kindly and go back to arguing. Perhaps if you brought something worth tasting."),
             {
               kind: "white",
+              skill: { kind: "scale", intro: "The older dealer sets an olive on one pan of his scale. “Persuade us,” he says. “Olives are heavy.”", won: "The pan with your reasons drops. They look at each other, and reach for their spoons.", lost: "The olive outweighs you. They laugh kindly and go back to arguing.", patienceLabel: "The dealers’ patience" },
               mods: [
                 mod("They have tasted the olive", 1, flag("dealersSaw")),
                 mod("You carry the jar itself", 1, item("jar")),
@@ -549,7 +553,7 @@ export const olives = {
     trial: S(
       "The court of the moon",
       "The courtyard at moonrise",
-      "Twelve children, one moon, and a cushion for the cadi’s seat. Lamps on the wall, an audience on the roof. In the dark corner by the gate, three grown men in plain cloaks stand very still.",
+      "Twelve children, one moon, and a cushion for the cadi’s seat. Lamps on the wall, an audience on the roof. In the dark corner by the gate three grown men in plain cloaks stand very still, the way only important people know how to stand. “Is it starting?” somebody calls from the roof. “It has started,” Hind shouts back.",
       [
         C(
           "order",
@@ -562,6 +566,7 @@ export const olives = {
             outcome("Nobody listens. Someone throws a date stone. You will have to start over the noise."),
             {
               kind: "white",
+              skill: { kind: "rhythm" },
               mods: [
                 mod("Hind is your officer", 2, flag("cast")),
                 mod("Real olive dealers are here", 1, flag("realDealers")),
@@ -590,7 +595,7 @@ export const olives = {
           "Set Ali’s real jar before the court",
           "USE_ITEM",
           { flags: { realJar: true }, stats: { standing: 1 } },
-          "A gasp from the roof. This is not a pretend jar. The game is suddenly very quiet.",
+          "A gasp from the roof. This is not a pretend jar, and every child in the courtyard knows it at once, the way children know a real knife. The game goes very quiet.",
           { when: item("jar"), visible: not(flag("realJar")), uses: "jar", requires: "The olive jar" },
         ),
         A(
@@ -656,11 +661,12 @@ export const olives = {
               flags: { proven: true },
               stats: { standing: 1 },
             }),
-            outcome("The merchant shrugs. “Olives are olives.” The roof laughs. You need more than a feeling; think, then try again.", {
+            outcome("The merchant shrugs. “Olives are olives.” The roof laughs, and you feel your face go hot. You need more than a feeling. Think, then try again.", {
               stats: { standing: -1 },
             }),
             {
               kind: "white",
+              skill: { kind: "scale", intro: "The merchant’s oath sits on one pan. Lay your proof on the other, one thing at a time.", won: "The oath rises. The courtyard goes so quiet you can hear the lamps.", lost: "The oath outweighs what you have shown. The roof murmurs.", patienceLabel: "The audience’s patience" },
               mods: [
                 mod("The olives are too fresh", 3, deduced("tooFresh")),
                 mod("Seven-year olives would be rotten", 1, deduced("shouldRot")),
@@ -713,7 +719,7 @@ export const olives = {
           "Accept the merchant’s oath",
           "CHOOSE",
           { ending: "dismissed" },
-          "The pretend merchant swears. The pretend cadi nods. The game ends in a shrug.",
+          "The pretend merchant swears by everything he can think of, including his mother and a camel he has never owned. His cadi nods. And the game ends, as games do, in a shrug.",
         ),
       ],
       { art: "moonyard", mapAs: "trial", ...moon },
@@ -766,6 +772,7 @@ export const olives = {
               to: "$return",
               stats: { standing: -1 },
             }),
+            { skill: { kind: "chase" } },
           ),
         ),
       ],
@@ -777,7 +784,7 @@ export const olives = {
     E(
       "waterSeller",
       scene("street"),
-      "A water seller passes, brass cups chiming. Somebody tells him the olive story; he has a different version.",
+      "A water seller passes, brass cups chiming. Somebody tells him the olive story. He has heard a different one, and tells it back to them, louder.",
       {},
       { maxRuns: 3, cooldown: 3 },
     ),
@@ -816,7 +823,7 @@ export const olives = {
     verdict: {
       title: "A verdict that tastes right",
       kind: "Just ending",
-      text: "Next morning the caliph hears Ali Cogia’s petition and does exactly what the courtyard did: he sends for olive dealers. This year’s harvest, they say. The merchant’s oath collapses; the gold is dug up from under his shop floor and returned to the last piece, and he pays a fine to the poor of the quarter. Ali Cogia buys new olives. He does not ask anyone to keep them.",
+      text: "Next morning the caliph hears Ali Cogia’s petition and does exactly what the courtyard did: he sends for olive dealers. This year’s harvest, they say. The merchant’s oath collapses. The gold is dug up from under his shop floor and returned to the last piece, and he pays a fine to the poor of the quarter. Ali Cogia buys new olives. He does not ask anyone to keep them.",
       reflection: "Evidence that spoke for itself outweighed an oath. A child’s game asked the question the court forgot.",
     },
     mercy: {
@@ -828,14 +835,14 @@ export const olives = {
     dismissed: {
       title: "An oath outruns the truth",
       kind: "Unresolved ending",
-      text: "The game ends in a shrug. Tomorrow the caliph, without a better method, accepts the same oath the cadi did. Ali Cogia leaves Baghdad again, this time with nothing to leave behind. Months later you taste a fresh olive and understand what you failed to ask.",
+      text: "The game ends in a shrug. Tomorrow the caliph, who has no better method, accepts the same oath the cadi did. Ali Cogia leaves Baghdad again. This time he has nothing to leave behind. Months later you taste a fresh olive, and understand, too late, what you failed to ask.",
       reflection: "Without evidence, an oath decided the case. The olives were the witness you never called.",
     },
     caliph: {
       title: "The strangers in the corner",
       kind: "Secret ending",
       secret: true,
-      text: "The courtyard goes silent: Harun al-Rashid has been watching your game. “Tomorrow,” he says, “you will sit beside me while I hear this case, and you will ask the questions.” In the morning you do. The merchant does not swear. The gold comes back from under his floor. Ali Cogia and his old friend leave the palace by different doors, but both of them stop to thank the child who would not take an oath for an answer.",
+      text: "The courtyard goes silent. Harun al-Rashid, Commander of the Faithful, has been watching your game from the dark by the gate. “Tomorrow,” he says, “you will sit beside me while I hear this case, and you will ask the questions.” In the morning you do. Faced with you, the merchant does not swear at all. The gold comes back from under his floor. Ali Cogia and his old friend leave the palace by different doors, but both of them stop to thank the child who would not take an oath for an answer.",
       reflection: "Knowing who was watching, and what an oath can hide, let you bring the real court to the courtyard.",
     },
   },
