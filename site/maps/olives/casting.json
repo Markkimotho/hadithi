@@ -1,0 +1,727 @@
+{
+  "type": "map",
+  "version": "1.10",
+  "tiledversion": "1.10.2",
+  "orientation": "orthogonal",
+  "renderorder": "right-down",
+  "width": 22,
+  "height": 12,
+  "tilewidth": 32,
+  "tileheight": 32,
+  "infinite": false,
+  "layers": [
+    {
+      "id": 1,
+      "name": "ground",
+      "type": "tilelayer",
+      "width": 22,
+      "height": 12,
+      "opacity": 1,
+      "visible": true,
+      "data": [
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        12,
+        12,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        12,
+        12,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        12,
+        12,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        12,
+        12,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        12,
+        12,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        12,
+        12,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        12,
+        12,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        12,
+        12,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        12,
+        12,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        4,
+        4,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12
+      ],
+      "x": 0,
+      "y": 0
+    },
+    {
+      "id": 2,
+      "name": "objects",
+      "type": "objectgroup",
+      "draworder": "topdown",
+      "opacity": 1,
+      "visible": true,
+      "objects": [
+        {
+          "id": 1,
+          "name": "start",
+          "type": "spawn",
+          "x": 336,
+          "y": 304,
+          "width": 0,
+          "height": 0,
+          "point": true
+        },
+        {
+          "id": 2,
+          "name": "fountain",
+          "type": "spawn",
+          "x": 336,
+          "y": 336,
+          "width": 0,
+          "height": 0,
+          "point": true
+        },
+        {
+          "id": 3,
+          "name": "cast",
+          "type": "hotspot",
+          "x": 336,
+          "y": 208,
+          "width": 0,
+          "height": 0,
+          "point": true,
+          "properties": [
+            {
+              "name": "actions",
+              "type": "string",
+              "value": "[\"done\"]"
+            },
+            {
+              "name": "label",
+              "type": "string",
+              "value": "\"Your cast\""
+            }
+          ]
+        },
+        {
+          "id": 4,
+          "name": "back",
+          "type": "exit",
+          "x": 336,
+          "y": 368,
+          "width": 0,
+          "height": 0,
+          "point": true
+        },
+        {
+          "id": 5,
+          "name": "back",
+          "type": "exit",
+          "x": 368,
+          "y": 368,
+          "width": 0,
+          "height": 0,
+          "point": true
+        },
+        {
+          "id": 6,
+          "name": "basin",
+          "type": "prop",
+          "x": 272,
+          "y": 48,
+          "width": 192,
+          "height": 96,
+          "point": true,
+          "properties": [
+            {
+              "name": "kind",
+              "type": "string",
+              "value": "\"basin\""
+            },
+            {
+              "name": "w",
+              "type": "float",
+              "value": 6
+            },
+            {
+              "name": "h",
+              "type": "float",
+              "value": 3
+            }
+          ]
+        },
+        {
+          "id": 7,
+          "name": "yusuf",
+          "type": "person",
+          "x": 240,
+          "y": 176,
+          "width": 32,
+          "height": 32,
+          "point": true,
+          "properties": [
+            {
+              "name": "id",
+              "type": "string",
+              "value": "\"yusuf\""
+            },
+            {
+              "name": "kind",
+              "type": "string",
+              "value": "\"child\""
+            }
+          ]
+        },
+        {
+          "id": 8,
+          "name": "bilal",
+          "type": "person",
+          "x": 304,
+          "y": 176,
+          "width": 32,
+          "height": 32,
+          "point": true,
+          "properties": [
+            {
+              "name": "id",
+              "type": "string",
+              "value": "\"bilal\""
+            },
+            {
+              "name": "kind",
+              "type": "string",
+              "value": "\"child\""
+            },
+            {
+              "name": "tint",
+              "type": "string",
+              "value": "\"red\""
+            }
+          ]
+        },
+        {
+          "id": 9,
+          "name": "twin1",
+          "type": "person",
+          "x": 400,
+          "y": 176,
+          "width": 32,
+          "height": 32,
+          "point": true,
+          "properties": [
+            {
+              "name": "id",
+              "type": "string",
+              "value": "\"twin1\""
+            },
+            {
+              "name": "kind",
+              "type": "string",
+              "value": "\"child\""
+            },
+            {
+              "name": "tint",
+              "type": "string",
+              "value": "\"green\""
+            }
+          ]
+        },
+        {
+          "id": 10,
+          "name": "twin2",
+          "type": "person",
+          "x": 432,
+          "y": 176,
+          "width": 32,
+          "height": 32,
+          "point": true,
+          "properties": [
+            {
+              "name": "id",
+              "type": "string",
+              "value": "\"twin2\""
+            },
+            {
+              "name": "kind",
+              "type": "string",
+              "value": "\"child\""
+            },
+            {
+              "name": "tint",
+              "type": "string",
+              "value": "\"green\""
+            }
+          ]
+        },
+        {
+          "id": 11,
+          "name": "hind",
+          "type": "person",
+          "x": 496,
+          "y": 176,
+          "width": 32,
+          "height": 32,
+          "point": true,
+          "properties": [
+            {
+              "name": "id",
+              "type": "string",
+              "value": "\"hind\""
+            },
+            {
+              "name": "kind",
+              "type": "string",
+              "value": "\"child\""
+            },
+            {
+              "name": "tint",
+              "type": "string",
+              "value": "\"indigo\""
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "tilesets": [
+    {
+      "firstgid": 1,
+      "name": "OlivesTerrain",
+      "tilewidth": 32,
+      "tileheight": 32,
+      "tilecount": 18,
+      "columns": 8,
+      "image": "../../art/olives/tiles.svg",
+      "imagewidth": 256,
+      "imageheight": 128,
+      "tiles": [
+        {
+          "id": 0,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "."
+            }
+          ]
+        },
+        {
+          "id": 1,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": ","
+            }
+          ]
+        },
+        {
+          "id": 2,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "\""
+            }
+          ]
+        },
+        {
+          "id": 3,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": ":"
+            }
+          ]
+        },
+        {
+          "id": 4,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "_"
+            }
+          ]
+        },
+        {
+          "id": 5,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "~"
+            }
+          ]
+        },
+        {
+          "id": 6,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "w"
+            }
+          ]
+        },
+        {
+          "id": 7,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "+"
+            }
+          ]
+        },
+        {
+          "id": 8,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "s"
+            }
+          ]
+        },
+        {
+          "id": 9,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "r"
+            }
+          ]
+        },
+        {
+          "id": 10,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "m"
+            }
+          ]
+        },
+        {
+          "id": 11,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "#"
+            }
+          ]
+        },
+        {
+          "id": 12,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "="
+            }
+          ]
+        },
+        {
+          "id": 13,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "o"
+            }
+          ]
+        },
+        {
+          "id": 14,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "T"
+            }
+          ]
+        },
+        {
+          "id": 15,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "b"
+            }
+          ]
+        },
+        {
+          "id": 16,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "h"
+            }
+          ]
+        },
+        {
+          "id": 17,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": " "
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "properties": [
+    {
+      "name": "menu",
+      "type": "string",
+      "value": "[]"
+    },
+    {
+      "name": "wind",
+      "type": "string",
+      "value": "[0,0]"
+    }
+  ]
+}

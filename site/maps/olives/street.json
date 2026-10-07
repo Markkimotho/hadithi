@@ -1,0 +1,1235 @@
+{
+  "type": "map",
+  "version": "1.10",
+  "tiledversion": "1.10.2",
+  "orientation": "orthogonal",
+  "renderorder": "right-down",
+  "width": 30,
+  "height": 16,
+  "tilewidth": 32,
+  "tileheight": 32,
+  "infinite": false,
+  "layers": [
+    {
+      "id": 1,
+      "name": "ground",
+      "type": "tilelayer",
+      "width": 30,
+      "height": 16,
+      "opacity": 1,
+      "visible": true,
+      "data": [
+        12,
+        12,
+        12,
+        12,
+        12,
+        4,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        4,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        4,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        4,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        4,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        4,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        4,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        4,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        4,
+        12,
+        12,
+        12,
+        12,
+        12,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        4,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        4,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        4,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        4,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        4,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        4,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12
+      ],
+      "x": 0,
+      "y": 0
+    },
+    {
+      "id": 2,
+      "name": "objects",
+      "type": "objectgroup",
+      "draworder": "topdown",
+      "opacity": 1,
+      "visible": true,
+      "objects": [
+        {
+          "id": 1,
+          "name": "start",
+          "type": "spawn",
+          "x": 464,
+          "y": 272,
+          "width": 0,
+          "height": 0,
+          "point": true
+        },
+        {
+          "id": 2,
+          "name": "inn",
+          "type": "spawn",
+          "x": 48,
+          "y": 272,
+          "width": 0,
+          "height": 0,
+          "point": true
+        },
+        {
+          "id": 3,
+          "name": "shop",
+          "type": "spawn",
+          "x": 176,
+          "y": 112,
+          "width": 0,
+          "height": 0,
+          "point": true
+        },
+        {
+          "id": 4,
+          "name": "house",
+          "type": "spawn",
+          "x": 496,
+          "y": 112,
+          "width": 0,
+          "height": 0,
+          "point": true
+        },
+        {
+          "id": 5,
+          "name": "olives",
+          "type": "spawn",
+          "x": 784,
+          "y": 112,
+          "width": 0,
+          "height": 0,
+          "point": true
+        },
+        {
+          "id": 6,
+          "name": "court",
+          "type": "spawn",
+          "x": 912,
+          "y": 272,
+          "width": 0,
+          "height": 0,
+          "point": true
+        },
+        {
+          "id": 7,
+          "name": "fountain",
+          "type": "spawn",
+          "x": 304,
+          "y": 400,
+          "width": 0,
+          "height": 0,
+          "point": true
+        },
+        {
+          "id": 8,
+          "name": "neighbours",
+          "type": "hotspot",
+          "x": 592,
+          "y": 304,
+          "width": 0,
+          "height": 0,
+          "point": true,
+          "properties": [
+            {
+              "name": "actions",
+              "type": "string",
+              "value": "[\"gossip\"]"
+            },
+            {
+              "name": "label",
+              "type": "string",
+              "value": "\"The neighbours\""
+            }
+          ]
+        },
+        {
+          "id": 9,
+          "name": "inn",
+          "type": "exit",
+          "x": 16,
+          "y": 240,
+          "width": 0,
+          "height": 0,
+          "point": true
+        },
+        {
+          "id": 10,
+          "name": "inn",
+          "type": "exit",
+          "x": 16,
+          "y": 272,
+          "width": 0,
+          "height": 0,
+          "point": true
+        },
+        {
+          "id": 11,
+          "name": "shop",
+          "type": "exit",
+          "x": 176,
+          "y": 16,
+          "width": 0,
+          "height": 0,
+          "point": true
+        },
+        {
+          "id": 12,
+          "name": "house",
+          "type": "exit",
+          "x": 496,
+          "y": 16,
+          "width": 0,
+          "height": 0,
+          "point": true
+        },
+        {
+          "id": 13,
+          "name": "olives",
+          "type": "exit",
+          "x": 784,
+          "y": 16,
+          "width": 0,
+          "height": 0,
+          "point": true
+        },
+        {
+          "id": 14,
+          "name": "court",
+          "type": "exit",
+          "x": 944,
+          "y": 240,
+          "width": 0,
+          "height": 0,
+          "point": true
+        },
+        {
+          "id": 15,
+          "name": "court",
+          "type": "exit",
+          "x": 944,
+          "y": 272,
+          "width": 0,
+          "height": 0,
+          "point": true
+        },
+        {
+          "id": 16,
+          "name": "fountain",
+          "type": "exit",
+          "x": 304,
+          "y": 496,
+          "width": 0,
+          "height": 0,
+          "point": true
+        },
+        {
+          "id": 17,
+          "name": "stall",
+          "type": "prop",
+          "x": 80,
+          "y": 144,
+          "width": 64,
+          "height": 64,
+          "point": true,
+          "properties": [
+            {
+              "name": "kind",
+              "type": "string",
+              "value": "\"stall\""
+            },
+            {
+              "name": "w",
+              "type": "float",
+              "value": 2
+            },
+            {
+              "name": "h",
+              "type": "float",
+              "value": 2
+            },
+            {
+              "name": "block",
+              "type": "bool",
+              "value": true
+            },
+            {
+              "name": "tint",
+              "type": "string",
+              "value": "\"indigo\""
+            }
+          ]
+        },
+        {
+          "id": 18,
+          "name": "stall",
+          "type": "prop",
+          "x": 368,
+          "y": 144,
+          "width": 64,
+          "height": 64,
+          "point": true,
+          "properties": [
+            {
+              "name": "kind",
+              "type": "string",
+              "value": "\"stall\""
+            },
+            {
+              "name": "w",
+              "type": "float",
+              "value": 2
+            },
+            {
+              "name": "h",
+              "type": "float",
+              "value": 2
+            },
+            {
+              "name": "block",
+              "type": "bool",
+              "value": true
+            },
+            {
+              "name": "tint",
+              "type": "string",
+              "value": "\"gold\""
+            }
+          ]
+        },
+        {
+          "id": 19,
+          "name": "stall",
+          "type": "prop",
+          "x": 624,
+          "y": 144,
+          "width": 64,
+          "height": 64,
+          "point": true,
+          "properties": [
+            {
+              "name": "kind",
+              "type": "string",
+              "value": "\"stall\""
+            },
+            {
+              "name": "w",
+              "type": "float",
+              "value": 2
+            },
+            {
+              "name": "h",
+              "type": "float",
+              "value": 2
+            },
+            {
+              "name": "block",
+              "type": "bool",
+              "value": true
+            },
+            {
+              "name": "tint",
+              "type": "string",
+              "value": "\"red\""
+            }
+          ]
+        },
+        {
+          "id": 20,
+          "name": "stall",
+          "type": "prop",
+          "x": 432,
+          "y": 336,
+          "width": 64,
+          "height": 64,
+          "point": true,
+          "properties": [
+            {
+              "name": "kind",
+              "type": "string",
+              "value": "\"stall\""
+            },
+            {
+              "name": "w",
+              "type": "float",
+              "value": 2
+            },
+            {
+              "name": "h",
+              "type": "float",
+              "value": 2
+            },
+            {
+              "name": "block",
+              "type": "bool",
+              "value": true
+            },
+            {
+              "name": "tint",
+              "type": "string",
+              "value": "\"green\""
+            }
+          ]
+        },
+        {
+          "id": 21,
+          "name": "scales",
+          "type": "prop",
+          "x": 272,
+          "y": 208,
+          "width": 32,
+          "height": 32,
+          "point": true,
+          "properties": [
+            {
+              "name": "kind",
+              "type": "string",
+              "value": "\"scales\""
+            }
+          ]
+        },
+        {
+          "id": 22,
+          "name": "basket",
+          "type": "prop",
+          "x": 720,
+          "y": 336,
+          "width": 32,
+          "height": 32,
+          "point": true,
+          "properties": [
+            {
+              "name": "kind",
+              "type": "string",
+              "value": "\"basket\""
+            },
+            {
+              "name": "physics",
+              "type": "string",
+              "value": "\"crate\""
+            }
+          ]
+        },
+        {
+          "id": 23,
+          "name": "jar",
+          "type": "prop",
+          "x": 848,
+          "y": 176,
+          "width": 32,
+          "height": 32,
+          "point": true,
+          "properties": [
+            {
+              "name": "kind",
+              "type": "string",
+              "value": "\"jar\""
+            },
+            {
+              "name": "physics",
+              "type": "string",
+              "value": "\"jar\""
+            }
+          ]
+        },
+        {
+          "id": 24,
+          "name": "n1",
+          "type": "person",
+          "x": 560,
+          "y": 304,
+          "width": 32,
+          "height": 32,
+          "point": true,
+          "properties": [
+            {
+              "name": "id",
+              "type": "string",
+              "value": "\"n1\""
+            },
+            {
+              "name": "kind",
+              "type": "string",
+              "value": "\"townsman\""
+            }
+          ]
+        },
+        {
+          "id": 25,
+          "name": "n2",
+          "type": "person",
+          "x": 624,
+          "y": 336,
+          "width": 32,
+          "height": 32,
+          "point": true,
+          "properties": [
+            {
+              "name": "id",
+              "type": "string",
+              "value": "\"n2\""
+            },
+            {
+              "name": "kind",
+              "type": "string",
+              "value": "\"townswoman\""
+            }
+          ]
+        },
+        {
+          "id": 26,
+          "name": "n3",
+          "type": "person",
+          "x": 240,
+          "y": 336,
+          "width": 32,
+          "height": 32,
+          "point": true,
+          "properties": [
+            {
+              "name": "id",
+              "type": "string",
+              "value": "\"n3\""
+            },
+            {
+              "name": "kind",
+              "type": "string",
+              "value": "\"townsman\""
+            },
+            {
+              "name": "wander",
+              "type": "float",
+              "value": 3
+            },
+            {
+              "name": "tint",
+              "type": "string",
+              "value": "\"red\""
+            }
+          ]
+        },
+        {
+          "id": 27,
+          "name": "n4",
+          "type": "person",
+          "x": 816,
+          "y": 240,
+          "width": 32,
+          "height": 32,
+          "point": true,
+          "properties": [
+            {
+              "name": "id",
+              "type": "string",
+              "value": "\"n4\""
+            },
+            {
+              "name": "kind",
+              "type": "string",
+              "value": "\"townswoman\""
+            },
+            {
+              "name": "wander",
+              "type": "float",
+              "value": 3
+            }
+          ]
+        },
+        {
+          "id": 28,
+          "name": "cat",
+          "type": "person",
+          "x": 880,
+          "y": 368,
+          "width": 32,
+          "height": 32,
+          "point": true,
+          "properties": [
+            {
+              "name": "id",
+              "type": "string",
+              "value": "\"cat\""
+            },
+            {
+              "name": "kind",
+              "type": "string",
+              "value": "\"streetcat\""
+            },
+            {
+              "name": "wander",
+              "type": "float",
+              "value": 2
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "tilesets": [
+    {
+      "firstgid": 1,
+      "name": "OlivesTerrain",
+      "tilewidth": 32,
+      "tileheight": 32,
+      "tilecount": 18,
+      "columns": 8,
+      "image": "../../art/olives/tiles.svg",
+      "imagewidth": 256,
+      "imageheight": 128,
+      "tiles": [
+        {
+          "id": 0,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "."
+            }
+          ]
+        },
+        {
+          "id": 1,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": ","
+            }
+          ]
+        },
+        {
+          "id": 2,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "\""
+            }
+          ]
+        },
+        {
+          "id": 3,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": ":"
+            }
+          ]
+        },
+        {
+          "id": 4,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "_"
+            }
+          ]
+        },
+        {
+          "id": 5,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "~"
+            }
+          ]
+        },
+        {
+          "id": 6,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "w"
+            }
+          ]
+        },
+        {
+          "id": 7,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "+"
+            }
+          ]
+        },
+        {
+          "id": 8,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "s"
+            }
+          ]
+        },
+        {
+          "id": 9,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "r"
+            }
+          ]
+        },
+        {
+          "id": 10,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "m"
+            }
+          ]
+        },
+        {
+          "id": 11,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "#"
+            }
+          ]
+        },
+        {
+          "id": 12,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "="
+            }
+          ]
+        },
+        {
+          "id": 13,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "o"
+            }
+          ]
+        },
+        {
+          "id": 14,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "T"
+            }
+          ]
+        },
+        {
+          "id": 15,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "b"
+            }
+          ]
+        },
+        {
+          "id": 16,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "h"
+            }
+          ]
+        },
+        {
+          "id": 17,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": " "
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "properties": [
+    {
+      "name": "menu",
+      "type": "string",
+      "value": "[]"
+    },
+    {
+      "name": "wind",
+      "type": "string",
+      "value": "[0,0]"
+    }
+  ]
+}

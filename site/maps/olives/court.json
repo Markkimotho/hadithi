@@ -1,0 +1,773 @@
+{
+  "type": "map",
+  "version": "1.10",
+  "tiledversion": "1.10.2",
+  "orientation": "orthogonal",
+  "renderorder": "right-down",
+  "width": 22,
+  "height": 13,
+  "tilewidth": 32,
+  "tileheight": 32,
+  "infinite": false,
+  "layers": [
+    {
+      "id": 1,
+      "name": "ground",
+      "type": "tilelayer",
+      "width": 22,
+      "height": 13,
+      "opacity": 1,
+      "visible": true,
+      "data": [
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        12,
+        12,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        12,
+        12,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        12,
+        12,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        12,
+        12,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        12,
+        4,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        12,
+        4,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        12,
+        12,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        12,
+        12,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        12,
+        12,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        12,
+        12,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12
+      ],
+      "x": 0,
+      "y": 0
+    },
+    {
+      "id": 2,
+      "name": "objects",
+      "type": "objectgroup",
+      "draworder": "topdown",
+      "opacity": 1,
+      "visible": true,
+      "objects": [
+        {
+          "id": 1,
+          "name": "start",
+          "type": "spawn",
+          "x": 80,
+          "y": 208,
+          "width": 0,
+          "height": 0,
+          "point": true
+        },
+        {
+          "id": 2,
+          "name": "street",
+          "type": "spawn",
+          "x": 48,
+          "y": 208,
+          "width": 0,
+          "height": 0,
+          "point": true
+        },
+        {
+          "id": 3,
+          "name": "clerk",
+          "type": "hotspot",
+          "x": 464,
+          "y": 208,
+          "width": 0,
+          "height": 0,
+          "point": true,
+          "properties": [
+            {
+              "name": "actions",
+              "type": "string",
+              "value": "[\"rule\",\"audience\"]"
+            },
+            {
+              "name": "label",
+              "type": "string",
+              "value": "\"The clerk\""
+            }
+          ]
+        },
+        {
+          "id": 4,
+          "name": "street",
+          "type": "exit",
+          "x": 16,
+          "y": 208,
+          "width": 0,
+          "height": 0,
+          "point": true
+        },
+        {
+          "id": 5,
+          "name": "street",
+          "type": "exit",
+          "x": 16,
+          "y": 240,
+          "width": 0,
+          "height": 0,
+          "point": true
+        },
+        {
+          "id": 6,
+          "name": "dais",
+          "type": "prop",
+          "x": 272,
+          "y": 48,
+          "width": 192,
+          "height": 64,
+          "point": true,
+          "properties": [
+            {
+              "name": "kind",
+              "type": "string",
+              "value": "\"dais\""
+            },
+            {
+              "name": "w",
+              "type": "float",
+              "value": 6
+            },
+            {
+              "name": "h",
+              "type": "float",
+              "value": 2
+            },
+            {
+              "name": "block",
+              "type": "bool",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": 7,
+          "name": "scroll",
+          "type": "prop",
+          "x": 496,
+          "y": 176,
+          "width": 32,
+          "height": 32,
+          "point": true,
+          "properties": [
+            {
+              "name": "kind",
+              "type": "string",
+              "value": "\"scroll\""
+            }
+          ]
+        },
+        {
+          "id": 8,
+          "name": "lamp",
+          "type": "prop",
+          "x": 144,
+          "y": 80,
+          "width": 32,
+          "height": 32,
+          "point": true,
+          "properties": [
+            {
+              "name": "kind",
+              "type": "string",
+              "value": "\"lamp\""
+            }
+          ]
+        },
+        {
+          "id": 9,
+          "name": "lamp",
+          "type": "prop",
+          "x": 560,
+          "y": 80,
+          "width": 32,
+          "height": 32,
+          "point": true,
+          "properties": [
+            {
+              "name": "kind",
+              "type": "string",
+              "value": "\"lamp\""
+            }
+          ]
+        },
+        {
+          "id": 10,
+          "name": "cadi",
+          "type": "person",
+          "x": 336,
+          "y": 80,
+          "width": 32,
+          "height": 32,
+          "point": true,
+          "properties": [
+            {
+              "name": "id",
+              "type": "string",
+              "value": "\"cadi\""
+            },
+            {
+              "name": "kind",
+              "type": "string",
+              "value": "\"judge\""
+            },
+            {
+              "name": "perch",
+              "type": "float",
+              "value": 0.3
+            }
+          ]
+        },
+        {
+          "id": 11,
+          "name": "clerk",
+          "type": "person",
+          "x": 464,
+          "y": 176,
+          "width": 32,
+          "height": 32,
+          "point": true,
+          "properties": [
+            {
+              "name": "id",
+              "type": "string",
+              "value": "\"clerk\""
+            },
+            {
+              "name": "kind",
+              "type": "string",
+              "value": "\"clerk\""
+            }
+          ]
+        },
+        {
+          "id": 12,
+          "name": "goat",
+          "type": "person",
+          "x": 240,
+          "y": 272,
+          "width": 32,
+          "height": 32,
+          "point": true,
+          "properties": [
+            {
+              "name": "id",
+              "type": "string",
+              "value": "\"goat\""
+            },
+            {
+              "name": "kind",
+              "type": "string",
+              "value": "\"goat\""
+            },
+            {
+              "name": "wander",
+              "type": "float",
+              "value": 2
+            }
+          ]
+        },
+        {
+          "id": 13,
+          "name": "plaintiff",
+          "type": "person",
+          "x": 272,
+          "y": 304,
+          "width": 32,
+          "height": 32,
+          "point": true,
+          "properties": [
+            {
+              "name": "id",
+              "type": "string",
+              "value": "\"plaintiff\""
+            },
+            {
+              "name": "kind",
+              "type": "string",
+              "value": "\"townsman\""
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "tilesets": [
+    {
+      "firstgid": 1,
+      "name": "OlivesTerrain",
+      "tilewidth": 32,
+      "tileheight": 32,
+      "tilecount": 18,
+      "columns": 8,
+      "image": "../../art/olives/tiles.svg",
+      "imagewidth": 256,
+      "imageheight": 128,
+      "tiles": [
+        {
+          "id": 0,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "."
+            }
+          ]
+        },
+        {
+          "id": 1,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": ","
+            }
+          ]
+        },
+        {
+          "id": 2,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "\""
+            }
+          ]
+        },
+        {
+          "id": 3,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": ":"
+            }
+          ]
+        },
+        {
+          "id": 4,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "_"
+            }
+          ]
+        },
+        {
+          "id": 5,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "~"
+            }
+          ]
+        },
+        {
+          "id": 6,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "w"
+            }
+          ]
+        },
+        {
+          "id": 7,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "+"
+            }
+          ]
+        },
+        {
+          "id": 8,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "s"
+            }
+          ]
+        },
+        {
+          "id": 9,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "r"
+            }
+          ]
+        },
+        {
+          "id": 10,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "m"
+            }
+          ]
+        },
+        {
+          "id": 11,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "#"
+            }
+          ]
+        },
+        {
+          "id": 12,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "="
+            }
+          ]
+        },
+        {
+          "id": 13,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "o"
+            }
+          ]
+        },
+        {
+          "id": 14,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "T"
+            }
+          ]
+        },
+        {
+          "id": 15,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "b"
+            }
+          ]
+        },
+        {
+          "id": 16,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": "h"
+            }
+          ]
+        },
+        {
+          "id": 17,
+          "properties": [
+            {
+              "name": "glyph",
+              "type": "string",
+              "value": " "
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "properties": [
+    {
+      "name": "menu",
+      "type": "string",
+      "value": "[]"
+    },
+    {
+      "name": "wind",
+      "type": "string",
+      "value": "[0,0]"
+    }
+  ]
+}
