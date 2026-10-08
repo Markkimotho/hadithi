@@ -58,6 +58,24 @@ Without `outcome`, the seeded dice decide, which is Story mode.
 
 Each attempt's result is written to `state.ledger`, keyed `scene/action#attempt`. The ledger is saved and survives undo. Any later resolution of the same attempt, by skill or dice, follows it, so undo cannot reroll fate in either mode. White-check rules still apply: a failed skill attempt needs better odds before a retry.
 
+### Trials: how a check is played by hand
+
+`site/world/trials/core.js` holds the rules, and they are pure.
+
+**Timed trials** (leap, brace, balance, steer, swim, sneak, carry, chase, formation, stack, rhythm):
+
+- A timed trial is a short run of moments, and the player answers each one with a press. A trial passes when enough of the answers are good, for example 2 of 3, or 3 of 4.
+- The timing window around each moment is solved from the check's dice odds, so a player with average timing (a 0.13 s standard deviation) passes exactly as often as the dice would. Experts pass more often and novices less.
+- Storyteller's grace is already part of the odds.
+
+**The scale** (persuasion):
+
+- The doubt on one pan is `dc − 7`, which is what an average roll would need.
+- The stones you can lay on the other pan are the positive parts of the check's own odds: your stat and each advantage you have earned. Their labels come from the tale's modifiers, so the arguments are exactly what you learned.
+- Laying every earned stone passes exactly when `7 + bonus ≥ dc`.
+
+`site/world/trials/stage.js` stages trials in the world: rings close on stones, gust shadows, a swinging pot, and a Planck beam balance. `evals/skills.mjs` plays 2,000 simulated trials per player type through the same core, for every timed check in the tales and a grid of odds. With trials turned off in Settings, the seeded dice decide.
+
 ### Physics flags
 
 `physicsFlags: { id: { text, scenes?, effects? } }` declares facts the world may report, such as a pot cracking in a fall. `{ type: "PHYSICS", id }` sets the flag once, costs no turn, records the text, and triggers events like any command. Effects are limited to `flags`, `stats` and `clues`; movement and endings stay with authored actions. Physics flags are logged commands, so replay matches.
