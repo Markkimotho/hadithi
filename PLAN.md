@@ -167,3 +167,17 @@ The third-edition plan from the recovered Claude session is preserved in [docs/T
 **Phase 3 is implemented locally.** The Wisdom vector tilesheet is generated from a checked manifest and drives the world renderer. Kweku and Anansi now have shared-anchor layered rigs and idle/walk/carry/push/fall clips; Kweku drives the physical player sprite. The art gate validates atlas grids, glyph coverage, rig bones, clips, and SVG part dimensions and runs in production builds. The prop sheet is reserved and documented, while live physics props still use their existing drawn art.
 
 **Phase 4 implementation is complete locally.** All 14 Wisdom scenes use authored Tiled JSON maps with validated entry points and reachable interactions. River and ford currents and squall wind affect Planck physics. World mode layers weather and light over the map. Leap, balance, scale, and brace challenges reflect terrain, story evidence, character choices, check odds, and assist mode. Wisdom narration follows the Fante voice guide and passes strict prose lint. Mark's desktop and phone vertical-slice playtest remains the final human check; the handoff checklist is in [docs/PLAYTEST-WISDOM.md](docs/PLAYTEST-WISDOM.md). The third-edition work remains local and has not been deployed.
+
+## Third edition — status, 19 October 2026
+
+All four tales are played in a walkable world, with a storyteller telling each beat over it. Classic view is gone.
+
+- **Maps.** Every scene of every tale has a Tiled map, checked against the story for coverage and reachability.
+- **People.** Heroes and companions are layered rigs; in the Orchestra the band follows the donkey once each animal joins.
+- **Trials.** Every dice check is a physical trial played by hand, calibrated so an average player passes at the dice odds (`evals/skills.mjs`). With trials off, the seeded dice decide.
+- **Prose.** All four tales pass the strict voice lint. The blind prose eval through local Claude Code compares them with the second-edition text (`artifacts/eval/prose-report.md`).
+- **Still open.**
+  - Your playtest on desktop and phone.
+  - Cultural review of the Akan and Baghdad framing.
+  - International rights checks.
+  - The Render deploy.
