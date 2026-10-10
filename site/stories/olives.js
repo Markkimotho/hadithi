@@ -835,7 +835,7 @@ export const olives = {
     dismissed: {
       title: "An oath outruns the truth",
       kind: "Unresolved ending",
-      text: "The game ends in a shrug. Tomorrow the caliph, who has no better method, accepts the same oath the cadi did. Ali Cogia leaves Baghdad again. This time he has nothing to leave behind. Months later you taste a fresh olive, and understand, too late, what you failed to ask.",
+      text: "The game ends in a shrug. Tomorrow the caliph, who has no better method, accepts the same oath the cadi did. Ali Cogia leaves Baghdad again. This time he has nothing to leave behind. Months later you taste a fresh olive and understand what you failed to ask.",
       reflection: "Without evidence, an oath decided the case. The olives were the witness you never called.",
     },
     caliph: {
