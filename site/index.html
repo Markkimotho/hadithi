@@ -6,43 +6,21 @@
     <meta name="theme-color" content="#20261f" />
     <meta
       name="description"
-      content="Four old tales from Ghana, Japan, Germany and Baghdad, retold as games you can play in a browser. Free, no account."
+      content="Four old tales from Ghana, Japan, Germany and Baghdad, retold as first-person games you play in a browser. Free, no account."
     />
-    <title>Hadithi · Old tales you can play</title>
+    <title>Hadithi · Old tales you can walk into</title>
     <link rel="icon" href="./assets/icon.svg" type="image/svg+xml" />
     <link rel="manifest" href="./manifest.webmanifest" />
-    <link rel="preload" href="./fonts/literata-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="preload" href="./fonts/atkinson-hyperlegible-next-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="./fonts/pixelify-sans-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="stylesheet" href="./fonts.css" />
     <link rel="stylesheet" href="./style.css" />
     <script type="module" src="./app.js"></script>
   </head>
   <body>
-    <a class="skip-link" href="#main">Skip to the adventure</a>
-    <header class="masthead">
-      <button id="brand" class="brand" aria-label="Hadithi story library">
-        <span class="brand-mark" aria-hidden="true">H</span
-        ><span>Hadithi<small>Old tales you can play</small></span>
-      </button>
-      <nav aria-label="Main navigation">
-        <button id="library-link">The collection</button
-        ><button id="chronicle-link">Chronicle</button
-        ><button id="help-link" aria-keyshortcuts="?">How to play</button
-        ><button id="sources-link">Field notes <span aria-hidden="true">↗</span></button
-        ><button id="sound-link" class="sound-button" aria-pressed="false" aria-keyshortcuts="S" aria-label="Toggle sound">
-          <i aria-hidden="true">♪</i> <span>Sound off</span></button
-        ><button id="settings-link" class="settings-button" aria-label="Open game settings">
-          ⚙ <span>Settings</span>
-        </button>
-      </nav>
-    </header>
+    <a class="skip-link" href="#main">Skip to the game</a>
     <main id="main" tabindex="-1">
-      <p class="loading">Opening the atlas…</p>
+      <p class="loading">Hadithi</p>
     </main>
-    <footer class="site-footer">
-      <span>Hadithi <i>n.</i> stories, in Swahili.</span><span>Retold from public-domain collections.</span
-      ><button id="footer-sources">Sources & credits</button>
-    </footer>
     <div id="announcement" class="sr-only" role="status" aria-live="polite"></div>
     <div id="toast" class="toast" role="status" hidden></div>
     <dialog id="modal" aria-labelledby="modal-title">
