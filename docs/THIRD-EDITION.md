@@ -1,5 +1,12 @@
 # Hadithi third edition: a top-down game with physics
 
+> **Superseded view, 28 October 2026.** The world is now first person: a
+> canvas raycaster ported from Bunker Run replaced Phaser, the top-down
+> camera, puppets and rigs. Physics (Planck), the bridge, trials, maps and the
+> story engine carry over unchanged in role. Current architecture:
+> [WORLD.md](WORLD.md). Art: [ART-SPEC.md](ART-SPEC.md). The plan below is
+> kept as the record of how the third edition was built.
+
 ## Recovered-plan progress — 18 October 2026
 
 - **Phase 0:** typography, prose linting, and local LLM judge are implemented.

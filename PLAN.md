@@ -181,3 +181,13 @@ All four tales are played in a walkable world, with a storyteller telling each b
   - Cultural review of the Akan and Baghdad framing.
   - International rights checks.
   - The Render deploy.
+
+## Third edition — status, 28 October 2026: first person
+
+The world is now seen through the hero's eyes. A software raycaster ported from Bunker Run (`sdl-c-raycasting`) to plain JavaScript replaced Phaser; Planck physics, the bridge, maps, trials and the story engine keep their roles. See [docs/WORLD.md](docs/WORLD.md).
+
+- **Renderer.** Textured walls, floor and ceiling casting, a skyline per tradition, billboards with shadows and a depth buffer, Bunker Run's light model (daylight, night ambient, torch cone, fog) plus fires and lanterns that light the ground. Mean 2.7 ms a frame across all 166 arrival views.
+- **Art.** Every wall, floor, person, animal and thing is painted in code per tradition, with walk frames and the hero's own hands. No binary art in the repo. `npm run art:check` covers all of it.
+- **HUD.** One pixel face (Pixelify Sans), quest panel, minimap, crosshair prompt, bag slots, a dialogue box with the speaker's face. The web shelf became a title screen drawn by the game's renderer.
+- **Tests.** 133 gate tests (`test/ray.test.js` new), 69 browser tests on desktop and phone, the render eval. A passing browser run writes nothing to disk.
+- **Still open.** Your playtest on desktop and phone; cultural review; international rights checks.
