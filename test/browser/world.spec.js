@@ -48,7 +48,9 @@ test("the world loads on entry in first person, walking needs no click, and dial
     last = now;
     return still;
   }, { intervals: [150] }).toBe(true);
-  await page.locator("#story-source").click();
+  // Any dialog pauses the world (the guide is on every screen; Source is hidden on phones).
+  await page.keyboard.press("?");
+  await expect(page.locator("dialog")).toBeVisible();
   const paused = await state(page);
   await page.keyboard.down("w");
   await page.waitForTimeout(300);
