@@ -32,6 +32,15 @@ export async function enter(page, id = "wisdom", { echoes = [], motion = false, 
   await expect(page.locator('.world-stage[data-ready="true"]')).toBeVisible();
 }
 
+/**
+ * A screenshot for review, written only when SHOTS=1. Passing runs leave
+ * nothing on disk; failures keep Playwright's own artifacts.
+ */
+export async function shot(page, name, options = {}) {
+  if (process.env.SHOTS !== "1") return;
+  await page.screenshot({ path: `artifacts/${name}.png`, animations: "disabled", ...options });
+}
+
 export const save = (page, id = "wisdom") => page.evaluate((tale) => JSON.parse(localStorage.getItem(`hadithi.v1.save.${tale}`)), id);
 export const world = (page) => page.evaluate(() => window.__hadithi.world());
 export const story = (page) => page.evaluate(() => window.__hadithi.story());
