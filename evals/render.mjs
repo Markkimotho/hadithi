@@ -3,8 +3,12 @@
 // from every spawn, render the arrival view at the game's default frame size
 // in Node and measure:
 //
-//   ms        time per frame (median of 5). The browser budget is 16 ms at
-//             60 fps; Node has no GPU help either, so this is a fair proxy.
+//   ms        time per frame: median of 7, after 4 warm-up frames so the
+//             JIT has compiled the renderer. The mean over every view must
+//             fit the 16 ms budget of 60 fps; no single view may take more
+//             than three budgets (a stall, not noise). CI runners are a few
+//             times slower than a laptop, so these are the bounds that hold
+//             on both while still catching a renderer that got slow.
 //   open      share of the screen that is not a wall closer than 2 m. An
 //             arrival that opens on a wall in your face fails.
 //   detail    distinct colours in the frame. A frame that is all fog or all
@@ -25,7 +29,8 @@ import { eyeOf } from "../site/world/tales.js";
 
 const W = 576,
   H = 360;
-const MAX_MS = 16;
+const BUDGET_MS = 16;
+const MAX_MS = BUDGET_MS * 3;
 const MIN_OPEN = 0.5;
 const MIN_DETAIL = 400;
 
@@ -48,12 +53,13 @@ for (const tale of ["wisdom", "tide", "orchestra", "olives"]) {
       const target = createTarget(W, H);
       const times = [];
       let stats;
-      for (let i = 0; i < 5; i++) {
+      for (let i = 0; i < 4; i++) renderFrame(target, prepared, cam, { light, time: 0, eye: eyeOf(tale), things, lights: lamps });
+      for (let i = 0; i < 7; i++) {
         const t0 = performance.now();
         stats = renderFrame(target, prepared, cam, { light, time: i * 0.1, eye: eyeOf(tale), things, lights: lamps });
         times.push(performance.now() - t0);
       }
-      const ms = times.sort((a, b) => a - b)[2];
+      const ms = times.sort((a, b) => a - b)[3];
       let close = 0;
       for (let x = 0; x < W; x++) if (target.columns.dist[x] < 2) close++;
       const open = 1 - close / W;
@@ -66,11 +72,13 @@ for (const tale of ["wisdom", "tide", "orchestra", "olives"]) {
 }
 
 const mean = (k) => rows.reduce((s, r) => s + r[k], 0) / rows.length;
+const overBudget = mean("ms") > BUDGET_MS;
+if (overBudget) failures++;
 const worst = rows.reduce((a, b) => (b.ms > a.ms ? b : a));
 const report = [
   "# Renderer eval",
   "",
-  `${rows.length} arrival views across 4 tales, ${W}x${H}. Thresholds: ≤ ${MAX_MS} ms, ≥ ${MIN_OPEN * 100}% open, ≥ ${MIN_DETAIL} colours.`,
+  `${rows.length} arrival views across 4 tales, ${W}x${H}. Thresholds: mean ≤ ${BUDGET_MS} ms, every view ≤ ${MAX_MS} ms, ≥ ${MIN_OPEN * 100}% open, ≥ ${MIN_DETAIL} colours.`,
   "",
   `Mean ${mean("ms").toFixed(2)} ms · slowest ${worst.ms.toFixed(2)} ms (${worst.tale}/${worst.id}) · mean open ${(mean("open") * 100).toFixed(0)}% · ${failures} failing`,
   "",
@@ -82,6 +90,7 @@ const report = [
 mkdirSync("artifacts/eval", { recursive: true });
 writeFileSync("artifacts/eval/render-report.md", report);
 console.log(report.split("\n").slice(0, 6).join("\n"));
+if (overBudget) console.log(`FAIL mean frame ${mean("ms").toFixed(2)} ms is over the ${BUDGET_MS} ms budget`);
 for (const r of rows.filter((r) => !r.pass)) console.log(`FAIL ${r.tale}/${r.id} from ${r.from}: ${r.ms.toFixed(1)} ms, ${(r.open * 100).toFixed(0)}% open, ${r.detail} colours`);
 console.log("artifacts/eval/render-report.md");
 if (failures) process.exit(1);
