@@ -1,6 +1,6 @@
 // Prose lint: deterministic checks for the habits that make game text read as
 // machine-written. Every tale gets the universal rules. A tale that declares
-// `voice: 3` (rewritten against docs/VOICE.md) also gets the strict rules.
+// `voice: 3` (rewritten against docs/dev/VOICE.md) also gets the strict rules.
 //
 //   node scripts/prose-lint.mjs            lint every tale, exit 1 on issues
 //   node scripts/prose-lint.mjs wisdom     one tale
