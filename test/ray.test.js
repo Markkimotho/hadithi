@@ -287,3 +287,16 @@ test("a thing underfoot is not drawn over the whole view (regression: the ford's
   const empty = frame(layout, [3.5, 2.5], 0, "day").target;
   assert.deepEqual(target.data, empty.data);
 });
+
+test("point lights are baked once per scene and read back where they shine", async () => {
+  const { lightMap, LIGHTMAP_RES } = await import("../site/world/ray/render.js");
+  const layout = room();
+  const level = buildLevel(layout);
+  const prepared = prepareLevel(level, worldArtFor("wisdom", [layout]));
+  const lamps = [{ x: 4.5, y: 2.5, color: [1, 0.7, 0.3], power: 1 }];
+  const map = lightMap(prepared, lamps);
+  assert.equal(lightMap(prepared, lamps), map, "the same lights reuse the map");
+  const at = (x, y) => map.data[(Math.floor(y * LIGHTMAP_RES) * map.w + Math.floor(x * LIGHTMAP_RES)) * 3];
+  assert.ok(at(4.5, 2.5) > at(8.5, 2.5) * 3, "bright by the lamp, dim across the room");
+  assert.notEqual(lightMap(prepared, [{ ...lamps[0], power: 2 }]), map, "new lights rebuild it");
+});
