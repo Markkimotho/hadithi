@@ -115,6 +115,24 @@ overlay canvas:
 - **balance**: the view gives way to the climb, the pot swinging on its rope;
 - **scale**: the elders' beam balance, a Planck simulation.
 
+## The story panel
+
+The story must never stand between you and the world:
+
+- **Desktop:** a narrow panel in the bottom-left corner (at most 470 px, about
+  a third of the screen). The hands keep to the middle 40% of the frame, so
+  the two never meet. The bag sits in the opposite corner.
+- **Phone:** the panel sits at the top, under a one-line quest bar, so the
+  stick, the act button and the hands at the bottom stay clear. The minimap
+  waits above the touch buttons.
+- With nothing being told and nothing to choose, the panel steps away; the
+  objective is always in the quest panel.
+- **H** (or the Fold button) folds narration down to one line. A conversation
+  or a trial always shows in full.
+- Reading text (the telling, choices, bubbles, prompts, the journal, dialogs)
+  is Atkinson Hyperlegible. The pixel face is kept for short labels: titles,
+  names, keys.
+
 ## The HUD
 
 `ui/play.js` and the play-screen block of `style.css`. One pixel face,

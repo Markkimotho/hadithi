@@ -73,7 +73,7 @@ export function createPlay(main, ctx) {
     <section class="story-band" aria-labelledby="scene-title">
       <div class="story-portrait" aria-hidden="true"><canvas width="40" height="40"></canvas></div>
       <div class="story-main">
-        <h1 id="scene-title" class="story-scene" tabindex="-1"></h1>
+        <div class="story-head"><h1 id="scene-title" class="story-scene" tabindex="-1"></h1><button class="story-fold" aria-pressed="false" aria-keyshortcuts="H" title="Fold the story out of the way (H)"><span>Fold</span><kbd aria-hidden="true">H</kbd></button></div>
         <div class="story-body">
           <p class="story-line"></p>
           <ul class="story-notes"></ul>
@@ -575,11 +575,13 @@ export function createPlay(main, ctx) {
     const canvas = portraitEl.querySelector("canvas");
     if (!tex) {
       canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
+      band.style.removeProperty("--portrait");
       return;
     }
     canvas.width = tex.w;
     canvas.height = tex.h;
     canvas.getContext("2d").putImageData(new ImageData(new Uint8ClampedArray(tex.data.buffer.slice(0)), tex.w, tex.h), 0, 0);
+    band.style.setProperty("--portrait", `url(${canvas.toDataURL()})`);
   }
 
   /** Roads out are signposts: over the road when you face it, pinned to the screen's edge when you do not. */
@@ -650,7 +652,9 @@ export function createPlay(main, ctx) {
       const mid = place.tiles.reduce((m, [x, y]) => [m[0] + x / place.tiles.length, m[1] + y / place.tiles.length], [0, 0]);
       const at = world.project(mid, 1.7);
       const half = (el.offsetWidth || 120) / 2 + 12;
-      const bottom = h - (band.offsetHeight || 0) - 30;
+      // The story is in the bottom-left corner on a wide screen and at the top on a phone.
+      const phone = w < 700;
+      const bottom = phone ? h - 190 : h - 40;
       let x, y, side;
       if (at && at.x > half && at.x < w - half) {
         x = at.x;
@@ -661,7 +665,7 @@ export function createPlay(main, ctx) {
         const bearing = Math.atan2(mid[1] + 0.5 - state.y, mid[0] + 0.5 - state.x) - state.angle;
         side = Math.sin(bearing) < 0 ? "left" : "right";
         x = side === "left" ? half : w - half;
-        y = Math.max(170, Math.min(bottom, h * (w < 700 ? 0.36 : 0.45)));
+        y = Math.max(170, Math.min(bottom, h * (phone ? 0.6 : 0.42)));
       }
       el.style.transform = `translate(${Math.round(x)}px, ${Math.round(y)}px)`;
       el.dataset.side = side;
@@ -726,6 +730,7 @@ export function createPlay(main, ctx) {
     const tab = TABS.find(([, , k]) => k.toLowerCase() === key);
     if (tab) return event.preventDefault(), openJournal(tab[0]);
     if (key === "u") return event.preventDefault(), ctx.undo();
+    if (key === "h") return event.preventDefault(), fold();
     if (key === "escape" && conversation) return event.preventDefault(), (conversation = null), idle();
     const n = Number(event.key);
     if (n >= 1 && n <= 9 && !telling()) {
@@ -737,6 +742,17 @@ export function createPlay(main, ctx) {
     }
   }
 
+  /**
+   * Fold the story down to one line, or open it again. Folding only ever
+   * hides narration: a conversation or a trial always shows in full.
+   */
+  function fold(on = root.dataset.fold !== "true") {
+    root.dataset.fold = String(on);
+    const button = $(".story-fold");
+    button.setAttribute("aria-pressed", String(on));
+    button.querySelector("span").textContent = on ? "Open" : "Fold";
+  }
+
   // ── Mount, sync, teardown ──────────────────────────────────────────────
   function mount() {
     main.className = "play-screen";
@@ -746,6 +762,10 @@ export function createPlay(main, ctx) {
     $(".hud-tale").textContent = flat(ep.title);
     portrait(null);
     $("#back-library").onclick = () => ctx.library();
+    $(".story-fold").onclick = (e) => {
+      e.stopPropagation();
+      fold();
+    };
     $("#undo").onclick = () => ctx.undo();
     $("#open-journal").onclick = () => (journalOpen ? closeJournal() : openJournal());
     $("#story-source").onclick = () => ctx.sources(ep.id);
@@ -759,8 +779,13 @@ export function createPlay(main, ctx) {
     $("[data-throw]").onclick = () => world?.toss();
     window.addEventListener("keydown", onKey);
     // Touch controls sit just above the storyteller's band, whatever its height.
-    bandObserver = new ResizeObserver(() => root.style.setProperty("--band-h", `${band.offsetHeight}px`));
+    // The story panel sits under the top row on a phone, however tall that row grows.
+    bandObserver = new ResizeObserver(() => {
+      root.style.setProperty("--band-h", `${band.offsetHeight}px`);
+      root.style.setProperty("--top-h", `${$(".hud-top").offsetHeight}px`);
+    });
     bandObserver.observe(band);
+    bandObserver.observe($(".hud-top"));
     world = createWorld({
       bridge,
       root,

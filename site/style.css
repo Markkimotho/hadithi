@@ -3606,3 +3606,86 @@ dialog .eyebrow { color: var(--hud-dim); font-family: var(--font-pixel); }
 dialog .button { border-radius: 0; clip-path: var(--notch); font-family: var(--font-pixel); }
 .dialog-close { color: var(--hud-ink); font-family: var(--font-pixel); }
 .toast { background: var(--hud-ink); color: var(--hud-edge); border: 0; box-shadow: 0 0 0 3px var(--hud-edge); clip-path: var(--notch); font: 600 var(--fs-ui-sm)/1.5 var(--font-pixel); }
+
+/* ── Reading text, and a story panel that leaves room to play ────────────
+   The pixel face is for short labels: titles, names, keys. Anything you
+   read runs in Atkinson Hyperlegible, a face made to be read at a glance.
+   The story keeps to a corner on a wide screen and to the top on a phone,
+   so the middle of the view and the hero's hands stay clear. With nothing
+   being told or asked it steps away entirely: the objective is already in
+   the quest panel. H folds it to one line. */
+:root { --font-read: var(--font-ui); }
+.story-line, .story-line .story-speaker, .story-notes li, .choice, .choice.quiet, .choice small, .choice .remembered-badge,
+.trial-hint, .trial-feedback, .puzzle-slots, .play-prompt, .play-bubble, .play-message, .hud-objective,
+.journal-drawer p, .journal-drawer li, .journal-drawer button, .journal-want p, .journal-hint,
+.ending-text, .ending-reflection, .ending-page p, .ending-page li,
+.tale-meta p, .title-tag, .title-foot, dialog p, dialog li, dialog dd, dialog label, dialog small, dialog td, .toast,
+.world-skill p, .world-loading {
+  font-family: var(--font-read);
+}
+.story-line { font-weight: 500; line-height: 1.45; letter-spacing: 0; }
+.story-line .story-speaker { font-weight: 700; }
+.choice { font-weight: 500; }
+.play-prompt { font-weight: 700; }
+.play-bubble { font-weight: 500; }
+.hud-objective { font-weight: 600; }
+
+.story-band {
+  left: 14px; right: auto; transform: none; bottom: max(14px, env(safe-area-inset-bottom));
+  width: min(470px, calc(36vw + 40px)); max-height: 42vh; grid-template-columns: 1fr; gap: 0;
+  padding: 14px 18px 12px; background: #15110de0; transition: opacity .2s, max-height .2s;
+}
+.story-band[data-tone="chapter"] { transform: none; }
+.story-portrait { display: none; }
+.story-head { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+.story-head .story-scene { flex: 1; min-width: 0; margin: 0; }
+.story-band:has(.story-portrait[data-who]:not([data-who="teller"])) .story-head::before {
+  /* The speaker's face sits beside their name. */
+  content: ""; flex: none; width: 44px; height: 44px; background: var(--portrait) center / contain no-repeat #2a2016;
+  image-rendering: pixelated; box-shadow: inset 0 0 0 2px var(--hud-edge), 0 0 0 2px var(--accent-deep);
+}
+.story-fold {
+  flex: none; display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 2px 8px;
+  border: 0; background: transparent; color: var(--hud-dim); font: 600 var(--fs-label)/1 var(--font-pixel);
+}
+.story-fold:hover, .story-fold:focus-visible { color: var(--accent); }
+.story-fold kbd { min-width: 22px; height: 22px; }
+.story-line { font-size: var(--fs-lead); }
+.story-next { margin-top: 2px; }
+
+/* Nothing to tell and nothing to choose: the panel steps away. */
+.story-band[data-state="idle"]:not(:has(.story-choices > *)) { opacity: 0; pointer-events: none; }
+/* Folded: one line of the telling, the rest out of the way. A conversation or trial always shows. */
+.play[data-fold="true"] .story-band[data-state="telling"] { max-height: none; opacity: .88; }
+.play[data-fold="true"] .story-band[data-state="telling"] .story-line {
+  display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; font-size: var(--fs-ui);
+}
+.play[data-fold="true"] .story-band[data-state="telling"] :is(.story-notes, .story-roll) { display: none; }
+
+/* The bag moves to the far corner, away from the story. */
+.hud-bag { bottom: max(14px, env(safe-area-inset-bottom)); right: 14px; }
+@media (pointer: coarse) {
+  .play-touch { bottom: max(18px, env(safe-area-inset-bottom)); }
+}
+
+@media (max-width: 700px) {
+  /* On a phone the story sits at the top, under a slimmer quest bar. */
+  .hud-quest { padding: 6px 10px 8px; }
+  .hud-quest .hud-tale, .hud-quest .hud-time { display: none; }
+  .hud-objective { margin: 0; }
+  /* Top row: the objective, then Journal, Undo and Quit. The minimap waits
+     above the touch buttons; the story sits just under the top row. */
+  .hud-quest { flex: 1; max-width: none; }
+  .hud-side { display: contents; }
+  .hud-buttons { display: flex; flex-wrap: nowrap; gap: 4px; }
+  .hud-buttons #story-source { display: none; }
+  .hud-buttons button { min-height: 44px; padding: 4px 8px; }
+  .hud-minimap { position: fixed; right: 8px; bottom: calc(max(18px, env(safe-area-inset-bottom)) + 150px); width: 84px; height: 84px; }
+  .story-band {
+    top: calc(var(--top-h, 60px) + 6px); bottom: auto; left: 8px; right: 8px; width: auto;
+    max-height: 32vh; padding: 10px 12px;
+  }
+  .story-line { font-size: var(--fs-body); }
+  .story-band[data-state="trial"], .story-band[data-state="conversation"] { max-height: 44vh; }
+  .hud-bag { top: auto; bottom: calc(max(18px, env(safe-area-inset-bottom)) + 130px); left: 8px; }
+}

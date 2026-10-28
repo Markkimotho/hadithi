@@ -724,25 +724,29 @@ export function createWorld({ bridge, root, paused, busy, events, motion, onErro
     w.stats = stats;
   }
 
-  /** The hero's hands at the bottom of the frame, swaying as they walk. */
+  /**
+   * The hero's hands at the bottom of the frame, swaying as they walk. They
+   * keep to the middle of the screen (about the centre 40% on a wide screen),
+   * so the story panel in the corner never covers them.
+   */
   function drawHands(fx) {
     const H = target.h,
       W = target.w;
-    const size = H * 0.46;
+    const size = Math.min(H * 0.4, W * 0.42);
     const sway = w.motion && w.moving ? Math.sin(w.bob) * size * 0.05 : 0;
     const lift = w.motion && w.moving ? Math.abs(Math.cos(w.bob)) * size * 0.05 : 0;
     const raise = fx.hands * size;
     const k = Math.min(1.15, 0.3 + w.light.day * 0.75 + w.light.torch * 0.45);
     const mul = [k * w.light.tint[0] * 0.95 + 0.05, k * w.light.tint[1] * 0.95 + 0.05, k * w.light.tint[2] * 0.95 + 0.05];
     const carrying = w.phys.carrying;
-    const inward = carrying ? size * 0.32 : 0;
+    const inward = carrying ? size * 0.22 : 0;
     const y = H - size * 0.82 + lift - raise - (carrying ? size * 0.3 : 0);
     if (carrying) {
       const sprite = w.art.sprites.get(spriteKey(carrying.kind, carrying.source.tint));
       if (sprite) blit(target, sprite.tex, W / 2 - size * 0.55 + sway, y - size * 0.35, size * 1.1, size * 1.1, { mul });
     }
-    blit(target, w.hand, W / 2 + size * 0.15 - inward + sway, y, size, size, { mul });
-    blit(target, w.hand, W / 2 - size * 1.15 + inward + sway, y, size, size, { mul, flip: true });
+    blit(target, w.hand, W / 2 + size * 0.02 - inward + sway, y, size, size, { mul });
+    blit(target, w.hand, W / 2 - size * 1.02 + inward + sway, y, size, size, { mul, flip: true });
   }
 
   /** Drop to a smaller frame when drawing is slow, and climb back when it is quick. */

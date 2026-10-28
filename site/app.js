@@ -117,7 +117,7 @@ function showHelp() {
       <section><h3>✧ Direction</h3><p>Once per journey you can turn the tale toward a different genre. It changes scenes, solutions, and endings, not just colours.</p></section>
     </div>
     <h3>Keyboard</h3>
-    <dl class="keys"><dt>W S · ↑ ↓</dt><dd>Walk forward and back (Shift to run)</dd><dt>A D</dt><dd>Step sideways</dd><dt>← → · mouse</dt><dd>Turn and look (click the view to hold the mouse; Esc lets go)</dd><dt>E · Space</dt><dd>Act on what the crosshair is on, talk, or go on with the story</dd><dt>1–9</dt><dd>Choose a line in a conversation</dd><dt>Q · F</dt><dd>Lift or set down · throw</dd><dt>J</dt><dd>Your journal (B, K, P, M for its pages)</dd><dt>U</dt><dd>Take back a step</dd><dt>?</dt><dd>This guide</dd></dl>`,
+    <dl class="keys"><dt>W S · ↑ ↓</dt><dd>Walk forward and back (Shift to run)</dd><dt>A D</dt><dd>Step sideways</dd><dt>← → · mouse</dt><dd>Turn and look (click the view to hold the mouse; Esc lets go)</dd><dt>E · Space</dt><dd>Act on what the crosshair is on, talk, or go on with the story</dd><dt>1–9</dt><dd>Choose a line in a conversation</dd><dt>Q · F</dt><dd>Lift or set down · throw</dd><dt>H</dt><dd>Fold the story to one line, or open it again</dd><dt>J</dt><dd>Your journal (B, K, P, M for its pages)</dd><dt>U</dt><dd>Take back a step</dd><dt>?</dt><dd>This guide</dd></dl>`,
   );
 }
 
