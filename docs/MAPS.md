@@ -2,8 +2,9 @@
 
 Every scene of every tale has a walkable map in `site/maps/<tale>/<scene>.json`.
 These are Tiled JSON maps and the source of truth: open them in Tiled as
-orthogonal maps with 32 × 32 tiles. Each map embeds its tale's terrain tileset,
-which points to `site/art/<tale>/tiles.svg`. `site/maps/<tale>/index.js` lists
+orthogonal maps with 32 × 32 tiles. Each map embeds its tale's Tiled palette,
+which points to `site/art/<tale>/tiles.svg`. The palette is for the editor only:
+the game turns the same map into a first-person level (`docs/WORLD.md`). `site/maps/<tale>/index.js` lists
 the maps for the world to load. It is generated, so don't edit it by hand.
 
 ## Layers
@@ -11,8 +12,9 @@ the maps for the world to load. It is generated, so don't edit it by hand.
 - `ground`: the tile grid. Tile properties map atlas frames back to the
   runtime glyphs in `site/world/layout.js` (`.` earth, `,` grass, `~` slow
   water, `w` deep water, `#` wall, `T` tree, and so on). The glyph decides
-  walking, blocking, footstep sound and slowness. The tale's tileset decides
-  the look.
+  walking, blocking, footstep sound and slowness. In first person, `#`, `h`,
+  `T`, `b` and the void are walls 2.5 m tall; `=` fences and `o` rocks stand
+  as things; everything else is floor, painted in the tale's palette.
 - `objects`: objects of these types:
   - `spawn`: where you arrive. The name is the scene you come from; `start`
     is the fallback.
@@ -21,12 +23,13 @@ the maps for the world to load. It is generated, so don't edit it by hand.
     is a conversation; walking up and pressing E offers them as lines.
   - `exit`: tiles that leave the scene by a plain TRAVEL action when you
     step on them.
-  - `prop`: scenery and loose things. `kind` picks the drawing. `w`, `h` and
-    `block` give the footprint. `physics: "crate" | "jar"` makes it a Planck
+  - `prop`: scenery and loose things. `kind` picks the painter
+    (`docs/ART-SPEC.md`). `w`, `h` and `block` give the footprint. Buildings
+    and great trunks become walls; marks on the ground are painted into the
+    floor; everything else stands as one billboard per cell it covers. `physics: "crate" | "jar"` makes it a Planck
     body you can push, lift or throw. `item: "<id>"` hides it once the story
     puts that item in your bag.
-  - `person`: people and animals. A `kind` that has a rig in the tale is
-    drawn as an animated puppet. `wander` lets them amble, `perch` raises them
+  - `person`: people and animals, painted with walk frames. `wander` lets them amble, `perch` raises them
     (Anansi up the trunk, a cat on a wall), and `when: "<flag>"` shows them
     only once the story has brought them.
   - `flow`: a rectangle with a `force` in metres per second squared: a river
