@@ -20,7 +20,7 @@
   - **Trials.** Every check is a physical trial calibrated to its dice odds (`evals/skills.mjs`), and the scale is exactly as fair as an average roll.
   - **Prose.** All four tales pass the strict voice lint. The lint's rhythm rule now judges the storyteller's own sentences, not dialogue or journal notes.
 - **Next:** Mark's desktop and phone playtest of all four tales. The third-edition work is pushed but has not been deployed.
-- The third-edition runtime is not deployed yet. Verification results are recorded in the root [PLAN.md](../PLAN.md).
+Verification results are recorded in [PLAN.md](PLAN.md).
 
 The original plan follows.
 
@@ -274,7 +274,7 @@ Work runs in parallel worktrees where phases are independent, per CLAUDE.md.
 | 6 | Orchestra | 15 maps; skills sneak, formation, stack, rhythm; animal followers | 4 |
 | 7 | Olive Jar | 13 maps; skills carry, sneak, scale, rhythm, chase; crowd sim; moonrise light | 4 |
 | 8 | Polish | Spatial audio, footsteps, haptics, perf pass, offline precache of vendor and fonts, lazy-load world (Phaser only after "Enter the story") | 5–7 |
-| 9 | Docs + deploy | ENGINE.md world section, WORLD.md, VOICE.md, ART-SPEC.md, README, DEPLOYMENT.md; Render deploy | all |
+| 9 | Docs + release | ENGINE.md world section, WORLD.md, VOICE.md, ART-SPEC.md, README; release | all |
 
 Phases 5, 6, and 7 run as three parallel worktrees. They meet only at the bridge contract and `skills/` core.
 
@@ -370,7 +370,7 @@ Phases 5, 6, and 7 run as three parallel worktrees. They meet only at the bridge
 - Read the courtyard, river, and council text aloud.
 - Answer "does it feel like a game?" before tales 2–4 start.
 
-**Deploy:** Render static site with build `npm ci && npm test && npm run build` and publish dir `dist`. After each phase, trigger a manual deploy (auto-deploy is not firing; see `docs/DEPLOYMENT.md`) and run a live smoke test: open each tale, walk, attempt one skill, reload, and resume.
+**Release:** a static build (`npm ci && npm test && npm run build`, publish `dist`), smoke-tested after each phase: open each tale, walk, attempt one skill, reload, and resume.
 
 ---
 
