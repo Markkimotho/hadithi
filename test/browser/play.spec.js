@@ -3,7 +3,7 @@
 import { test, expect } from "@playwright/test";
 import { walkthroughs, commandsOf } from "../walkthroughs.js";
 import { episodeById, episodes } from "../../site/stories.js";
-import { url, enter, save, story, settle, walk, perform, watchErrors } from "./helpers.js";
+import { url, enter, save, story, settle, walk, perform, watchErrors, shot } from "./helpers.js";
 
 const wisdom = episodeById("wisdom");
 /** Tales with a world for every scene. The shelf test checks this list against the game. */
@@ -27,24 +27,24 @@ for (const tale of PLAYABLE)
     }
   });
 
-test("the shelf offers every tale with a world, and marks any still being retold", async ({ page }, info) => {
+test("the title screen offers every tale with a world, and its menu opens sources and the chronicle", async ({ page }, info) => {
   const errors = watchErrors(page);
   await page.goto("/?nosw");
-  await expect(page.getByRole("heading", { name: /Four old stories/ })).toBeVisible();
-  await expect(page.locator(".story-card")).toHaveCount(4);
+  await expect(page.getByRole("heading", { name: "Hadithi", level: 1 })).toBeVisible();
+  await expect(page.locator(".tale-card")).toHaveCount(4);
   for (const tale of PLAYABLE) await expect(page.locator(`[data-start="${tale}"]`)).toBeVisible();
-  for (const ep of episodes.filter((e) => !PLAYABLE.includes(e.id))) {
-    await expect(page.locator(`.story-card.${ep.id}`)).toHaveClass(/retelling/);
-    await expect(page.locator(`[data-start="${ep.id}"]`)).toHaveCount(0);
-  }
-  await page.screenshot({ path: `artifacts/collection-${info.project.name}.png`, fullPage: true, animations: "disabled" });
-  await page.getByRole("button", { name: "Middle East", exact: true }).click();
-  await expect(page.locator(".story-card")).toHaveCount(1);
-  await page.getByRole("button", { name: "All tales", exact: true }).click();
-  await page.locator("#footer-sources").click();
+  for (const ep of episodes.filter((e) => !PLAYABLE.includes(e.id))) await expect(page.locator(`[data-start="${ep.id}"]`)).toHaveCount(0);
+  // Every card gets a still of its tale, painted by the game's renderer.
+  await expect.poll(() => page.evaluate(() => [...document.querySelectorAll(".tale-thumb")].every((c) => c.width === 160))).toBe(true);
+  await shot(page, `title-${info.project.name}`, { fullPage: true });
+  // Arrow keys move between tales.
+  await page.locator('[data-start="wisdom"]').focus();
+  await page.keyboard.press("ArrowRight");
+  await expect(page.locator('.tale-card[data-tale="tide"]')).toHaveClass(/focused/);
+  await page.locator("#title-sources").click();
   await expect(page.getByRole("link", { name: "Read the source collection ↗" })).toHaveCount(4);
   await page.getByRole("button", { name: "Close dialog" }).click();
-  await page.locator("#shelf-chronicle").click();
+  await page.locator("#title-chronicle").click();
   await expect(page.locator(".ending-list .secret")).toHaveCount(4);
   await page.getByRole("button", { name: "Close dialog" }).click();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
@@ -54,13 +54,14 @@ test("the shelf offers every tale with a world, and marks any still being retold
 test("a telling opens with the storyteller: opening line, chapter card, the scene, then what you want", async ({ page }, info) => {
   const errors = watchErrors(page);
   await enter(page, "wisdom", { motion: true });
-  // The site chrome steps aside; the world fills the screen.
-  await expect(page.locator(".masthead")).toBeHidden();
+  // The world fills the screen, with the HUD over it.
+  await expect(page.locator(".hud-quest")).toBeVisible();
+  await expect(page.locator(".hud-crosshair")).toBeVisible();
   await expect(page.locator(".story-band")).toHaveAttribute("data-tone", "opening");
   await expect(page.locator(".story-line")).toContainText("ask him for advice.", { timeout: 6000 });
   await page.keyboard.press("Space");
   await expect(page.locator(".play-chapter h2")).toHaveText(wisdom.scenes.courtyard.title);
-  await page.screenshot({ path: `artifacts/chapter-${info.project.name}.png`, animations: "disabled" });
+  await shot(page, `chapter-${info.project.name}`);
   await expect(page.locator(".story-band")).toHaveAttribute("data-tone", "scene", { timeout: 4000 });
   await expect(page.locator(".story-line")).toContainText("Cold ash");
   await expect(page.locator(".story-line")).toContainText(wisdom.scenes.courtyard.text.slice(-12), { timeout: 6000 });
@@ -83,7 +84,9 @@ test("looking notes the clue; taking something sends it to the bag", async ({ pa
   await expect(page.locator(".story-notes")).toContainText("Into your bag: Palm cord");
   await page.keyboard.press("b");
   await expect(page.locator(".journal-drawer")).toBeVisible();
-  await expect(page.getByRole("button", { name: "Palm cord" })).toBeVisible();
+  await expect(page.locator(".journal-drawer").getByRole("button", { name: "Palm cord" })).toBeVisible();
+  // The same thing sits in the HUD bag.
+  await expect(page.locator('.hud-bag [data-item="cord"]')).toBeVisible();
   await page.keyboard.press("Escape");
   await expect(page.locator(".journal-drawer")).toBeHidden();
 });
@@ -98,7 +101,7 @@ test("a person with several things to say opens a conversation; their words appe
   await expect(page.locator(".story-speaker")).toHaveText("The potter");
   const lines = page.locator(".story-choices .choice:not(.quiet)");
   await expect(lines).toHaveCount(2); // the remembered line needs an echo
-  await page.screenshot({ path: `artifacts/conversation-${info.project.name}.png`, animations: "disabled" });
+  await shot(page, `conversation-${info.project.name}`);
   await page.keyboard.press("1");
   await expect(page.locator(".play-bubble")).toBeVisible();
   await expect(page.locator(".play-bubble b")).toHaveText("The potter");
@@ -136,7 +139,7 @@ test("an ending is a closing page; its echo is remembered in the next telling", 
   await walk(page, "childStory");
   await expect.poll(async () => (await save(page)).actions.at(-1).id).toBe("childStory");
   await page.locator("#back-library").click();
-  await expect(page.locator(".story-card.wisdom .card-progress")).toContainText("◈ 1 echo");
+  await expect(page.locator('.tale-card[data-tale="wisdom"] .tale-progress')).toContainText("◈ 1");
 });
 
 test("a trial is played in the world, by hand, and its outcome is what the story records", async ({ page }, info) => {
@@ -147,7 +150,7 @@ test("a trial is played in the world, by hand, and its outcome is what the story
   await expect.poll(async () => (await page.evaluate(() => window.__hadithi.world()))?.trial?.kind, { timeout: 20000 }).toBe("leap");
   await expect(page.locator(".story-band")).toHaveAttribute("data-tone", "trial");
   await expect(page.locator(".trial-hint")).toContainText("ring closes");
-  await page.screenshot({ path: `artifacts/trial-${info.project.name}.png`, animations: "disabled" });
+  await shot(page, `trial-${info.project.name}`);
   // Press as each ring closes on its stone.
   for (let i = 0; i < 600; i++) {
     const t = (await page.evaluate(() => window.__hadithi.world()))?.trial;
@@ -171,7 +174,7 @@ test("stepping back from a trial leaves the story untouched", async ({ page }) =
   const before = (await save(page)).actions.length;
   page.evaluate(() => window.__hadithi.walkTo("leap"));
   await expect(page.locator(".story-band")).toHaveAttribute("data-tone", "trial", { timeout: 20000 });
-  await page.getByRole("button", { name: "Step back" }).click();
+  await page.getByRole("button", { name: "Back off" }).click();
   await expect(page.locator(".story-band")).toHaveAttribute("data-state", "idle");
   expect((await save(page)).actions.length).toBe(before);
   expect((await page.evaluate(() => window.__hadithi.world())).trial).toBeNull();
@@ -198,7 +201,7 @@ test("the journal holds the bag, what you know, people, the map, and the turn of
   for (const id of ["takeCord", "market", "takeCloth"]) await perform(page, { id });
   await perform(page, { type: "COMBINE", id: "sling" });
   await page.keyboard.press("b");
-  await page.getByRole("button", { name: "Carrying sling", exact: true }).click();
+  await page.locator(".journal-drawer").getByRole("button", { name: "Carrying sling", exact: true }).click();
   await expect(page.locator(".item-detail")).toContainText("leaves both hands free");
   await page.locator("#tab-people").click();
   await expect(page.locator(".people-list")).toContainText("potter");
@@ -228,7 +231,7 @@ test("shared ground: the well is part of the market, and its choices sit in the 
 
 test("comfort settings persist and the guide explains walking and trials", async ({ page }) => {
   await page.goto("/?nosw");
-  await page.getByRole("button", { name: "Open game settings" }).click();
+  await page.locator("#title-settings").click();
   await page.getByLabel("Scene motion").uncheck();
   await page.getByLabel("Physical trials").uncheck();
   await page.getByLabel("Story text size").selectOption("larger");
@@ -252,7 +255,7 @@ test("portable save export and import reconstruct the journey", async ({ page })
   await page.keyboard.press("Escape");
   await page.locator("#back-library").click();
   await page.evaluate(() => localStorage.removeItem("hadithi.v1.save.wisdom"));
-  await page.getByRole("button", { name: "Open game settings" }).click();
+  await page.locator("#title-settings").click();
   await page.locator("#import-file").setInputFiles(file);
   await expect(page.locator('.world-stage[data-ready="true"]')).toBeVisible();
   expect((await save(page)).actions).toEqual([{ type: "TAKE_ITEM", id: "takeCord" }]);
@@ -275,7 +278,7 @@ test("first-edition saves are carried forward; unknown editions start fresh", as
   await expect(page.locator('.world-stage[data-ready="true"]')).toHaveAttribute("data-scene", "courtyard");
 });
 
-test("no serious accessibility violations on the shelf, the tale, the journal and an ending", async ({ page }) => {
+test("no serious accessibility violations on the title screen, the tale, the journal and an ending", async ({ page }) => {
   const { default: AxeBuilder } = await import("@axe-core/playwright");
   const audit = async (where) => {
     const result = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze();
@@ -284,7 +287,7 @@ test("no serious accessibility violations on the shelf, the tale, the journal an
   };
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/?nosw");
-  await audit("shelf");
+  await audit("title");
   await enter(page);
   await audit("telling");
   await settle(page);
@@ -318,7 +321,7 @@ test("all text is at least 14px and nothing scrolls sideways at 320px", async ({
     await page.setViewportSize({ width, height: 800 });
     await page.goto("/?nosw");
     await page.evaluate(() => document.fonts.ready);
-    await check("shelf", width);
+    await check("title", width);
     await enter(page);
     await check("telling", width);
     await settle(page);

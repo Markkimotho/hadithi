@@ -1,10 +1,11 @@
 import { Game, newSeed, seedCode, parseSeedCode } from "./game.js";
-import { episodes, episodeById, regions } from "./stories.js";
+import { episodes, episodeById } from "./stories.js";
 import { read, write, perTale, chronicle, MAX_CHRONICLE, storageFailed, onStorageFailure } from "./ui/storage.js";
 import * as audio from "./ui/audio.js";
 import { escape } from "./ui/widgets.js";
 import { createPlay } from "./ui/play.js";
 import { playable } from "./world/bridge.js";
+import { mountTitleView, paintThumb } from "./ui/title.js";
 
 const $ = (selector) => document.querySelector(selector);
 const flat = (title) => title.replace("\n", " ");
@@ -33,7 +34,7 @@ const recorded = read("recorded", {});
 // ── Session UI state ──────────────────────────────────────────────────────
 let game = null,
   play = null,
-  filter = "All tales",
+  titleView = null,
   endingNews = null,
   toastTimer;
 const main = $("#main"),
@@ -63,19 +64,20 @@ function applySettings() {
   audio.configure({ sfx: settings.sound, ambience: settings.ambience, volume: settings.volume / 100 });
   const on = settings.sound || settings.ambience;
   const button = $("#sound-link");
+  if (!button) return;
   button.setAttribute("aria-pressed", String(on));
-  button.querySelector("span").textContent = on ? "Sound on" : "Sound off";
+  button.textContent = on ? "Sound: on" : "Sound: off";
 
 }
 applySettings();
-$("#sound-link").addEventListener("click", () => {
+function toggleSound() {
   const on = !(settings.sound || settings.ambience);
   settings.sound = on;
   settings.ambience = on;
   saveSettings();
   audio.sfx("click");
   toast(on ? "Sound on: effects and ambience. Adjust in Settings." : "Sound off.");
-});
+}
 document.addEventListener("visibilitychange", () => (document.hidden ? audio.pause() : audio.resume()));
 
 // ── Dialogs ───────────────────────────────────────────────────────────────
@@ -102,14 +104,12 @@ function sources(id) {
       .join("")}<p class="fineprint">Source records checked ${escape(episodes[0].source.checked)}. International edition rights and regional editorial review remain release checks. Illustrations, sound, game text, and interface were created for Hadithi. No source illustrations or ebook text are included.</p>`,
   );
 }
-$("#sources-link").addEventListener("click", () => sources());
-$("#footer-sources").addEventListener("click", () => sources());
 
 function showHelp() {
   showDialog(
     "How a telling works",
     `<div class="help-grid">
-      <section><h3>⌕ Walk, look, act</h3><p>Walk anywhere: it costs nothing. Glints mark what you can look at, take or talk to. Walk up and press E. Looking is free; doing takes a turn, and the world moves when turns pass. Weather, tides, patrols and moonrise do not wait.</p></section>
+      <section><h3>⌕ Walk, look, act</h3><p>Walk anywhere: it costs nothing. A gold diamond hangs over everything you can look at, take or talk to. Walk up, put the crosshair on it, and press E. On a phone, tap it and you walk there. Looking is free; doing takes a turn, and the world moves when turns pass. Weather, tides, patrols and moonrise do not wait.</p></section>
       <section><h3>⚄ Trials</h3><p>Leaps, climbs and arguments are played by hand. Your stats make them easier, and the odds are shown first. Turn trials off in Settings and the dice decide instead. <b>One try</b> trials cannot be repeated. <b>Retry</b> trials open again once your odds improve. Failing always moves the story on. Taking a step back cannot change how a trial went.</p></section>
       <section><h3>⟷ Put things together</h3><p>Open your journal (J), go to <b>What you know</b>, and choose two things that fit. A true connection opens new conversations, arguments and endings. A wrong one costs nothing.</p></section>
       <section><h3>◈ Echoes</h3><p>Every ending teaches you something. Echoes carry that knowledge into your next telling and reveal <b>remembered</b> actions that were not there before. Each tale hides one ending that only remembered knowledge can reach.</p></section>
@@ -117,10 +117,9 @@ function showHelp() {
       <section><h3>✧ Direction</h3><p>Once per journey you can turn the tale toward a different genre. It changes scenes, solutions, and endings, not just colours.</p></section>
     </div>
     <h3>Keyboard</h3>
-    <dl class="keys"><dt>WASD · arrows</dt><dd>Walk (Shift to run)</dd><dt>E · Space</dt><dd>Act, talk, or go on with the story</dd><dt>1–9</dt><dd>Choose a line in a conversation</dd><dt>Q · F</dt><dd>Lift or set down · throw</dd><dt>J</dt><dd>Your journal (B, K, P, M for its pages)</dd><dt>U</dt><dd>Take back a step</dd><dt>?</dt><dd>This guide</dd></dl>`,
+    <dl class="keys"><dt>W S · ↑ ↓</dt><dd>Walk forward and back (Shift to run)</dd><dt>A D</dt><dd>Step sideways</dd><dt>← → · mouse</dt><dd>Turn and look (click the view to hold the mouse; Esc lets go)</dd><dt>E · Space</dt><dd>Act on what the crosshair is on, talk, or go on with the story</dd><dt>1–9</dt><dd>Choose a line in a conversation</dd><dt>Q · F</dt><dd>Lift or set down · throw</dd><dt>J</dt><dd>Your journal (B, K, P, M for its pages)</dd><dt>U</dt><dd>Take back a step</dd><dt>?</dt><dd>This guide</dd></dl>`,
   );
 }
-$("#help-link").addEventListener("click", showHelp);
 
 function showSettings() {
   const row = (id, label, hint, control) =>
@@ -139,7 +138,7 @@ function showSettings() {
     ${row("text-size", "Story text size", "Applies to story and journal text.", `<select id="text-size">${[["normal", "Standard"], ["large", "Large"], ["larger", "Larger"]].map(([v, l]) => `<option value="${v}" ${settings.size === v ? "selected" : ""}>${l}</option>`).join("")}</select>`)}
     ${row("assist", "Storyteller’s grace", "New journeys add +2 to every dice check. Shown in every roll.", check("assist", settings.assist))}
     ${row("carry", "Carry echoes", "New journeys remember what earlier endings taught you.", check("carry", settings.carryEchoes))}
-    <p class="fineprint">Walk with WASD or the arrows, act with E or Space, J for your journal, U to take back a step, ? for the guide. Progress saves after every action on this browser.</p>
+    <p class="fineprint">W and S walk, A and D step aside, the arrows or the mouse turn. E or Space acts. J opens your journal, U takes back a step, ? opens the guide. Progress saves after every action on this browser.</p>
     <div class="dialog-actions"><button class="button secondary" id="import-save">Import a journey</button><button class="button secondary" id="open-help">How to play</button></div>`,
   );
   for (const [id, key] of [["sound", "sound"], ["ambience", "ambience"], ["motion", "motion"], ["assist", "assist"], ["carry", "carryEchoes"], ["trials", "trials"]])
@@ -161,7 +160,6 @@ function showSettings() {
   $("#import-save").addEventListener("click", () => $("#import-file").click());
   $("#open-help").addEventListener("click", showHelp);
 }
-$("#settings-link").addEventListener("click", showSettings);
 $("#import-file").addEventListener("change", async (event) => {
   const file = event.target.files?.[0];
   if (!file) return;
@@ -223,9 +221,8 @@ function showChronicle(id) {
     "Your chronicle",
   );
 }
-$("#chronicle-link").addEventListener("click", () => showChronicle());
 
-// ── The shelf ─────────────────────────────────────────────────────────────
+// ── The title screen ──────────────────────────────────────────────────────
 function endingSlots(ep) {
   return Object.entries(ep.endings)
     .map(([id, e]) => {
@@ -238,46 +235,74 @@ function library() {
   play?.destroy();
   play = null;
   game = null;
+  titleView?.destroy();
   document.body.classList.remove("playing");
   audio.setAmbience("none");
-  main.className = "collection";
+  main.className = "title-screen";
   delete main.dataset.theme;
-  document.title = "Hadithi · Old tales you can play";
+  document.title = "Hadithi · Old tales you can walk into";
   const total = episodes.reduce((n, ep) => n + Object.keys(ep.endings).length, 0);
-  const secrets = episodes.reduce((n, ep) => n + Object.values(ep.endings).filter((e) => e.secret).length, 0);
   const found = Object.values(discoveries).reduce((n, list) => n + list.length, 0);
-  main.innerHTML = `<section class="collection-intro"><div class="intro-copy"><div class="edition"><span class="small-star">✳</span> Third edition <span class="rule"></span> ${episodes.length} tales</div><h1>Four old stories,<br>and <em>you in each one.</em></h1><p>Chase Anansi and his pot into the rain. Ride a turtle down to the sea palace. Scare robbers out of a house with a donkey, a dog, a cat and a rooster. Win back a jar of gold with a children’s game.</p><div class="intro-meta"><span>${episodes.length} tales</span><span>${total - secrets} endings, ${secrets} hidden</span><span>Saves as you go</span></div></div><div class="atlas-seal" aria-hidden="true"><span class="seal-top">Hadithi</span><div class="compass"><span class="compass-letter north">N</span><span class="compass-letter east">E</span><span class="compass-letter south">S</span><span class="compass-letter west">W</span><svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="90"/><circle cx="100" cy="100" r="74"/><path d="m100 12 12 76 76 12-76 12-12 76-12-76-76-12 76-12z"/><path class="needle" d="m100 28 12 60 60 12-72 0zM100 172l-12-60-60-12h72z"/><path d="m46 46 54 32 54-32-32 54 32 54-54-32-54 32 32-54z"/><circle cx="100" cy="100" r="8"/></svg></div><span class="seal-bottom">Ghana · Japan · Germany · Baghdad</span></div></section>
-  <section class="shelf"><div class="shelf-header"><div><span class="eyebrow">Pick a tale</span><h2>The collection</h2></div><button class="discovery-count" id="shelf-chronicle">${found} of ${total} endings found · Chronicle ↗</button></div><div class="filters" role="group" aria-label="Filter stories">${["All tales", ...regions]
-    .map((f) => `<button class="filter ${filter === f ? "active" : ""}" data-filter="${f}" aria-pressed="${filter === f}">${f}</button>`)
-    .join("")}<span class="filter-note">Free. No account.</span></div><div class="story-grid">${episodes
-    .filter((ep) => filter === "All tales" || ep.region === filter)
+  main.innerHTML = `<canvas class="title-view" aria-hidden="true"></canvas><div class="title-shade" aria-hidden="true"></div>
+  <header class="title-head"><h1 class="title-logo">Hadithi</h1><p class="title-tag">Four old tales. Walk into one.</p></header>
+  <div class="title-tales" role="list" aria-label="The tales">${episodes
     .map((ep) => {
       const open = ready.has(ep.id);
       const save = open && read(`save.${ep.id}`, null);
       const echoes = knownEchoes[ep.id].length;
       const marks = earnedMarks[ep.id].length;
-      return `<article class="story-card ${ep.id}${open ? "" : " retelling"}"><div class="cover"><img src="./assets/${ep.id}.svg" alt="" /><div class="cover-top"><span>Tale ${Number(ep.number)}</span><span class="cover-region">${ep.region}</span></div><div class="cover-caption"><span>${escape(ep.genre)}</span><h3>${escape(ep.title).replace("\n", "<br>")}</h3></div><span class="cover-corner" aria-hidden="true">✧</span></div><div class="card-body"><div class="story-origin">${escape(ep.tradition)} <span>${ep.duration}</span></div><p>${escape(ep.hook)}</p><div class="card-bottom">${
-        open
-          ? `<button class="button start-button" data-start="${ep.id}">${save ? "Go on with the tale" : "Enter the story"} <span>→</span></button>`
-          : `<span class="retelling-note">Being retold for the world. Soon.</span>`
-      }<button class="source-button" data-source="${ep.id}" aria-label="Source notes for ${escape(flat(ep.title))}">ⓘ</button></div><div class="card-progress"><span class="slots" aria-label="${discoveries[ep.id].length} of ${Object.keys(ep.endings).length} endings found">${endingSlots(ep)}</span><span>${echoes ? `◈ ${echoes} echo${echoes === 1 ? "" : "es"}` : "No echoes yet"}</span><span>★ ${marks}/${ep.marks.length}</span></div>${
-        open ? `<div class="card-foot"><span>${save ? "Saved in this browser" : "No account needed"}</span><button class="new-run" data-new="${ep.id}">${save ? "Begin again" : "Journey options"}</button></div>` : ""
-      }</div></article>`;
+      return `<article class="tale-card" role="listitem" data-tale="${ep.id}" tabindex="-1">
+        <canvas class="tale-thumb" aria-hidden="true"></canvas>
+        <div class="tale-meta"><span class="tale-origin">Tale ${Number(ep.number)} · ${escape(ep.region)}</span><h2>${escape(flat(ep.title))}</h2><p>${escape(ep.hook)}</p>
+        <div class="tale-progress"><span class="slots" aria-label="${discoveries[ep.id].length} of ${Object.keys(ep.endings).length} endings found">${endingSlots(ep)}</span><span>${echoes ? `◈ ${echoes}` : ""}</span><span>★ ${marks}/${ep.marks.length}</span></div>
+        <div class="tale-actions">${
+          open
+            ? `<button class="title-button primary" data-start="${ep.id}">${save ? "Continue" : "Play"}</button><button class="title-button" data-new="${ep.id}">${save ? "Start over" : "Options"}</button>`
+            : `<span class="retelling-note">Not ready yet.</span>`
+        }<button class="title-button" data-source="${ep.id}" aria-label="Where ${escape(flat(ep.title))} comes from">Source</button></div></div>
+      </article>`;
     })
-    .join("")}</div></section><section class="how-to"><span class="how-number">How to play</span><div><b>01. Walk and look.</b><p>Go where the glints are. Looking costs nothing.</p></div><div><b>02. Act it out.</b><p>Leap, climb, argue. Your hands decide.</p></div><div><b>03. Remember.</b><p>Each ending echoes into the next telling.</p></div><button class="how-help" id="shelf-help">The full guide ↗</button></section>`;
-  bind("[data-filter]", (el) => {
-    filter = el.dataset.filter;
-    library();
-    $(`[data-filter="${filter}"]`).focus({ preventScroll: true });
-  });
+    .join("")}</div>
+  <nav class="title-menu" aria-label="Menu"><button id="title-chronicle">Chronicle <small>${found}/${total}</small></button><button id="title-help">How to play</button><button id="title-settings">Settings</button><button id="sound-link" aria-pressed="false">Sound: off</button><button id="title-sources">Sources</button></nav>
+  <p class="title-foot">Hadithi means stories, in Swahili. Retold from public-domain collections. Free. No account.</p>`;
+  applySettings();
   bind("[data-start]", (el) => start(el.dataset.start));
   bind("[data-new]", (el) => newJourney(el.dataset.new));
   bind("[data-source]", (el) => sources(el.dataset.source));
-  $("#shelf-chronicle").onclick = () => showChronicle();
-  $("#shelf-help").onclick = showHelp;
+  $("#title-chronicle").onclick = () => showChronicle();
+  $("#title-help").onclick = showHelp;
+  $("#title-settings").onclick = showSettings;
+  $("#title-sources").onclick = () => sources();
+  $("#sound-link").onclick = toggleSound;
+  // The backdrop shows whichever tale you are looking at.
+  titleView = mountTitleView(main.querySelector(".title-view"), settings.motion);
+  const cards = [...main.querySelectorAll(".tale-card")];
+  const focusTale = (card) => {
+    cards.forEach((c) => c.classList.toggle("focused", c === card));
+    titleView.show(episodeById(card.dataset.tale));
+  };
+  for (const card of cards) {
+    card.addEventListener("pointerenter", () => focusTale(card));
+    card.addEventListener("focusin", () => focusTale(card));
+  }
+  focusTale(cards.find((c) => read(`save.${c.dataset.tale}`, null)) ?? cards[0]);
+  // Still frames for the cards, one at a time so the page stays responsive.
+  cards.forEach((card, i) =>
+    setTimeout(() => {
+      if (card.isConnected) paintThumb(card.querySelector(".tale-thumb"), episodeById(card.dataset.tale));
+    }, 60 * (i + 1)),
+  );
 }
-$("#brand").addEventListener("click", library);
-$("#library-link").addEventListener("click", library);
+// Arrow keys move between tales on the title screen.
+document.addEventListener("keydown", (event) => {
+  if (game || modal.open || !["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(event.key)) return;
+  const cards = [...document.querySelectorAll(".tale-card")];
+  if (!cards.length) return;
+  const at = cards.findIndex((c) => c.classList.contains("focused"));
+  const next = cards[(at + (event.key === "ArrowLeft" || event.key === "ArrowUp" ? cards.length - 1 : 1)) % cards.length];
+  event.preventDefault();
+  (next.querySelector("[data-start]") ?? next).focus();
+});
 
 /** A shared link can fix the dice: ?seed=CODE starts new journeys with it. */
 const linkSeed = parseSeedCode(new URLSearchParams(location.search).get("seed"));
@@ -307,6 +332,8 @@ function start(id, options = null) {
 
 /** Put a game on screen: the world, the storyteller, the journal. */
 function openTale(next) {
+  titleView?.destroy();
+  titleView = null;
   play?.destroy();
   game = next;
   endingNews = null;
@@ -492,7 +519,7 @@ document.addEventListener("keydown", (event) => {
     return;
   }
   // S walks south while a tale is open; it toggles sound only on the shelf.
-  if (!game && event.key.toLowerCase() === "s" && !event.shiftKey) $("#sound-link").click();
+  if (!game && event.key.toLowerCase() === "s" && !event.shiftKey) toggleSound();
 });
 
 if ("serviceWorker" in navigator && location.protocol.startsWith("http") && !/[?&]nosw\b/.test(location.search))
@@ -504,10 +531,12 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http") && !/[?
 // It cannot change story state or move the hero except by walking.
 if (new URLSearchParams(location.search).has("worldtest")) {
   window.__hadithi = {
-    walkTo: (id) => play?.world?.walkTo(id, true) ?? Promise.resolve(false),
+    walkTo: (id, attempt = true) => play?.world?.walkTo(id, attempt) ?? Promise.resolve(false),
     world: () => play?.world?.inspect() ?? null,
     story: () => play?.state() ?? null,
     placed: (id) => play?.world?.placed(id) ?? false,
+    face: (x, y) => play?.world?.face(x, y),
+    screenOf: (id) => play?.world?.screenOf(id) ?? null,
   };
 }
 

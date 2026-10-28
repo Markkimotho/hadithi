@@ -1,12 +1,15 @@
-// Trials, staged in the world. The rules come from core.js (tested and
-// calibrated in Node); this file only draws them and listens for the press.
+// Trials, staged in first person. The rules come from core.js (tested and
+// calibrated in Node); this file only draws them over the view and listens
+// for the press.
 //
-// leap    the stepping stones of the ford: hop as each stone rises
-// brace   the squall: dig in as each gust shadow reaches you
-// balance the climb: a side view of the trunk, the pot swinging on its rope
+// leap    the stepping stones of the ford: a ring closes on each stone in
+//         turn, and a good press carries you onto it
+// brace   the squall: gust shadows sweep in across the grass toward you
+// balance the climb: the view gives way to the trunk, the pot swinging on its rope
 // scale   the elders' circle: argument stones dropped on a real beam balance
+// path    (steer, swim, sneak, carry, chase) rings on points ahead of you
+// place   (formation, stack, rhythm) a ring closing on the crosshair
 import { createTiming, paramsFor } from "./core.js";
-import { TILE } from "../art.js";
 
 const TEXT = {
   leap: {
@@ -77,29 +80,82 @@ const TEXT = {
   },
 };
 
-/** How each timed kind is staged: moving through points, or holding in place. */
-const STAGING = { leap: "stones", brace: "gusts", balance: "climb", steer: "path", swim: "path", sneak: "path", carry: "path", chase: "path", formation: "place", stack: "place", rhythm: "place" };
+/** How each timed kind is staged. */
+export const STAGING = { leap: "stones", brace: "gusts", balance: "climb", steer: "path", swim: "path", sneak: "path", carry: "path", chase: "path", formation: "place", stack: "place", rhythm: "place" };
+
+const css = (hex, a = 1) => `rgba(${(hex >> 16) & 255},${(hex >> 8) & 255},${hex & 255},${a})`;
+
+/** A small Phaser-Graphics-like drawing helper over a 2D context. */
+function gfx(ctx) {
+  const g = {
+    fill: (hex, a = 1) => ((ctx.fillStyle = css(hex, a)), g),
+    stroke: (width, hex, a = 1) => ((ctx.lineWidth = width), (ctx.strokeStyle = css(hex, a)), g),
+    circle(x, y, r, fill = true) {
+      ctx.beginPath();
+      ctx.arc(x, y, Math.max(0, r), 0, Math.PI * 2);
+      fill ? ctx.fill() : ctx.stroke();
+      return g;
+    },
+    ellipse(x, y, w, h) {
+      ctx.beginPath();
+      ctx.ellipse(x, y, w / 2, h / 2, 0, 0, Math.PI * 2);
+      ctx.fill();
+      return g;
+    },
+    rect: (x, y, w, h) => (ctx.fillRect(x, y, w, h), g),
+    line(x1, y1, x2, y2) {
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+      ctx.stroke();
+      return g;
+    },
+    tri(x1, y1, x2, y2, x3, y3) {
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+      ctx.lineTo(x3, y3);
+      ctx.fill();
+      return g;
+    },
+    round(x, y, w, h, r) {
+      ctx.beginPath();
+      ctx.roundRect(x, y, w, h, r);
+      ctx.fill();
+      return g;
+    },
+  };
+  return g;
+}
+
+/** The ring that closes on a moment: it meets its mark at the instant. */
+function ring(g, x, y, t, i, { base = 18, tone = 0xf3dc9a, scale = 1 } = {}) {
+  const r = (base + Math.max(0, t.times[i] - t.clock) * 70) * scale;
+  g.stroke(4, 0x14100c, 0.55).circle(x, y, Math.min(r, 160 * scale) + 1, false);
+  g.stroke(3, tone, 0.95).circle(x, y, Math.min(r, 160 * scale), false);
+  g.stroke(2, tone, 0.4).circle(x, y, base * scale, false);
+}
 
 /**
  * Run one trial. Resolves to { mode: "skill", pass, score } or null if the
  * player steps back.
- * @param scene the ExploreScene
- * @param kind  skill kind
+ * @param stage   the world's trial stage (see boot.js trialStage)
+ * @param kind    skill kind
  * @param profile from bridge.profile(): odds, clues, deductions, flags
- * @param ui { say(text, tone), hint(text), feedback(text, good), done(), onCancel(fn), choices(list) }
+ * @param ui      { say(text), hint(text), feedback(text, good), done(), onCancel(fn), choices(list), bandHeight() }
  */
-export function playTrial(scene, kind, profile, ui, seed) {
-  if (kind === "scale") return scaleTrial(scene, profile, ui);
+export function playTrial(stage, kind, profile, ui, seed) {
+  if (kind === "scale") return scaleTrial(stage, profile, ui);
   const params = paramsFor(kind, profile);
   const trial = createTiming(params, seed);
   const text = TEXT[kind] ?? TEXT.leap;
   const staging = STAGING[kind] ?? "place";
   const view =
-    staging === "stones" ? leapView(scene, trial)
-    : staging === "gusts" ? braceView(scene, trial)
-    : staging === "climb" ? balanceView(scene, trial, profile, ui)
-    : staging === "path" ? pathView(scene, trial, kind)
-    : placeView(scene, trial, kind);
+    staging === "stones" ? leapView(stage, trial)
+    : staging === "gusts" ? braceView(stage, trial)
+    : staging === "climb" ? balanceView(stage, trial, profile, ui)
+    : staging === "path" ? pathView(stage, trial, kind)
+    : placeView(stage, trial, kind);
   ui.say(`${text.intro} ${params.need === params.moments ? "Every one" : `${params.need} of ${params.moments}`} must go well.`, "trial");
   ui.hint(text.hint);
   return new Promise((resolve) => {
@@ -107,260 +163,200 @@ export function playTrial(scene, kind, profile, ui, seed) {
     const finish = (result) => {
       if (finished) return;
       finished = true;
-      scene.events.off("update", tick);
-      scene.trialPress = null;
-      scene.trialInfo = null;
+      stage.offTick(tick);
+      stage.setPress(null);
+      stage.setInfo(null);
+      stage.clear();
       view.destroy();
       ui.done();
       resolve(result);
     };
     ui.onCancel(() => finish(null));
-    scene.trialPress = () => {
+    stage.setPress(() => {
       const r = trial.press();
       if (!r) return;
-      const line = (r.good ? text.good : text.bad)[r.index % 3];
-      ui.feedback(line, r.good);
+      ui.feedback((r.good ? text.good : text.bad)[r.index % 3], r.good);
       view.answer(r.index, r.good, r.error);
-    };
+    });
     let ending = 0;
     // What the test driver may read: the next instant, never the answer.
-    scene.trialInfo = () => ({ kind, next: trial.current() >= 0 ? trial.times[trial.current()] - trial.clock : null, done: trial.done, good: trial.good });
-    const tick = (_t, deltaMs) => {
+    stage.setInfo(() => ({ kind, next: trial.current() >= 0 ? trial.times[trial.current()] - trial.clock : null, done: trial.done, good: trial.good }));
+    const tick = (dt) => {
       const before = trial.answers.map((a) => a?.missed);
-      trial.advance(Math.min(0.05, deltaMs / 1000));
+      trial.advance(Math.min(0.05, dt));
       trial.answers.forEach((a, i) => {
         if (a?.missed && !before[i]) {
           ui.feedback(text.bad[i % 3], false);
           view.answer(i, false, null);
         }
       });
-      view.draw(trial);
+      stage.clear();
+      view.draw(trial, gfx(stage.overlay.ctx));
       if (trial.done) {
-        ending += deltaMs;
-        if (ending > 900) finish({ mode: "skill", pass: trial.pass, score: trial.score });
+        ending += dt;
+        if (ending > 0.9) finish({ mode: "skill", pass: trial.pass, score: trial.score });
       }
     };
-    scene.events.on("update", tick);
+    stage.onTick(tick);
   });
 }
 
-// ── Leap: the stepping stones ─────────────────────────────────────────────
-function leapView(scene, trial) {
-  const layout = scene.snapshot.layout;
-  // Stones are the props of kind "stone"; ordered from the near bank.
-  const stones = layout.props.filter((p) => p.kind === "stone").sort((a, b) => a.at[1] - b.at[1]);
-  const spots = stones.length >= trial.times.length ? stones : Array.from({ length: trial.times.length }, (_, i) => ({ at: [scene.phys.tile()[0], scene.phys.tile()[1] + 2 + i * 2] }));
-  const at = (i) => ({ x: (spots[i].at[0] + 0.5) * TILE, y: (spots[i].at[1] + 0.5) * TILE });
-  const g = scene.add.graphics().setDepth(99990);
-  const splash = scene.add.graphics().setDepth(99991);
-  const hero = scene.hero.root;
-  const start = { x: hero.x, y: hero.y };
-  scene.heroLocked = true;
-  hero.setDepth(99992);
-  // Frame the stones above the story band.
-  const cam = scene.cameras.main;
-  cam.stopFollow();
-  cam.pan(at(1).x, at(1).y + scene.scale.height * 0.18 / cam.zoom, scene.motion ? 600 : 0, "Sine.easeInOut");
+// ── Leap: the stepping stones, seen ahead of you ──────────────────────────
+function leapView(stage, trial) {
+  const start = stage.player();
+  const f = stage.facing();
+  // Stones are the props of kind "stone"; nearest first.
+  let stones = stage
+    .props()
+    .filter((p) => p.kind === "stone")
+    .map((p) => ({ x: p.at[0] + 0.5, y: p.at[1] + 0.5 }))
+    .sort((a, b) => Math.hypot(a.x - start.x, a.y - start.y) - Math.hypot(b.x - start.x, b.y - start.y));
+  if (stones.length < trial.times.length)
+    stones = Array.from({ length: trial.times.length }, (_, i) => ({ x: start.x + f.x * 1.4 * (i + 1), y: start.y + f.y * 1.4 * (i + 1) }));
+  stage.face(stones[0].x, stones[0].y);
   return {
-    draw(t) {
-      g.clear();
+    draw(t, g) {
       const i = t.current();
-      spots.forEach((_, k) => {
-        const p = at(k);
+      stones.slice(0, t.times.length).forEach((s, k) => {
+        const p = stage.project(s.x, s.y, 0.15);
+        if (!p) return;
+        const scale = Math.max(0.5, Math.min(2.2, 3 / p.depth));
         const rise = k === i ? t.nearness() : 0;
-        g.fillStyle(0xd8e7df, 0.18 + rise * 0.3).fillEllipse(p.x, p.y + 6, 44, 14);
-        if (k === i) {
-          // The closing ring: it meets the stone at the instant.
-          const r = 20 + Math.max(0, t.times[i] - t.clock) * 55;
-          g.lineStyle(3, 0xf3dc9a, 0.9).strokeCircle(p.x, p.y - rise * 6, Math.min(r, 110));
-          g.lineStyle(2, 0xf3dc9a, 0.35).strokeCircle(p.x, p.y - rise * 6, 20);
-        }
+        g.fill(0xd8e7df, 0.16 + rise * 0.34).ellipse(p.x, p.y, 70 * scale, 22 * scale);
+        if (k === i) ring(g, p.x, p.y - rise * 8, t, i, { scale });
       });
     },
     answer(i, good) {
-      const p = at(i);
-      scene.tweens.add({
-        targets: hero,
-        x: p.x,
-        y: p.y - 6,
-        duration: 260,
-        ease: "Quad.out",
-        onUpdate: (tw) => hero.setScale(hero.scaleX, 1 + Math.sin(tw.progress * Math.PI) * 0.15),
-        onComplete: () => {
-          hero.setScale(hero.scaleX, 1);
-          if (!good) {
-            splash.fillStyle(0xd8eef0, 0.9);
-            for (let k = 0; k < 9; k++) splash.fillCircle(p.x + Math.cos(k) * 18, p.y + Math.sin(k * 1.7) * 8, 4);
-            scene.tweens.add({ targets: splash, alpha: 0, duration: 600, onComplete: () => splash.clear().setAlpha(1) });
-            if (scene.motion) scene.cameras.main.shake(120, 0.004);
-          }
-        },
-      });
-    },
-    destroy() {
-      g.destroy();
-      splash.destroy();
-      // Across: the story moves you to the far bank.
-      scene.heroLocked = false;
-      hero.setPosition(start.x, start.y);
-      scene.cameras.main.startFollow(hero, true, 0.1, 0.1);
-    },
-  };
-}
-
-// ── Brace: gusts across the grass ─────────────────────────────────────────
-function braceView(scene, trial) {
-  const g = scene.add.graphics().setDepth(99990).setScrollFactor(0);
-  const hero = scene.hero.root;
-  const cam = scene.cameras.main;
-  return {
-    draw(t) {
-      g.clear();
-      const heroX = (hero.x - cam.worldView.x) * cam.zoom;
-      const w = scene.scale.width,
-        h = scene.scale.height;
-      t.times.forEach((time, i) => {
-        if (t.answers[i]) return;
-        // The gust shadow travels from the right edge to the hero in one period.
-        const x = heroX + (time - t.clock) * (w / 2.2);
-        if (x < -80 || x > w + 120) return;
-        g.fillStyle(0x0f1a14, 0.28).fillRect(x - 30, 0, 60, h);
-        g.fillStyle(0xdfe8dc, 0.18).fillRect(x - 34, 0, 4, h);
-      });
-      g.lineStyle(3, 0xf3dc9a, 0.8).lineBetween(heroX, (hero.y - cam.worldView.y) * cam.zoom - 70, heroX, (hero.y - cam.worldView.y) * cam.zoom + 10);
-    },
-    answer(_i, good) {
-      if (good) scene.tweens.add({ targets: hero, scaleY: 0.82, duration: 140, yoyo: true, hold: 200 });
-      else {
-        const m = scene.phys.player.getMass();
-        scene.phys.player.applyLinearImpulse({ x: -2.4 * m, y: 0.4 * m }, scene.phys.player.getPosition(), true);
-        scene.phys.step();
-        if (scene.motion) cam.shake(160, 0.006);
+      const s = stones[i] ?? stones.at(-1);
+      stage.glideTo(s.x, s.y, 260);
+      stage.fx("hop", 300);
+      const next = stones[i + 1];
+      if (next) setTimeout(() => stage.face(next.x, next.y), 280);
+      if (!good) {
+        stage.fx("dip", 420, 1.4);
+        stage.fx("shake", 200, 1);
       }
     },
     destroy() {
-      g.destroy();
+      // Across, or not: the story moves you where the leap left you.
+      stage.endGlide();
     },
   };
 }
 
-// ── Path: rings on points ahead; each good answer carries you on ────────
-function pathView(scene, trial, kind) {
-  const hero = scene.hero.root;
-  const start = { x: hero.x, y: hero.y };
-  const f = scene.facing ?? { x: 1, y: 0 };
-  const dir = Math.abs(f.x) + Math.abs(f.y) > 0.1 ? f : { x: 1, y: 0 };
+// ── Brace: gust shadows sweep in toward you ───────────────────────────────
+function braceView(stage, trial) {
+  return {
+    draw(t, g) {
+      const { width: w, height: h } = stage.overlay;
+      t.times.forEach((time, i) => {
+        if (t.answers[i]) return;
+        // Each gust crosses from the right edge to the middle of the screen in one period.
+        const x = w / 2 + (time - t.clock) * (w / 2.2);
+        if (x < -80 || x > w + 120) return;
+        g.fill(0x0f1a14, 0.3).rect(x - 40, 0, 80, h);
+        g.fill(0xdfe8dc, 0.2).rect(x - 46, 0, 5, h);
+      });
+      // Where you stand: a mark under the crosshair.
+      g.stroke(4, 0xf3dc9a, 0.85).line(w / 2, h * 0.32, w / 2, h * 0.68);
+    },
+    answer(_i, good) {
+      if (good) stage.fx("dip", 340);
+      else {
+        const f = stage.facing();
+        stage.shove(f.y * 2.4, -f.x * 2.4);
+        stage.fx("shake", 220, 1.2);
+      }
+    },
+    destroy() {},
+  };
+}
+
+// ── Path: rings on points ahead; each good answer carries you on ──────────
+function pathView(stage, trial, kind) {
+  const start = stage.player();
+  const f = stage.facing();
   const n = trial.times.length;
-  // Points ahead of the hero, a little zig-zag so each one is its own place.
+  // Points ahead of you, a little zig-zag so each one is its own place.
   const points = Array.from({ length: n }, (_, i) => ({
-    x: start.x + dir.x * TILE * 1.6 * (i + 1) - dir.y * TILE * (i % 2 ? 0.6 : -0.6),
-    y: start.y + dir.y * TILE * 1.6 * (i + 1) + dir.x * TILE * (i % 2 ? 0.6 : -0.6),
+    x: start.x + f.x * 1.3 * (i + 1) - f.y * (i % 2 ? 0.35 : -0.35),
+    y: start.y + f.y * 1.3 * (i + 1) + f.x * (i % 2 ? 0.35 : -0.35),
   }));
-  const g = scene.add.graphics().setDepth(99990);
-  const fx = scene.add.graphics().setDepth(99991);
-  scene.heroLocked = true;
   const tone = { steer: 0x9fd0c8, swim: 0x9fd0c8, sneak: 0xe0c47a }[kind] ?? 0xf3dc9a;
   return {
-    draw(t) {
-      g.clear();
+    draw(t, g) {
       const i = t.current();
-      points.forEach((p, k) => {
+      points.forEach((pt, k) => {
         if (t.answers[k]) return;
-        g.fillStyle(tone, k === i ? 0.35 : 0.12).fillCircle(p.x, p.y, 10);
-        if (k === i) {
-          const r = 16 + Math.max(0, t.times[i] - t.clock) * 55;
-          g.lineStyle(3, tone, 0.9).strokeCircle(p.x, p.y, Math.min(r, 110));
-        }
+        const p = stage.project(pt.x, pt.y, 0.05);
+        if (!p) return;
+        const scale = Math.max(0.5, Math.min(2.2, 3 / p.depth));
+        g.fill(tone, k === i ? 0.4 : 0.14).ellipse(p.x, p.y, 40 * scale, 14 * scale);
+        if (k === i) ring(g, p.x, p.y, t, i, { tone, scale });
       });
     },
     answer(i, good) {
       const p = points[i];
-      scene.tweens.add({ targets: hero, x: good ? p.x : p.x + dir.y * 14, y: good ? p.y : p.y - dir.x * 14, duration: 280, ease: "Quad.out" });
-      if (!good) {
-        fx.fillStyle(kind === "steer" || kind === "swim" ? 0xd8eef0 : 0xe8d9b0, 0.9);
-        for (let k = 0; k < 8; k++) fx.fillCircle(p.x + Math.cos(k * 0.8) * 16, p.y + Math.sin(k * 1.3) * 10, 3.5);
-        scene.tweens.add({ targets: fx, alpha: 0, duration: 600, onComplete: () => fx.clear().setAlpha(1) });
-        if (scene.motion) scene.cameras.main.shake(110, 0.004);
-      }
+      stage.glideTo(good ? p.x : p.x + f.y * 0.4, good ? p.y : p.y - f.x * 0.4, 280);
+      if (!good) stage.fx("shake", 200, 1);
     },
     destroy() {
-      g.destroy();
-      fx.destroy();
-      scene.heroLocked = false;
-      hero.setPosition(start.x, start.y);
+      stage.endGlide();
     },
   };
 }
 
-// ── Place: rings around the hero; the trial is how you hold, call or sway ─
-function placeView(scene, trial, kind) {
-  const hero = scene.hero.root;
-  const g = scene.add.graphics().setDepth(99990);
+// ── Place: a ring closing on the crosshair ────────────────────────────────
+function placeView(stage, trial, kind) {
   const tone = kind === "rhythm" ? 0xe8a04d : 0xf3dc9a;
   return {
-    draw(t) {
-      g.clear();
+    draw(t, g) {
       const i = t.current();
       if (i < 0) return;
-      const r = 26 + Math.max(0, t.times[i] - t.clock) * 70;
-      g.lineStyle(3, tone, 0.9).strokeCircle(hero.x, hero.y - 30, Math.min(r, 140));
-      g.lineStyle(2, tone, 0.35).strokeCircle(hero.x, hero.y - 30, 26);
+      const { width: w, height: h } = stage.overlay;
+      ring(g, w / 2, h / 2, t, i, { base: 26, tone, scale: 1.2 });
     },
     answer(_i, good) {
-      if (good) scene.tweens.add({ targets: hero, scaleY: 1.12, duration: 110, yoyo: true });
-      else {
-        scene.tweens.add({ targets: hero, angle: 8, duration: 90, yoyo: true, repeat: 1 });
-        if (scene.motion) scene.cameras.main.shake(110, 0.004);
-      }
+      if (good) stage.fx(kind === "rhythm" ? "talk" : "dip", 260);
+      else stage.fx("shake", 200, 1);
     },
-    destroy() {
-      g.destroy();
-      hero.setAngle(0);
-    },
+    destroy() {},
   };
 }
 
-// ── Balance: a side view of the climb, the pot swinging on its rope ───────
-function balanceView(scene, trial, profile, ui) {
+// ── Balance: the climb, with the pot swinging on its rope ─────────────────
+function balanceView(stage, trial, profile, ui) {
   const behind = profile.flags?.includes("behind") || profile.flags?.includes("knotTaught");
-  const w = scene.scale.width;
-  // Draw in the space above the story band.
-  const h = scene.scale.height - (ui.bandHeight?.() ?? scene.scale.height * 0.32) - 20;
-  const layer = scene.add.container(0, 0).setDepth(99995).setScrollFactor(0);
-  const back = scene.add.graphics();
-  back.fillStyle(0x182114, 0.94).fillRect(0, 0, w, scene.scale.height);
-  const cx = w / 2;
-  // Far trees, then the trunk with its bark, then leaves crowding the edges.
-  for (let i = 0; i < 9; i++) back.fillStyle(0x223020, 1).fillCircle((i * 173) % w, h * 0.2 + ((i * 97) % 120), 90);
-  back.fillStyle(0x7d6950).fillRect(cx - 50, 0, 100, scene.scale.height);
-  back.lineStyle(3, 0x5a4a37, 0.7);
-  for (let i = -2; i <= 2; i++) back.lineBetween(cx + i * 17, 0, cx + i * 18, scene.scale.height);
-  const leaf = (x, y, r, seed) => {
-    for (let k = 0; k < 9; k++) {
-      const a = (k * 2.4 + seed) % (Math.PI * 2);
-      back.fillStyle(k % 3 ? 0x3d5c35 : 0x4d6d3f, 1).fillCircle(x + Math.cos(a) * r * 0.6, y + Math.sin(a) * r * 0.45, r * (0.35 + (k % 4) * 0.08));
-    }
-  };
-  leaf(cx + 190, h * 0.25, 90, 1);
-  leaf(cx - 210, h * 0.55, 80, 2);
-  leaf(cx + 230, h * 0.8, 70, 3);
-  // The ledge above: where the climb ends.
-  back.fillStyle(0x6c5a45).fillRoundedRect(cx - 10, 26, 210, 22, 10);
-  back.fillStyle(0x4d6d3f).fillCircle(cx + 200, 30, 26);
-  const fig = scene.add.graphics();
-  const pot = scene.add.graphics();
-  const ring = scene.add.graphics();
-  layer.add([back, pot, fig, ring]);
-  // A pendulum: the rope from Kweku's hand, the pot at the end.
   let theta = 0.3,
     omega = 0,
     climb = 0;
   const L = behind ? 38 : 68;
-  const base = h * 0.78;
-  const goal = h * 0.5;
   return {
-    draw(t) {
+    draw(t, g) {
+      const { width: w, height: fullH } = stage.overlay;
+      // Draw in the space above the story band.
+      const h = fullH - (ui.bandHeight?.() ?? fullH * 0.32) - 20;
+      const cx = w / 2;
+      g.fill(0x182114, 0.96).rect(0, 0, w, fullH);
+      for (let i = 0; i < 9; i++) g.fill(0x223020).circle((i * 173) % w, h * 0.2 + ((i * 97) % 120), 90);
+      g.fill(0x7d6950).rect(cx - 50, 0, 100, fullH);
+      g.stroke(3, 0x5a4a37, 0.7);
+      for (let i = -2; i <= 2; i++) g.line(cx + i * 17, 0, cx + i * 18, fullH);
+      const leaf = (x, y, r, seed) => {
+        for (let k = 0; k < 9; k++) {
+          const a = (k * 2.4 + seed) % (Math.PI * 2);
+          g.fill(k % 3 ? 0x3d5c35 : 0x4d6d3f).circle(x + Math.cos(a) * r * 0.6, y + Math.sin(a) * r * 0.45, r * (0.35 + (k % 4) * 0.08));
+        }
+      };
+      leaf(cx + 190, h * 0.25, 90, 1);
+      leaf(cx - 210, h * 0.55, 80, 2);
+      leaf(cx + 230, h * 0.8, 70, 3);
+      // The ledge above: where the climb ends.
+      g.fill(0x6c5a45).round(cx - 10, 26, 210, 22, 10);
+      g.fill(0x4d6d3f).circle(cx + 200, 30, 26);
       const dt = 1 / 60;
+      const base = h * 0.78,
+        goal = h * 0.5;
       const i = t.current();
       const pushT = i >= 0 ? t.times[i] - t.clock : 9;
       const force = pushT > 0 && pushT < 0.35 ? Math.sin(t.clock * 9) * 6 : 0;
@@ -370,36 +366,28 @@ function balanceView(scene, trial, profile, ui) {
       climb = Math.min(goal, climb + dt * (goal / (t.times.at(-1) + 1)));
       const y = base - climb;
       const hand = { x: cx + (behind ? -16 : 24), y: y - 4 };
-      fig.clear();
-      fig.lineStyle(7, 0x3f2c20).lineBetween(cx - 4, y + 20, cx - 16, y + 46).lineBetween(cx + 12, y + 20, cx + 22, y + 44);
-      fig.fillStyle(0xe0ba69).fillRoundedRect(cx - 10, y - 26, 28, 46, 7);
-      fig.fillStyle(0x7a4e35).fillCircle(cx + 4, y - 40, 13);
-      fig.fillStyle(0x221b14).fillEllipse(cx + 4, y - 50, 22, 10);
-      fig.lineStyle(7, 0x7a4e35).lineBetween(cx - 6, y - 18, cx - 34, y - 42).lineBetween(cx + 14, y - 16, hand.x, hand.y);
-      pot.clear();
+      g.stroke(7, 0x3f2c20).line(cx - 4, y + 20, cx - 16, y + 46).line(cx + 12, y + 20, cx + 22, y + 44);
+      g.fill(0xe0ba69).round(cx - 10, y - 26, 28, 46, 7);
+      g.fill(0x7a4e35).circle(cx + 4, y - 40, 13);
+      g.fill(0x221b14).ellipse(cx + 4, y - 50, 22, 10);
+      g.stroke(7, 0x7a4e35).line(cx - 6, y - 18, cx - 34, y - 42).line(cx + 14, y - 16, hand.x, hand.y);
       const px = hand.x + Math.sin(theta) * L,
         py = hand.y + Math.cos(theta) * L;
-      pot.lineStyle(3, 0xc9b27a).lineBetween(hand.x, hand.y, px, py);
-      pot.fillStyle(0x6e4430).fillEllipse(px, py + 16, 50, 46);
-      pot.fillStyle(0xa86f4c).fillEllipse(px - 6, py + 12, 32, 30);
-      pot.fillStyle(0xb8402c).fillCircle(px - 5, py - 4, 4);
-      ring.clear();
-      if (i >= 0) {
-        const r = 24 + Math.max(0, t.times[i] - t.clock) * 60;
-        ring.lineStyle(3, 0xf3dc9a, 0.9).strokeCircle(px, py + 16, Math.min(r, 120));
-      }
+      g.stroke(3, 0xc9b27a).line(hand.x, hand.y, px, py);
+      g.fill(0x6e4430).ellipse(px, py + 16, 50, 46);
+      g.fill(0xa86f4c).ellipse(px - 6, py + 12, 32, 30);
+      g.fill(0xb8402c).circle(px - 5, py - 4, 4);
+      if (i >= 0) ring(g, px, py + 16, t, i, { base: 24 });
     },
     answer(_i, good) {
       if (good) omega *= 0.3;
       else {
         omega += theta > 0 ? 2.2 : -2.2;
         climb = Math.max(0, climb - 24);
-        if (scene.motion) scene.cameras.main.shake(120, 0.004);
+        stage.fx("shake", 160, 1);
       }
     },
-    destroy() {
-      layer.destroy(true);
-    },
+    destroy() {},
   };
 }
 
@@ -416,17 +404,11 @@ export function scaleStones(profile) {
   return (profile.parts ?? []).filter((p) => p.value > 0).map((p, i) => ({ id: `s${i}`, label: p.label, weight: p.value }));
 }
 
-function scaleTrial(scene, profile, ui) {
-  const planck = scene.planck;
+function scaleTrial(stage, profile, ui) {
+  const planck = stage.planck;
   const need = scaleNeed(profile);
   const stones = scaleStones(profile);
-  const w = scene.scale.width,
-    h = scene.scale.height;
-  const layer = scene.add.container(0, 0).setDepth(99995).setScrollFactor(0);
-  const back = scene.add.graphics();
-  back.fillStyle(0x161b13, 0.86).fillRect(0, 0, w, h);
-  const art = scene.add.graphics();
-  layer.add([back, art]);
+  const { width: w, height: h } = stage.overlay;
   // A real beam on a pivot, two pans on chains, stones dropped as bodies.
   const world = new planck.World({ gravity: { x: 0, y: 10 } });
   const S = 40; // px per metre for this vignette
@@ -437,10 +419,8 @@ function scaleTrial(scene, profile, ui) {
   const beam = world.createBody({ type: "dynamic", position: { x: cx, y: cy }, angularDamping: 2.5 });
   beam.createFixture(new planck.Box(3.2, 0.08), { density: 1, filterGroupIndex: -1 });
   // The pans are part of the beam, so their weight turns it.
-  const panL = new planck.Box(0.9, 0.06, { x: -3, y: 1.6 }, 0);
-  const panR = new planck.Box(0.9, 0.06, { x: 3, y: 1.6 }, 0);
-  beam.createFixture(panL, { density: 0.5 });
-  beam.createFixture(panR, { density: 0.5 });
+  beam.createFixture(new planck.Box(0.9, 0.06, { x: -3, y: 1.6 }, 0), { density: 0.5 });
+  beam.createFixture(new planck.Box(0.9, 0.06, { x: 3, y: 1.6 }, 0), { density: 0.5 });
   for (const [x, y] of [[-3.85, 1.3], [-2.15, 1.3], [2.15, 1.3], [3.85, 1.3]]) beam.createFixture(new planck.Box(0.05, 0.35, { x, y }, 0), { density: 0.1 });
   world.createJoint(new planck.RevoluteJoint({ lowerAngle: -0.45, upperAngle: 0.45, enableLimit: true }, post, beam, { x: cx, y: cy }));
   const bodies = [];
@@ -463,8 +443,8 @@ function scaleTrial(scene, profile, ui) {
     const finish = (result) => {
       if (settled) return;
       settled = true;
-      scene.events.off("update", tick);
-      layer.destroy(true);
+      stage.offTick(tick);
+      stage.clear();
       ui.done();
       resolve(result);
     };
@@ -472,7 +452,7 @@ function scaleTrial(scene, profile, ui) {
       const total = [...chosen.values()].reduce((s, x) => s + x, 0);
       const pass = total >= need;
       ui.feedback(pass ? (profile.skill?.won ?? "The beam tips your way.") : (profile.skill?.lost ?? "The beam does not move. Not yet."), pass);
-      setTimeout(() => finish({ mode: "skill", pass, score: Number(Math.min(1, total / need).toFixed(3)) }), 1100);
+      setTimeout(() => finish({ mode: "skill", pass, score: Number(Math.min(1, need ? total / need : 1).toFixed(3)) }), 1100);
     };
     ui.onCancel(() => finish(null));
     ui.choices([
@@ -487,32 +467,33 @@ function scaleTrial(scene, profile, ui) {
       })),
       { label: "Let the scale settle", act: settle, quiet: true },
     ]);
-    const tick = (_t, deltaMs) => {
-      const dt = Math.min(0.05, deltaMs / 1000);
-      world.step(dt);
+    const tick = (dt) => {
+      world.step(Math.min(0.05, dt));
       patience -= dt;
       ui.hint(`${profile.skill?.patienceLabel ?? "Patience"}: ${Math.max(0, Math.ceil(patience))} heartbeats.`);
       if (patience <= 0 && !settled) settle();
-      art.clear();
+      stage.clear();
+      const g = gfx(stage.overlay.ctx);
+      g.fill(0x161b13, 0.88).rect(0, 0, w, h);
       const p = beam.getPosition(),
         a = beam.getAngle();
       const toScreen = (x, y) => ({ x: (p.x + x * Math.cos(a) - y * Math.sin(a)) * S, y: (p.y + x * Math.sin(a) + y * Math.cos(a)) * S });
-      art.fillStyle(0x6a4b33).fillRect(cx * S - 8, cy * S, 16, usable * 0.5);
-      art.fillStyle(0x4a3524).fillTriangle(cx * S - 40, cy * S + usable * 0.5, cx * S + 40, cy * S + usable * 0.5, cx * S, cy * S + usable * 0.45);
+      g.fill(0x6a4b33).rect(cx * S - 8, cy * S, 16, usable * 0.5);
+      g.fill(0x4a3524).tri(cx * S - 40, cy * S + usable * 0.5, cx * S + 40, cy * S + usable * 0.5, cx * S, cy * S + usable * 0.45);
       const l = toScreen(-3.2, 0),
         r = toScreen(3.2, 0);
-      art.lineStyle(8, 0xb08a52).lineBetween(l.x, l.y, r.x, r.y);
+      g.stroke(8, 0xb08a52).line(l.x, l.y, r.x, r.y);
       for (const side of [-1, 1]) {
         const top = toScreen(side * 3, 0),
           pan = toScreen(side * 3, 1.6);
-        art.lineStyle(2, 0xc9b27a).lineBetween(top.x, top.y, pan.x - 30, pan.y).lineBetween(top.x, top.y, pan.x + 30, pan.y);
-        art.fillStyle(0x8a6a46).fillEllipse(pan.x, pan.y, 76, 12);
+        g.stroke(2, 0xc9b27a).line(top.x, top.y, pan.x - 30, pan.y).line(top.x, top.y, pan.x + 30, pan.y);
+        g.fill(0x8a6a46).ellipse(pan.x, pan.y, 76, 12);
       }
       for (const { b, color, weight } of bodies) {
         const q = b.getPosition();
-        art.fillStyle(color).fillCircle(q.x * S, q.y * S, (0.18 + weight * 0.06) * S);
+        g.fill(color).circle(q.x * S, q.y * S, (0.18 + weight * 0.06) * S);
       }
     };
-    scene.events.on("update", tick);
+    stage.onTick(tick);
   });
 }

@@ -1,21 +1,26 @@
-// The play screen: one full-screen world with a storyteller over it.
+// The play screen: the world in first person, with a game HUD over it.
 //
-// The world shows the place. The story band tells what happens, a beat at a
-// time, the way a storyteller would: the opening, a chapter card when a new
-// place opens, what you found, what was said, what it cost. People speak in
-// bubbles above their heads. Choices that are not places (what to say, what
-// to decide) appear in the band as lines you can choose.
+// The world shows the place. The dialogue box at the foot of the screen tells
+// what happens, a beat at a time, the way a storyteller would: the opening, a
+// chapter card when a new place opens, what you found, what was said, what it
+// cost, with the face of whoever is speaking. People speak in bubbles above
+// their heads. The quest panel holds what you are after, the minimap where you
+// are, the bag what you carry. Choices that are not places (what to say, what
+// to decide) appear in the box as numbered lines.
 import { createWorld } from "../world/boot.js";
 import { createBridge } from "../world/bridge.js";
 import { runSkillChallenge } from "../world/skill-challenge.js";
 import { beatsFor, splitSpeech, firstSpeech } from "./narrator.js";
 import { journalHtml, panelHtml, endingHtml, TABS } from "./journal.js";
 import { escape, diceTray, oddsBadge } from "./widgets.js";
+import { drawMinimap } from "./minimap.js";
+import { spriteKey } from "../world/ray/things.js";
 
 const flat = (t) => t.replace("\n", " ");
 /** Trials staged in the world; any other kind falls back to the card trial. */
 const STAGED = new Set(["leap", "brace", "balance", "scale", "steer", "swim", "sneak", "carry", "chase", "formation", "stack", "rhythm"]);
-const LIGHT = { dawn: "Dawn", day: "Day", dusk: "Dusk", night: "Night", deep: "Deep water", moon: "Moonlight" };
+const LIGHT = { dawn: "Dawn", day: "Day", dusk: "Dusk", night: "Night", deep: "Deep water", moon: "Moonlight", lamp: "Lamplight" };
+const BAG_SLOTS = 6;
 
 /**
  * @param ctx {
@@ -43,32 +48,44 @@ export function createPlay(main, ctx) {
   root.className = "play";
   root.setAttribute("aria-label", "The tale");
   root.innerHTML = `
-    <header class="play-hud">
-      <button class="hud-back" id="back-library" aria-label="Back to the collection">←<span> Tales</span></button>
-      <div class="hud-title"><span class="hud-tale"></span><small class="hud-time"></small></div>
-      <div class="hud-actions">
-        <button id="undo" aria-keyshortcuts="U" title="Take back your last step (U)">↶<span> Undo</span></button>
-        <button id="open-journal" aria-keyshortcuts="J" aria-expanded="false" title="Your journal (J)">❖<span> Journal</span><i class="journal-dot" hidden></i></button>
-        <button id="story-source" title="Where this tale comes from">ⓘ<span> Source</span></button>
+    <header class="hud-top">
+      <div class="hud-panel hud-quest">
+        <b class="hud-tale"></b>
+        <span class="hud-time"></span>
+        <p class="hud-objective"><span class="objective-mark" aria-hidden="true">▸</span><span class="objective-text"></span></p>
+      </div>
+      <div class="hud-side">
+        <canvas class="hud-minimap" aria-hidden="true"></canvas>
+        <nav class="hud-buttons" aria-label="Game">
+          <button id="open-journal" aria-keyshortcuts="J" aria-expanded="false" title="Journal (J)"><span>Journal</span><kbd aria-hidden="true">J</kbd><i class="journal-dot" hidden></i></button>
+          <button id="undo" aria-keyshortcuts="U" title="Take back your last step (U)"><span>Undo</span><kbd aria-hidden="true">U</kbd></button>
+          <button id="story-source" title="Where this tale comes from"><span>Source</span></button>
+          <button id="back-library" title="Back to the title screen"><span>Quit</span></button>
+        </nav>
       </div>
     </header>
+    <div class="hud-crosshair" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="play-prompt" hidden></div>
+    <div class="hud-bag" role="group" aria-label="What you carry"></div>
     <div class="play-chapter" aria-hidden="true" hidden><span class="eyebrow"></span><h2></h2></div>
     <div class="play-markers"></div>
-    <div class="play-prompt" hidden></div>
     <div class="play-bubble" hidden aria-hidden="true"><b></b><span></span></div>
     <section class="story-band" aria-labelledby="scene-title">
-      <h1 id="scene-title" class="story-scene" tabindex="-1"></h1>
-      <div class="story-body">
-        <p class="story-line"></p>
-        <ul class="story-notes"></ul>
-        <div class="story-roll"></div>
+      <div class="story-portrait" aria-hidden="true"><canvas width="40" height="40"></canvas></div>
+      <div class="story-main">
+        <h1 id="scene-title" class="story-scene" tabindex="-1"></h1>
+        <div class="story-body">
+          <p class="story-line"></p>
+          <ul class="story-notes"></ul>
+          <div class="story-roll"></div>
+        </div>
+        <div class="story-choices" role="group" aria-label="What you could do"></div>
+        <button class="story-next" hidden aria-label="Go on"><span aria-hidden="true">▼</span><kbd aria-hidden="true">E</kbd></button>
       </div>
-      <div class="story-choices" role="group" aria-label="What you could do"></div>
-      <button class="story-next" hidden>Go on <span aria-hidden="true">▸</span></button>
     </section>
     <div class="play-touch">
-      <div class="world-joystick" role="group" aria-label="Walk"><span aria-hidden="true"></span></div>
-      <div class="touch-buttons"><button data-touch-act aria-label="Act or go on">E</button><button data-lift aria-label="Lift or set down" disabled>⤒</button><button data-throw aria-label="Throw" disabled>➶</button></div>
+      <div class="world-joystick" role="group" aria-label="Walk and turn"><span aria-hidden="true"></span></div>
+      <div class="touch-buttons"><button data-touch-act aria-label="Act or go on">E</button><button data-lift aria-label="Lift or set down" disabled>Q</button><button data-throw aria-label="Throw" disabled>F</button></div>
     </div>
     <p class="play-message" role="status"></p>
     <aside class="journal-drawer" role="dialog" aria-modal="false" aria-labelledby="journal-title" hidden></aside>
@@ -79,6 +96,9 @@ export function createPlay(main, ctx) {
     notesEl = $(".story-notes"),
     rollEl = $(".story-roll"),
     choicesEl = $(".story-choices"),
+    portraitEl = $(".story-portrait"),
+    minimapEl = $(".hud-minimap"),
+    bagEl = $(".hud-bag"),
     nextBtn = $(".story-next"),
     chapterEl = $(".play-chapter"),
     markersEl = $(".play-markers"),
@@ -125,6 +145,7 @@ export function createPlay(main, ctx) {
   }
 
   function show(b) {
+    portrait(b.speaker?.kind ?? null);
     choicesEl.replaceChildren();
     rollEl.replaceChildren();
     notesEl.replaceChildren();
@@ -189,7 +210,7 @@ export function createPlay(main, ctx) {
     );
     for (const n of notes) {
       if (n.kind === "item" && n.gained && world) {
-        const target = $("#open-journal").getBoundingClientRect();
+        const target = (bagEl.querySelector(".bag-slot:not(.filled)") ?? bagEl).getBoundingClientRect();
         const stage = world.root.getBoundingClientRect();
         world.flyToBag(n.id, { x: target.left + target.width / 2 - stage.left, y: target.top + target.height / 2 - stage.top });
         $(".journal-dot").hidden = false;
@@ -248,7 +269,7 @@ export function createPlay(main, ctx) {
   function speakAbove(b) {
     const said = firstSpeech(b.text);
     if (!said || !b.speaker) return;
-    bubble = { at: b.speaker.at, name: b.speaker.name, until: performance.now() + 5200 };
+    bubble = { at: b.speaker.at, z: b.speaker.height ?? 2, name: b.speaker.name, until: performance.now() + 5200 };
     bubbleEl.querySelector("b").textContent = b.speaker.name ?? "";
     bubbleEl.querySelector("span").textContent = said;
     bubbleEl.hidden = false;
@@ -269,6 +290,7 @@ export function createPlay(main, ctx) {
     const puzzle = v.puzzleData && !v.flags[v.puzzleData.solvedFlag] ? v.puzzleData : null;
     const layout = bridge.read()?.layout;
     const menu = v.actions.filter((a) => layout?.menu.includes(a.id));
+    portrait(null);
     line.innerHTML = puzzle
       ? `<b>${escape(puzzle.prompt)}</b> ${escape(puzzle.clue)}`
       : `<span class="story-want">${escape(v.objective)}</span>`;
@@ -317,6 +339,7 @@ export function createPlay(main, ctx) {
       return idle();
     }
     band.dataset.state = "conversation";
+    portrait(personAt(place)?.kind ?? null);
     line.innerHTML = `<b class="story-speaker">${escape(place.name ?? "")}</b>`;
     choicesEl.replaceChildren(
       ...actions.map((a, i) =>
@@ -327,7 +350,7 @@ export function createPlay(main, ctx) {
       ),
       Object.assign(document.createElement("button"), {
         className: "choice quiet",
-        textContent: "Say nothing and step away",
+        textContent: "Leave it for now",
         onclick: () => {
           conversation = null;
           idle();
@@ -378,7 +401,7 @@ export function createPlay(main, ctx) {
     feedback.className = "trial-feedback";
     feedback.setAttribute("role", "status");
     rollEl.append(hint, feedback);
-    const leave = Object.assign(document.createElement("button"), { className: "choice quiet", textContent: "Step back" });
+    const leave = Object.assign(document.createElement("button"), { className: "choice quiet", textContent: "Back off" });
     leave.onclick = () => cancel?.();
     choicesEl.replaceChildren(leave);
     $("#scene-title").textContent = action.label;
@@ -429,7 +452,8 @@ export function createPlay(main, ctx) {
   function after(before, now) {
     const list = beatsFor(game().episode, before, now);
     // Words spoken during this action belong to whoever you acted with.
-    const speaker = lastPlace && !lastPlace.exit ? { at: lastPlace.at, name: lastPlace.name } : null;
+    const who = lastPlace && !lastPlace.exit ? personAt(lastPlace) : null;
+    const speaker = lastPlace && !lastPlace.exit ? { at: lastPlace.at, name: lastPlace.name, kind: who?.kind ?? null, height: (who?.perch ?? 0) + 2.05 } : null;
     for (const b of list) if (b.kind === "narrate" && b.tone === "consequence" && speaker && firstSpeech(b.text)) b.speaker = speaker;
     lastPlace = null;
     conversation = null;
@@ -534,15 +558,40 @@ export function createPlay(main, ctx) {
   }
 
   // ── Places, prompts and bubbles over the world ─────────────────────────
+  /** Who stands at a place: its own id, or whoever is on or beside its tile. */
+  function personAt(place) {
+    const people = bridge.read()?.layout?.people ?? [];
+    return (
+      people.find((p) => p.id === place.id) ??
+      people.find((p) => Math.max(Math.abs(p.at[0] - place.at[0]), Math.abs(p.at[1] - place.at[1])) <= 1) ??
+      null
+    );
+  }
+
+  /** The face in the dialogue box: whoever speaks, or the teller's mark. */
+  function portrait(kind) {
+    const tex = kind && world?.portrait(spriteKey(kind));
+    portraitEl.dataset.who = tex ? kind : "teller";
+    const canvas = portraitEl.querySelector("canvas");
+    if (!tex) {
+      canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
+      return;
+    }
+    canvas.width = tex.w;
+    canvas.height = tex.h;
+    canvas.getContext("2d").putImageData(new ImageData(new Uint8ClampedArray(tex.data.buffer.slice(0)), tex.w, tex.h), 0, 0);
+  }
+
+  /** Roads out are signposts: over the road when you face it, pinned to the screen's edge when you do not. */
   function renderMarkers(list) {
     places = list;
     markersEl.replaceChildren(
       ...list.map((place) => {
         const label = place.name ?? place.actions[0].label;
         const el = document.createElement("button");
-        el.className = `world-marker${place.exit ? " world-exit" : ""}${place.actions.some((a) => a.remembered) ? " remembered" : ""}`;
+        el.className = `world-marker${place.exit ? " world-exit" : " sr-only"}${place.actions.some((a) => a.remembered) ? " remembered" : ""}`;
         el.dataset.place = place.id;
-        el.innerHTML = place.exit ? `<span>${escape(signpost(place))}</span>` : `<span class="sr-only">${escape(label)}</span>`;
+        el.innerHTML = place.exit ? `<span class="marker-arrow" aria-hidden="true"></span><span>${escape(signpost(place))}</span>` : escape(label);
         el.setAttribute("aria-label", `${place.exit ? "Take the road" : "Go to"}: ${label}`);
         el.title = label;
         el.onclick = () => world?.walkTo(place.id, true);
@@ -553,7 +602,7 @@ export function createPlay(main, ctx) {
   function signpost(place) {
     const a = place.actions[0];
     const to = a.effects?.to && game().episode.scenes[a.effects.to];
-    return `${to ? flat(to.kicker.split("·")[0].trim()) : a.label} →`;
+    return to ? flat(to.kicker.split("·")[0].trim()) : a.label;
   }
 
   function onNear({ place, carrying, liftable }) {
@@ -561,6 +610,7 @@ export function createPlay(main, ctx) {
     $("[data-lift]").disabled = !carrying && !liftable;
     $("[data-lift]").setAttribute("aria-label", carrying ? `Set down the ${carrying}` : liftable ? `Lift the ${liftable}` : "Lift");
     $("[data-throw]").disabled = !carrying;
+    root.dataset.aim = place ? "place" : liftable ? "thing" : "none";
     if (conversation && (!place || place.id !== conversation.id)) {
       conversation = null;
       if (!telling()) idle();
@@ -570,14 +620,21 @@ export function createPlay(main, ctx) {
       return;
     }
     const enabled = place?.actions.filter((a) => a.enabled) ?? [];
-    let text;
-    if (place && enabled.length > 1) text = `Talk · ${place.name ?? "Speak"}`;
+    let key = "E",
+      text;
+    if (place && enabled.length > 1) text = `Talk to ${place.name ?? "them"}`;
     else if (place && enabled.length === 1) text = enabled[0].label;
     else if (place) text = place.actions[0].requires ? `${place.actions[0].label}: ${place.actions[0].requires}` : place.actions[0].label;
-    else if (carrying) text = `Carrying the ${carrying}. Q to set down, F to throw.`;
-    else text = `Q to lift the ${liftable}.`;
-    promptEl.innerHTML = `${place && enabled.length ? '<kbd aria-hidden="true">E</kbd>' : ""}<span>${escape(text)}</span>`;
-    promptEl.dataset.enabled = String(Boolean(enabled.length));
+    else if (carrying) {
+      key = "Q";
+      text = `Set down the ${carrying}. F to throw it.`;
+    } else {
+      key = "Q";
+      text = `Lift the ${liftable}`;
+    }
+    const live = !place || enabled.length > 0;
+    promptEl.innerHTML = `${live ? `<kbd aria-hidden="true">${key}</kbd>` : '<i class="prompt-lock" aria-hidden="true"></i>'}<span>${escape(text)}</span>`;
+    promptEl.dataset.enabled = String(live);
     promptEl.hidden = false;
   }
 
@@ -585,29 +642,71 @@ export function createPlay(main, ctx) {
     if (!world) return;
     const w = root.clientWidth,
       h = root.clientHeight;
+    const state = world.mapState();
+    if (state) drawMinimap(minimapEl, state);
     for (const el of markersEl.children) {
       const place = places.find((p) => p.id === el.dataset.place);
-      if (!place) continue;
-      const at = world.project(place.at, place.exit ? 0 : 34);
-      if (!at) continue;
-      // Keep signposts on screen and clear of the HUD and the story band.
-      const half = (el.offsetWidth || 28) / 2 + 10;
-      const top = 96 + (el.offsetHeight || 28) / 2;
-      const bottom = h - (band.offsetHeight || 0) - 26;
-      el.style.transform = `translate(${Math.round(Math.max(half, Math.min(w - half, at.x)))}px, ${Math.round(Math.max(top, Math.min(bottom, at.y)))}px)`;
-      el.dataset.near = String(near?.id === place.id);
+      if (!place?.exit || !state) continue;
+      const mid = place.tiles.reduce((m, [x, y]) => [m[0] + x / place.tiles.length, m[1] + y / place.tiles.length], [0, 0]);
+      const at = world.project(mid, 1.7);
+      const half = (el.offsetWidth || 120) / 2 + 12;
+      const bottom = h - (band.offsetHeight || 0) - 30;
+      let x, y, side;
+      if (at && at.x > half && at.x < w - half) {
+        x = at.x;
+        y = Math.max(150, Math.min(bottom, at.y));
+        side = "ahead";
+      } else {
+        // Off to one side or behind you: pin it to the edge it is nearest.
+        const bearing = Math.atan2(mid[1] + 0.5 - state.y, mid[0] + 0.5 - state.x) - state.angle;
+        side = Math.sin(bearing) < 0 ? "left" : "right";
+        x = side === "left" ? half : w - half;
+        y = Math.max(170, Math.min(bottom, h * (w < 700 ? 0.36 : 0.45)));
+      }
+      el.style.transform = `translate(${Math.round(x)}px, ${Math.round(y)}px)`;
+      el.dataset.side = side;
     }
-    const anchor = near ? world.project(near.at, 64) : world.heroScreen();
-    if (anchor && !promptEl.hidden) promptEl.style.transform = `translate(${Math.round(anchor.x)}px, ${Math.round(anchor.y)}px)`;
     if (bubble) {
       if (performance.now() > bubble.until) {
         bubble = null;
         bubbleEl.hidden = true;
       } else {
-        const at = world.project(bubble.at, 78);
-        if (at) bubbleEl.style.transform = `translate(${Math.round(at.x)}px, ${Math.round(at.y)}px)`;
+        const at = world.project(bubble.at, bubble.z);
+        bubbleEl.style.visibility = at ? "visible" : "hidden";
+        if (at) bubbleEl.style.transform = `translate(${Math.round(Math.max(130, Math.min(w - 130, at.x)))}px, ${Math.round(Math.max(170, at.y))}px)`;
       }
     }
+  }
+
+  /** The bag: one slot per thing carried, painted from the world's own art. */
+  function renderBag(v) {
+    const items = v.inventoryItems ?? [];
+    const slots = [];
+    for (let i = 0; i < Math.max(BAG_SLOTS, items.length); i++) {
+      const item = items[i];
+      const slot = document.createElement("button");
+      slot.className = `bag-slot${item ? " filled" : ""}`;
+      slot.disabled = !item;
+      if (item) {
+        slot.title = item.name;
+        slot.setAttribute("aria-label", item.name);
+        slot.dataset.item = item.id;
+        const tex = world?.portrait(item.id);
+        if (tex) {
+          const c = document.createElement("canvas");
+          c.width = tex.w;
+          c.height = tex.h;
+          c.getContext("2d").putImageData(new ImageData(new Uint8ClampedArray(tex.data.buffer.slice(0)), tex.w, tex.h), 0, 0);
+          slot.append(c);
+        } else slot.innerHTML = `<span aria-hidden="true">${escape(item.glyph ?? "◆")}</span>`;
+        slot.onclick = () => {
+          ui.item = item.id;
+          openJournal("bag");
+        };
+      } else slot.setAttribute("aria-label", "Empty slot");
+      slots.push(slot);
+    }
+    bagEl.replaceChildren(...slots);
   }
 
   // ── Keyboard for the band, the journal and the HUD ─────────────────────
@@ -645,6 +744,7 @@ export function createPlay(main, ctx) {
     const ep = game().episode;
     root.dataset.tale = ep.id;
     $(".hud-tale").textContent = flat(ep.title);
+    portrait(null);
     $("#back-library").onclick = () => ctx.library();
     $("#undo").onclick = () => ctx.undo();
     $("#open-journal").onclick = () => (journalOpen ? closeJournal() : openJournal());
@@ -668,7 +768,10 @@ export function createPlay(main, ctx) {
       busy,
       motion: ctx.settings.motion,
       events: {
-        onReady: () => sync(),
+        onReady: () => {
+          sync();
+          portrait(beats[beat]?.speaker?.kind ?? null);
+        },
         onPlaces: renderMarkers,
         onNear,
         onConverse: (place) => {
@@ -688,6 +791,7 @@ export function createPlay(main, ctx) {
       onError: (error) => {
         console.error("The world could not open", error);
         line.textContent = "The world could not open in this browser. Try another browser, or turn off strict content blocking for this site.";
+        root.dataset.broken = "true";
       },
     });
     root.prepend(world.root);
@@ -701,7 +805,9 @@ export function createPlay(main, ctx) {
     root.dataset.light = atm.light;
     root.dataset.weather = atm.weather;
     root.dataset.encounter = String(v.encounter);
-    $(".hud-time").textContent = `${LIGHT[atm.light] ?? atm.light} · turn ${v.turn}`;
+    $(".hud-time").textContent = `${LIGHT[atm.light] ?? atm.light} · Turn ${v.turn}`;
+    $(".objective-text").textContent = v.ending ? "The tale is told." : v.objective;
+    renderBag(v);
     $("#undo").disabled = !v.canUndo;
     if (!telling() && !v.ending) $("#scene-title").textContent = v.title;
     world?.sync(ctx.settings.motion);
