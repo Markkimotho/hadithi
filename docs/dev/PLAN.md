@@ -12,7 +12,7 @@ The visual direction is a late-1990s game manual and first-person adventure term
 - Desktop: a separate Tkinter edition reads the same old JSON. The browser edition is the priority for this rebuild; keep the desktop code intact until a deliberate migration or retirement decision.
 - Content: one crystal/dragon plot, eight locations, four defined objects, one boss, one victory route. Moving into a room automatically grants its loot. The fight advances through one repeated button and checks fixed inventory gates.
 - Persistence: the browser has no save system or story selection. Existing tests prove only that prepared players win and unprepared players lose.
-- Delivery: README describes GitHub Pages. Render is an option, but the proposed first release can still be a static site on Render; a server is useful only when a real feature needs it.
+- Delivery: README describes GitHub Pages. The proposed first release can still be a static site; a server is useful only when a real feature needs it.
 
 ## 3. Story sourcing and rights
 
@@ -84,11 +84,11 @@ Core engine API: `startEpisode`, `dispatch`, `evaluateTriggers`, `processQueue`,
 
 Use original CSS or properly licensed art. Build a small visual system first: palette, type scale, panel shapes, icon rules, and scene composition. Create one representative story shelf and one play screen, review them at desktop and mobile sizes, then implement the rest. Avoid neon gradients, glowing cards, and generic AI-generated fantasy art.
 
-## 7. Architecture and deployment
+## 7. Architecture and release
 
-Phase 1 can remain a fast static web app with local story JSON and `localStorage` or IndexedDB saves. This gives offline-capable reading, low operating cost, and simple Render Static Site deployment. Add a service worker only after cache/version handling is tested. No account or database is needed for local saves.
+Phase 1 can remain a fast static web app with local story JSON and `localStorage` or IndexedDB saves. This gives offline-capable reading, low operating cost, and simple a static host deployment. Add a service worker only after cache/version handling is tested. No account or database is needed for local saves.
 
-Use Render Static Site for the first public release. Add `render.yaml` with the build command and publish directory, a single-page fallback if routing requires it, and security headers where supported. Keep GitHub Actions for tests if helpful, but remove GitHub Pages as the assumed deployment path. A full stack Render web service plus managed PostgreSQL becomes appropriate for optional cross-device saves, accounts, authoring/review workflow, or social features. Do not add user accounts or a story-generation API to the first release merely because full stack hosting is available.
+Use a static host for the first public release. Configure the host with the build command and publish directory, a single-page fallback if routing requires it, and security headers where supported. Keep GitHub Actions for tests if helpful, but remove GitHub Pages as the assumed deployment path. A full stack the static host web service plus managed PostgreSQL becomes appropriate for optional cross-device saves, accounts, authoring/review workflow, or social features. Do not add user accounts or a story-generation API to the first release merely because full stack hosting is available.
 
 Avoid live fetching of third-party stories at play time: availability, rights, formatting, and offensive historical text would be uncontrolled. Maintain a documented content ingestion and review process instead. Keep dependency count modest, and use build tooling only where it clearly improves content validation and maintainability.
 
@@ -110,7 +110,7 @@ Avoid live fetching of third-party stories at play time: availability, rights, f
 9. Author and review the other two episodes to the same depth.
 10. Build story shelf, inventory, journal, theme UI, settings, responsive art system, and source/credit screens.
 11. Test narrative paths, save migration, mobile layout, keyboard/screen-reader use, and reduced-motion mode. Conduct at least one blind playtest per episode; revise confusing choices and dead branches.
-12. Update README, source ledger, and deployment config. Build and deploy to Render, then smoke-test a new run and a resumed run on the deployed URL.
+12. Update README, source ledger, and deployment config. Build and release, then smoke-test a new run and a resumed run on the deployed URL.
 
 ## 9. Acceptance criteria
 
@@ -119,7 +119,7 @@ Avoid live fetching of third-party stories at play time: availability, rights, f
 - A player can understand the goal and perform a meaningful action within one minute. No route can be completed by scrolling or using only a generic continue action. A completed episode can be replayed through a materially different sequence of events.
 - The build rejects broken story links, invalid triggers, dead events, unbounded event loops, and invalid content. Tests cover event ordering, inventory, conditional actions, theme changes, endings, and save/load during an active encounter.
 - Desktop and phone layouts are readable; keyboard and reduced-motion paths work; source and rights records are available from the game.
-- Render deployment serves the release, and the live site passes a smoke test.
+- The release is served, and the live site passes a smoke test.
 
 ## 10. Scope decisions still to make after this plan
 
@@ -129,7 +129,7 @@ Avoid live fetching of third-party stories at play time: availability, rights, f
 
 ## Implementation status — 18 October 2026 (second edition)
 
-**First edition.** Three tales, 44 scenes, 30 events, nine endings, deployed at [Hadithi](https://hadithi-i2us.onrender.com).
+**First edition.** Three tales, 44 scenes, 30 events, nine endings, deployed at Hadithi.
 
 **Second edition (this release).** The anthology grows to four tales with *The Olive Jar* (Ali Cogia, Lang's *Arabian Nights* from Galland; the first step of §4's "extend to the Middle East"). Every tale is deepened with systems drawn from modern narrative games. The engine stays deterministic and testable throughout:
 
@@ -158,7 +158,7 @@ Automated agents measure fairness and reachability, not fun. Agents reach *The O
 
 ## Third edition — implementation status, 18 October 2026
 
-The third-edition plan from the recovered Claude session is preserved in [docs/THIRD-EDITION.md](docs/THIRD-EDITION.md). It changes the presentation to a Phaser and Planck top-down world while keeping the current story engine authoritative and deterministic.
+The third-edition plan from the recovered Claude session is preserved in [docs/THIRD-EDITION.md](THIRD-EDITION.md). It changes the presentation to a Phaser and Planck top-down world while keeping the current story engine authoritative and deterministic.
 
 **Phases 0 and 1 are complete.** Large self-hosted type, prose linting, and the local-judge service are in place. The engine bridge records seeded skill outcomes, exposes check profiles, migrates v2 saves to v3, and accepts declared physics facts.
 
@@ -166,7 +166,7 @@ The third-edition plan from the recovered Claude session is preserved in [docs/T
 
 **Phase 3 is implemented locally.** The Wisdom vector tilesheet is generated from a checked manifest and drives the world renderer. Kweku and Anansi now have shared-anchor layered rigs and idle/walk/carry/push/fall clips; Kweku drives the physical player sprite. The art gate validates atlas grids, glyph coverage, rig bones, clips, and SVG part dimensions and runs in production builds. The prop sheet is reserved and documented, while live physics props still use their existing drawn art.
 
-**Phase 4 implementation is complete locally.** All 14 Wisdom scenes use authored Tiled JSON maps with validated entry points and reachable interactions. River and ford currents and squall wind affect Planck physics. World mode layers weather and light over the map. Leap, balance, scale, and brace challenges reflect terrain, story evidence, character choices, check odds, and assist mode. Wisdom narration follows the Fante voice guide and passes strict prose lint. Mark's desktop and phone vertical-slice playtest remains the final human check; the handoff checklist is in [docs/PLAYTEST-WISDOM.md](docs/PLAYTEST-WISDOM.md). The third-edition work remains local and has not been deployed.
+**Phase 4 implementation is complete locally.** All 14 Wisdom scenes use authored Tiled JSON maps with validated entry points and reachable interactions. River and ford currents and squall wind affect Planck physics. World mode layers weather and light over the map. Leap, balance, scale, and brace challenges reflect terrain, story evidence, character choices, check odds, and assist mode. Wisdom narration follows the Fante voice guide and passes strict prose lint. Mark's desktop and phone vertical-slice playtest remains the final human check; the handoff checklist is in [docs/PLAYTEST-WISDOM.md](PLAYTEST-WISDOM.md). The third-edition work remains local and has not been deployed.
 
 ## Third edition — status, 19 October 2026
 
@@ -180,13 +180,13 @@ All four tales are played in a walkable world, with a storyteller telling each b
   - Your playtest on desktop and phone.
   - Cultural review of the Akan and Baghdad framing.
   - International rights checks.
-  - The Render deploy.
+  - The release.
 
 ## Third edition — status, 28 October 2026: first person
 
-The world is now seen through the hero's eyes. A software raycaster ported from Bunker Run (`sdl-c-raycasting`) to plain JavaScript replaced Phaser; Planck physics, the bridge, maps, trials and the story engine keep their roles. See [docs/WORLD.md](docs/WORLD.md).
+The world is now seen through the hero's eyes. A software raycaster ported from Bunker Run (`sdl-c-raycasting`) to plain JavaScript replaced Phaser; Planck physics, the bridge, maps, trials and the story engine keep their roles. See [docs/WORLD.md](WORLD.md).
 
-- **Renderer.** Textured walls, floor and ceiling casting, a skyline per tradition, billboards with shadows and a depth buffer, Bunker Run's light model (daylight, night ambient, torch cone, fog) plus fires and lanterns that light the ground. Mean 2.7 ms a frame across all 166 arrival views.
+- **the static hoster.** Textured walls, floor and ceiling casting, a skyline per tradition, billboards with shadows and a depth buffer, Bunker Run's light model (daylight, night ambient, torch cone, fog) plus fires and lanterns that light the ground. Mean 2.7 ms a frame across all 166 arrival views.
 - **Art.** Every wall, floor, person, animal and thing is painted in code per tradition, with walk frames and the hero's own hands. No binary art in the repo. `npm run art:check` covers all of it.
 - **HUD.** One pixel face (Pixelify Sans), quest panel, minimap, crosshair prompt, bag slots, a dialogue box with the speaker's face. The web shelf became a title screen drawn by the game's renderer.
 - **Tests.** 133 gate tests (`test/ray.test.js` new), 69 browser tests on desktop and phone, the render eval. A passing browser run writes nothing to disk.

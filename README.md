@@ -1,97 +1,46 @@
 # Hadithi
 
-An atlas of playable tales. Four free browser adventures draw on a Fante Anansi tale, Urashima Tarō, the Grimms' travelling musicians, and Ali Cogia from the *Nights*. Walk each one in first person, through a world that moves when you act, roll seeded dice with honest odds, connect clues into conclusions, and carry what each ending teaches into your next telling. Every tale hides one ending that only that remembered knowledge can reach.
+Four old tales you can walk into. *Hadithi* means "stories" in Swahili.
 
-[Play Hadithi](https://hadithi-i2us.onrender.com)
+Each tale is a short first-person adventure that plays in your browser. You walk the world as the hero of a story first told in Ghana, Japan, Germany or Baghdad. A storyteller tells it as you go. What you look at, what you take, who you talk to and what you dare decide how it ends.
 
-## Run
+**[Play Hadithi](https://hadithi-i2us.onrender.com)**: free, no account, nothing to install. It works on a computer or a phone, and offline once it has loaded.
 
-Requires Node.js 22 or newer. The game has no runtime dependencies, account requirement, paid story API, or analytics.
+## The tales
 
-```sh
-cd hadithi
-npm ci
-npm run dev
-```
-
-Open http://localhost:4173. To serve the production build (with offline support):
-
-```sh
-npm test
-npm run build
-npm start
-```
-
-`npm run build` validates every tale, proves a path to every ending, versions the offline cache, and copies the app into `dist/`. Any static HTTP host can serve that directory. Serve over HTTP; ES modules and the service worker do not work from `file://`.
-
-## What you can play
-
-| Story | Tradition | Your role | Main interactions |
+| Tale | Told in | You play | Length |
 | --- | --- | --- | --- |
-| The Wisdom in the Pot | Fante, present-day Ghana | Kweku Tsin | Weave a sling, read a river, teach a knot, persuade a circle |
-| The Palace Beneath the Tide | Japanese, Tango coast | Urashima Tarō | Rescue a turtle, read a feast that is a clock, choose a home |
-| The Midnight Orchestra | German, Grimm collection | The donkey | Recruit an ensemble, time a patrol, build a case, conduct a four-voice entrance |
-| The Olive Jar | Baghdad, *The Thousand and One Nights* (Galland) | The courtyard cadi | Investigate a theft, resist a bribe, cast a children's court, prove the olives are too fresh |
+| **The Wisdom in the Pot** | Fante, Ghana | Kweku Tsin, Anansi's son | 15 to 25 minutes |
+| **The Palace Beneath the Tide** | Japan, the Tango coast | Urashima Tarō, a fisherman | 15 to 25 minutes |
+| **The Midnight Orchestra** | Germany, the Grimm collection | The donkey | 15 to 25 minutes |
+| **The Olive Jar** | Baghdad, *The Thousand and One Nights* | The courtyard cadi, a child judge | 15 to 25 minutes |
 
-57 scenes and encounters, 49 world events, 18 dice checks, 16 deductions, 16 endings (4 secret), 12 echoes, and 20 marks.
+Each tale has four endings, one of them secret. See [the tales](docs/the-tales.md) for what each one is about, with content notes.
 
-Each tale is a world you walk:
+## What playing is like
 
-- **Wisdom:** Kweku crosses a Fante forest after his father.
-- **Tide:** Urashima swims down to a lacquered palace.
-- **Orchestra:** A donkey gathers a dog, a cat and a rooster who walk behind him.
-- **Olive Jar:** A Baghdad child holds court by moonlight.
+- **You are there.** You see through the hero's eyes and walk where you like. Fires light the dark, rivers push you downstream, and the wind leans on you in a storm.
+- **The story answers what you do.** Walk up to something, put the crosshair on it and press E. Look, take, ask, persuade. The storyteller tells what happens in a small panel that stays out of your way.
+- **Leaps, climbs and arguments are played by hand.** Your choices make them easier. If you would rather the dice decide, turn that off in Settings.
+- **Think it through.** Your journal keeps what you have found. Put two things together to see what they mean. A true connection opens new conversations and new endings.
+- **Each ending teaches something.** Start again and the tale remembers it. Secret endings need what an earlier telling taught you.
+- **Nothing is lost.** Your journey saves after every step. Take back a step at any time.
 
-## What makes a telling
+## Guides
 
-- **A storyteller over a world you walk.** Each tale is a first-person world, drawn by a software raycaster in the style of the old corridor games (see [the world](docs/WORLD.md)), with a game HUD: quest, minimap, crosshair, bag. You walk it; a storyteller tells it. The opening line, a chapter card as each place opens, what you find, what people say (in bubbles over their heads), and what it costs all arrive a beat at a time in the dialogue box at the foot of the screen, with the speaker's face.
-- **Act it out.** A gold diamond hangs over what you can look at, take or talk to. Walk up, put the crosshair on it and press E: you kneel to look, reach to take, turn to talk, and the story answers. Taken things leave the ground and fly into your bag. People with several things to say open a conversation with lines to choose.
-- **Turns, not timers.** Walking, lifting and throwing things, and thinking are free. Story actions take turns. Weather, tides, patrols and moonrise arrive on schedule and interrupt when they must.
-- **Trials by hand.** Leaps, climbs, arguments and storms are played by hand, tuned to the odds your stats and choices earned. Turn trials off in Settings and seeded dice decide instead. Either way, failing moves the story on, and taking a step back cannot change how it went.
-- **What you know.** In the journal, choose two things that fit together. A true connection opens conversations, arguments and endings. A wrong one costs nothing.
-- **Echoes.** Endings teach echoes. A new telling remembers them and reveals ◈ remembered actions. Secret endings need them.
-- **The turn of the tale.** Once per journey, turn it toward another kind of story (Mystery, Survival, Reconciliation). Routes, solutions and endings change.
-- **Atmosphere.** Dawn to moonlight, a torch at night, fires and lanterns that light the ground, fog and mist, rain and storms, and wind fields that push you and loose things around. Optional procedural sound starts off.
+- [Getting started](docs/getting-started.md)
+- [Controls](docs/controls.md)
+- [How a telling works](docs/how-it-plays.md)
+- [The tales](docs/the-tales.md)
+- [Settings and accessibility](docs/settings-and-accessibility.md)
+- [Saves and privacy](docs/saves-and-privacy.md)
+- [Sources and credits](docs/sources-and-credits.md)
+- [Troubleshooting](docs/troubleshooting.md)
 
-## Controls and saves
+## Sources
 
-- W and S walk, A and D step sideways, the arrows or the mouse turn (click the view to hold the mouse; Esc lets go). Shift runs. A controller works (left stick walks, right stick turns), and on a phone the stick walks and turns, a swipe looks, and a tap on something walks you there. E, Space or the A button acts and moves the story on. 1 to 9 choose a line in a conversation. Q lifts or sets down, F throws. J opens the journal (B, K, P, M for its pages). U takes back a step. ? opens the guide.
-- Progress saves after each action on this browser. Export a JSON save from the journal for a portable copy; import through Settings. Once loaded, the game plays offline.
-- Settings: sound effects, ambience, volume, scene motion (respects reduced motion), three text sizes, physical trials on or off, Storyteller's grace (+2 to every trial's odds), and whether new journeys carry echoes.
-- All four tales are playable in the world. The title screen would mark any tale without a map for every scene as not ready and keep it from starting.
+Hadithi's tales are new, playable retellings of traditional stories, based on public-domain collections. No source text or illustrations are reproduced. Every tradition has more than one telling; ours is one of them. See [sources and credits](docs/sources-and-credits.md).
 
-Saves contain the episode ID, schema version, content revision, seed, echoes, assist flag, and the command sequence. Loading replays the rules to rebuild everything; nothing stored is trusted. Saves from an older revision listed in `compatibleRevisions` are replayed through the new rules and carried forward if every command is still legal; otherwise the player is told clearly to start fresh.
+## Building on Hadithi
 
-## Verify
-
-```sh
-npm test              # gate: rules, dice, migration, walkthroughs, witnesses, type scale, prose lint, LLM service (<2 s)
-npm run lint:prose    # the prose lint alone, with every issue printed
-npm run build         # validation + a proven path to every ending
-npm run eval          # 9,600 seeded agent playthroughs, trial fairness, every first-person arrival view rendered and timed
-npm run test:browser  # every walkthrough through the real UI, offline, axe audit, 14px floor, desktop + phone
-npm run eval:prose    # paid: blind judge of rewritten text vs the baseline, via local Claude Code
-```
-
-Browser tests use installed Google Chrome locally and Playwright Chromium in CI (`CI=1` with `npx playwright install chromium`). The eval writes `artifacts/eval/playtest-report.md`, `skills-report.md` and `render-report.md`; playtest thresholds live in `evals/thresholds.json`. A passing browser run writes nothing to disk. Failures keep a screenshot in `test-results/` (and a trace on CI only). `SHOTS=1` saves review screenshots to `artifacts/`. See [engine and verification](docs/ENGINE.md).
-
-## Deploy on Render
-
-The live site is in the `main` Render workspace: [Hadithi](https://hadithi-i2us.onrender.com) · [service Dashboard](https://dashboard.render.com/static/srv-db9vii7avr4c73fj59ng). Build command: `npm ci && npm test && npm run build`. Publish directory: `dist`. No database or secrets are required. GitHub Actions runs the gate tests, build, eval, and browser tests on every push and nightly; Render publishes the static app.
-
-The live service was created directly through the Render connector. Render reports auto-deploy enabled, but Git pushes did not queue deployments during setup, so the release was deployed manually. Check the Git provider connection in the service Dashboard before relying on automatic deployments. `render.yaml` is a validated provisioning reference that additionally specifies security headers and deployment after CI passes. Those additional settings are not automatically synced to a directly created service. Review the existing service before creating a Blueprint to avoid a duplicate site. The local server is for previewing and is not needed on Render. See [deployment details](docs/DEPLOYMENT.md).
-
-## Authoring and sources
-
-- [Episode briefs and source ledger](docs/EPISODES.md)
-- [Engine and content rules](docs/ENGINE.md)
-- [Voice guide: how the text should sound](docs/VOICE.md)
-- [The first-person world: renderer, light, controls, HUD, tools](docs/WORLD.md)
-- [Art contract](docs/ART-SPEC.md) and [maps](docs/MAPS.md)
-- [Original implementation plan](PLAN.md)
-
-The game's lettering is Pixelify Sans, self-hosted from Fontsource (OFL), with Literata, Fraunces and Atkinson Hyperlegible Next for long-form text outside play. They are installed by npm and copied at build by `scripts/vendor.mjs`, never committed. No text renders below 14px; `test/typography.test.js` and the browser suite enforce it. The only model access is `services/llm`, which shells out to the local Claude Code CLI.
-
-Each tale lives in `site/stories/<id>.js`, written with small helpers from `site/stories/helpers.js` that produce plain declarative objects. Conditions and effects are data, not executable story scripts. Validation rejects broken references, unexplained locked actions, checks without a failure outcome, clues nobody can find, echoes that unlock nothing, endings nothing reaches, and secret endings not gated by an echo. New routes belong in `test/walkthroughs.js`, which feeds the gate tests, the eval, and the browser suite. Traditional narrative motifs inspired newly written text, art painted in code, and procedural sound. Read the in-game source notes or source ledger for edition details, the distinction between tradition and adaptation, and outstanding international rights/editorial review.
-
-The original Tkinter prototype remains in `hadithi.py` with its original `game_data.json`. It is a separate legacy game and does not run the new episode engine.
+Hadithi is plain JavaScript with no runtime dependencies beyond a physics library. To run it yourself or change it, see [CONTRIBUTING.md](CONTRIBUTING.md).

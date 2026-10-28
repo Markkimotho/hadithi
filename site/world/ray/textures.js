@@ -2,7 +2,7 @@
 // a palette. Nothing is a committed image: the same seed paints the same
 // texture on every machine, and scripts/art-check.mjs checks every one.
 //
-// To use commissioned art instead, see docs/ART-SPEC.md: a PNG with the same
+// To use commissioned art instead, see docs/dev/ART-SPEC.md: a PNG with the same
 // name and size replaces the painted texture without touching this file.
 import { texture, fill, fbm, noise2, rect, ellipse, polygon, line, plot, rgb, mix, shade, random } from "./paint.js";
 import { hash32 } from "../../engine/rng.js";

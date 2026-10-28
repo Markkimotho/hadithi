@@ -50,6 +50,56 @@ export function prepareLevel(level, art) {
 }
 
 /**
+ * For each column of a texture, the first and last row with paint in it
+ * (first > last if the column is clear). Cached on the texture.
+ */
+export function opaqueRows(tex) {
+  if (tex.opaque) return tex.opaque;
+  const out = new Int16Array(tex.w * 2);
+  for (let x = 0; x < tex.w; x++) {
+    let first = tex.h,
+      last = -1;
+    for (let y = 0; y < tex.h; y++)
+      if (tex.data[y * tex.w + x] >>> 24 >= 128) {
+        if (y < first) first = y;
+        last = y;
+      }
+    out[x * 2] = first;
+    out[x * 2 + 1] = last;
+  }
+  tex.opaque = out;
+  return out;
+}
+
+/** Light map cells per metre. */
+export const LIGHTMAP_RES = 4;
+
+/** The sum of every point light, sampled on a grid over the level. Cached until the lights change. */
+export function lightMap(prepared, lamps) {
+  const key = lamps.map((l) => `${l.x},${l.y},${l.power},${l.color}`).join(";");
+  if (prepared.lightMap?.key === key) return prepared.lightMap;
+  const w = prepared.level.width * LIGHTMAP_RES,
+    h = prepared.level.height * LIGHTMAP_RES;
+  const data = new Float32Array(w * h * 3);
+  for (let gy = 0; gy < h; gy++)
+    for (let gx = 0; gx < w; gx++) {
+      const px = (gx + 0.5) / LIGHTMAP_RES,
+        py = (gy + 0.5) / LIGHTMAP_RES;
+      const i = (gy * w + gx) * 3;
+      for (const l of lamps) {
+        const dx = px - l.x,
+          dy = py - l.y;
+        const k = l.power / (1 + (dx * dx + dy * dy) * 0.9);
+        data[i] += l.color[0] * k;
+        data[i + 1] += l.color[1] * k;
+        data[i + 2] += l.color[2] * k;
+      }
+    }
+  prepared.lightMap = { key, w, h, data };
+  return prepared.lightMap;
+}
+
+/**
  * Draw one frame.
  * @param target   from createTarget
  * @param prepared from prepareLevel
@@ -74,17 +124,20 @@ export function renderFrame(target, prepared, cam, view) {
     const t = Math.min(1, Math.max(0, (Math.abs(camX) - 0.17) / 0.47));
     cone[x] = ((1 - t * t * (3 - 2 * t)) * 0.85 + 0.15) * torch;
   }
-  // Point lights add warm colour that falls off with distance.
+  // Point lights add warm colour that falls off with distance. They don't
+  // move, so their sum is baked once into a light map and each pixel reads it.
+  const map = lamps.length ? lightMap(prepared, lamps) : null;
   const lampAt = (px, py, out) => {
-    out[0] = out[1] = out[2] = 0;
-    for (const l of lamps) {
-      const dx = px - l.x,
-        dy = py - l.y;
-      const k = l.power / (1 + (dx * dx + dy * dy) * 0.9);
-      out[0] += l.color[0] * k;
-      out[1] += l.color[1] * k;
-      out[2] += l.color[2] * k;
+    const gx = Math.floor(px * LIGHTMAP_RES),
+      gy = Math.floor(py * LIGHTMAP_RES);
+    if (gx < 0 || gy < 0 || gx >= map.w || gy >= map.h) {
+      out[0] = out[1] = out[2] = 0;
+      return;
     }
+    const i = (gy * map.w + gx) * 3;
+    out[0] = map.data[i];
+    out[1] = map.data[i + 1];
+    out[2] = map.data[i + 2];
   };
   const lamp = [0, 0, 0];
   const sunR = light.day * light.tint[0],
@@ -301,9 +354,19 @@ export function renderFrame(target, prepared, cam, view) {
         mb = mb + (1 - mb) * glow;
       }
       const fk = fog * (1 - glow * 0.7);
-      for (let y = y0; y < y1; y++) {
-        const v = (((y + 0.5 - topY) / height) * tex.h) | 0;
-        if (v < 0 || v >= tex.h) continue;
+      // Only the rows of this texture column that have paint in them.
+      const span = opaqueRows(tex);
+      const first = span[u * 2],
+        last = span[u * 2 + 1];
+      if (first > last) continue;
+      const step = height / tex.h;
+      const ya = Math.max(y0, Math.floor(topY + first * step)),
+        yb = Math.min(y1, Math.ceil(topY + (last + 1) * step));
+      const vStep = tex.h / height;
+      let vf = (ya + 0.5 - topY) * vStep;
+      for (let y = ya; y < yb; y++, vf += vStep) {
+        const v = vf | 0;
+        if (v < first || v > last) continue;
         const c = tex.data[v * tex.w + u];
         if (c >>> 24 < 128) continue;
         any = true;
