@@ -5,27 +5,58 @@ on:
   pull_request:
   workflow_dispatch:
   schedule:
-    - cron: "17 3 * * *" # nightly playtest eval
+    - cron: "17 3 * * *" # nightly
 permissions:
   contents: read
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  build:
+  # Rules, build and the evals: fast, and independent of a browser.
+  verify:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
+          cache: npm
       - run: npm ci
       - run: npm test
       - run: npm run build
       - run: npm run eval
-      - run: npx playwright install --with-deps chromium
-      - run: npx playwright test
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: hadithi-reports
+          name: eval-reports
+          path: artifacts/eval/
+          if-no-files-found: ignore
+
+  # Every walkthrough through the real game, once per device, side by side.
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        project: [desktop, mobile]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - run: npx playwright test --project=${{ matrix.project }}
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: browser-${{ matrix.project }}
           path: |
-            artifacts/eval/
             test-results/
+            playwright-report/
+          if-no-files-found: ignore
